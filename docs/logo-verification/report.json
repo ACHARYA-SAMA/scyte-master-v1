@@ -1,0 +1,32 @@
+{
+  "generatedAt": "2026-10-22T15:18:10.727Z",
+  "svg": "public/brand/scyte-logo.svg",
+  "original": "public/brand/scyte-logo-original.png",
+  "native": {
+    "meanAbs": 0.00256,
+    "maxAbs": 0.254,
+    "mismatchPct": 0.245,
+    "mismatchedPixels": 41,
+    "comparedPixels": 16767,
+    "note": "1x antialiased render vs original; mismatch = |coverage delta| > 0.1"
+  },
+  "fourX": {
+    "meanAbs": 0.00225,
+    "maxAbs": 0.903,
+    "mismatchPct": 0.021,
+    "mismatchedPixels": 55,
+    "comparedPixels": 256096,
+    "ambiguousEdgePixels": 12176,
+    "ambiguousPct": 4.539,
+    "note": "4x render vs 4x nearest-neighbour original; mismatch = binary disagreement where the original is decisive"
+  },
+  "fourXBoxFiltered": {
+    "meanAbs": 0.00254,
+    "maxAbs": 0.252,
+    "mismatchPct": 0.25,
+    "mismatchedPixels": 42,
+    "comparedPixels": 16767,
+    "note": "4x render box-filtered to 1x vs original"
+  },
+  "budgetPct": 0.5
+}

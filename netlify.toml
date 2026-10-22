@@ -1,3 +1,5 @@
+# Vercel is the primary target. On Netlify, the Next.js runtime adapter detects the
+# app automatically; no publish directory is needed now that the site is not a
+# static export (the contact form uses a server action).
 [build]
   command = "npm run build"
-  publish = "out"
