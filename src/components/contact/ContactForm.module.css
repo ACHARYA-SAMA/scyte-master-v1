@@ -1,0 +1,306 @@
+.form {
+  display: grid;
+  gap: 28px;
+}
+
+.intents {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.intent {
+  position: relative;
+  display: grid;
+  gap: 6px;
+  padding: 18px 20px;
+  border: 1px solid var(--moss-hi);
+  transition:
+    border-color var(--dur-ui) linear,
+    background var(--dur-ui) linear;
+}
+
+.intent input {
+  position: absolute;
+  opacity: 0;
+  inset: 0;
+  margin: 0;
+}
+
+.intent:has(input:focus-visible) {
+  outline: 2px solid var(--signal);
+  outline-offset: 3px;
+}
+
+.intent[data-on] {
+  border-color: var(--bone);
+  background: var(--forest);
+}
+
+.intent[data-on]::after {
+  content: "";
+  position: absolute;
+  right: 14px;
+  top: 14px;
+  width: 10px;
+  height: 10px;
+  background: var(--signal);
+}
+
+.intentName {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-variation-settings: "opsz" 40;
+  text-transform: uppercase;
+  font-size: var(--step-2);
+  line-height: 0.95;
+  color: var(--bone);
+}
+
+.intentNote {
+  font-size: var(--step--1);
+  color: var(--bone-dim);
+  line-height: 1.4;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px 24px;
+}
+
+.field {
+  display: grid;
+  gap: 8px;
+}
+
+.field label,
+.pains legend {
+  font-family: var(--font-mono);
+  font-variation-settings: "wdth" 84;
+  font-size: var(--step--1);
+  color: var(--bone);
+}
+
+.opt {
+  color: var(--bone-dim);
+  margin-left: 6px;
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  padding: 12px 0;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--moss-hi);
+  color: var(--paper);
+  font-family: var(--font-serif);
+  font-size: var(--step-1);
+  border-radius: 0;
+  transition: border-color var(--dur-ui) linear;
+}
+
+.field select {
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var(--bone) 50%), linear-gradient(135deg, var(--bone) 50%, transparent 50%);
+  background-position:
+    calc(100% - 12px) 55%,
+    calc(100% - 7px) 55%;
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+}
+
+.field select option {
+  background: var(--forest);
+  color: var(--paper);
+}
+
+.field textarea {
+  resize: vertical;
+  min-height: 7em;
+  line-height: 1.45;
+}
+
+.field input::placeholder {
+  color: var(--moss-hi);
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  outline: none;
+  border-bottom-color: var(--bone);
+}
+
+.field input:focus-visible,
+.field select:focus-visible,
+.field textarea:focus-visible {
+  box-shadow: 0 2px 0 var(--signal);
+}
+
+.field[data-error] input {
+  border-bottom-color: var(--signal);
+}
+
+.error {
+  font-family: var(--font-mono);
+  font-variation-settings: "wdth" 84;
+  font-size: var(--step--2);
+  color: var(--signal);
+}
+
+.pains {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  position: relative;
+}
+
+.chip input {
+  position: absolute;
+  opacity: 0;
+  inset: 0;
+  margin: 0;
+}
+
+.chip span {
+  display: inline-block;
+  padding: 9px 12px;
+  border: 1px solid var(--moss-hi);
+  font-size: var(--step--1);
+  color: var(--paper);
+  transition:
+    background var(--dur-feedback) linear,
+    color var(--dur-feedback) linear,
+    border-color var(--dur-feedback) linear;
+}
+
+.chip input:checked + span {
+  background: var(--bone);
+  border-color: var(--bone);
+  color: var(--ink);
+}
+
+.chip input:focus-visible + span {
+  outline: 2px solid var(--signal);
+  outline-offset: 2px;
+}
+
+.honey {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.submitRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px 28px;
+}
+
+.submit {
+  display: inline-flex;
+  align-items: center;
+  gap: 18px;
+  padding: 20px 26px;
+  background: var(--bone);
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-variation-settings: "opsz" 36;
+  font-size: var(--step-2);
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.submit:disabled {
+  opacity: 0.7;
+  cursor: progress;
+}
+
+.submit i {
+  width: 14px;
+  height: 14px;
+  background: var(--signal);
+}
+
+.submit i[data-pending] {
+  animation: pend 0.6s steps(2) infinite;
+}
+
+@keyframes pend {
+  50% {
+    transform: scale(0.4);
+  }
+}
+
+.privacy {
+  font-family: var(--font-mono);
+  font-variation-settings: "wdth" 84;
+  font-size: var(--step--2);
+  color: var(--bone-dim);
+}
+
+.formError {
+  font-family: var(--font-mono);
+  font-variation-settings: "wdth" 84;
+  font-size: var(--step--1);
+  color: var(--signal);
+}
+
+.sent {
+  display: grid;
+  gap: 16px;
+  padding: 28px;
+  border: 1px solid var(--bone);
+}
+
+.sentKicker {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  color: var(--signal);
+}
+
+.sentTitle {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: var(--step-3);
+  line-height: 1.1;
+  color: var(--paper);
+}
+
+.sentNote {
+  font-size: var(--step--1);
+  color: var(--bone-dim);
+}
+
+.sentNote a {
+  color: var(--bone);
+  border-bottom: 1px solid var(--signal);
+}
+
+@media (max-width: 760px) {
+  .intents,
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}

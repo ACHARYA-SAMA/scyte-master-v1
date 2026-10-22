@@ -1,0 +1,143 @@
+.hero {
+  position: relative;
+  z-index: 1;
+  min-height: 78svh;
+  display: grid;
+  align-content: end;
+  gap: 22px;
+  padding: calc(var(--nav-h) + 8vh) var(--gutter) clamp(40px, 8vh, 80px);
+}
+
+.kicker {
+  font-family: var(--font-mono);
+  font-variation-settings: "wdth" 84;
+  font-size: var(--step--1);
+  color: var(--signal);
+}
+
+.title {
+  font-family: var(--font-display);
+  font-weight: 880;
+  font-variation-settings: "opsz" 72;
+  text-transform: uppercase;
+  font-size: clamp(3.2rem, 1rem + 7.6vw, 10rem);
+  line-height: 0.84;
+  color: var(--bone);
+  max-width: 14ch;
+  text-wrap: balance;
+}
+
+.lede {
+  font-size: var(--step-1);
+  line-height: 1.45;
+  color: var(--paper);
+  max-width: 44ch;
+}
+
+.process {
+  position: relative;
+  z-index: 1;
+  background: var(--ink);
+  padding: clamp(64px, 12vh, 140px) var(--gutter);
+  border-top: 1px solid var(--moss);
+}
+
+.h2 {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 300;
+  font-size: var(--step-4);
+  line-height: 0.95;
+  color: var(--paper);
+  margin-bottom: clamp(32px, 6vh, 64px);
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: 1px solid var(--moss-hi);
+  border-left: 1px solid var(--moss-hi);
+}
+
+.steps li {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  padding: 22px clamp(16px, 2vw, 28px) 28px;
+  border-right: 1px solid var(--moss-hi);
+  border-bottom: 1px solid var(--moss-hi);
+}
+
+.n {
+  font-family: var(--font-mono);
+  font-variation-settings: "wdth" 84;
+  font-size: var(--step--1);
+  color: var(--signal);
+}
+
+.steps h3 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-variation-settings: "opsz" 48;
+  text-transform: uppercase;
+  font-size: var(--step-3);
+  line-height: 0.9;
+  color: var(--bone);
+}
+
+.steps p {
+  font-size: var(--step-0);
+  line-height: 1.5;
+  color: var(--paper);
+  max-width: 34ch;
+}
+
+.bridge {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 4fr) auto;
+  gap: 24px clamp(24px, 4vw, 64px);
+  align-items: end;
+  padding: clamp(64px, 12vh, 120px) var(--gutter);
+}
+
+.bridgeTitle {
+  font-family: var(--font-display);
+  font-weight: 880;
+  font-variation-settings: "opsz" 72;
+  text-transform: uppercase;
+  font-size: var(--step-4);
+  line-height: 0.86;
+}
+
+.bridgeBody {
+  font-size: var(--step-1);
+  line-height: 1.45;
+  max-width: 40ch;
+}
+
+.bridgeLink {
+  padding: 16px 20px;
+  background: var(--forest);
+  color: var(--paper);
+  font-family: var(--font-display);
+  font-weight: 800;
+  text-transform: uppercase;
+  font-size: var(--step-1);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .steps {
+    grid-template-columns: 1fr;
+  }
+  .bridge {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+  .bridgeLink {
+    justify-self: start;
+  }
+}

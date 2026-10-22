@@ -1,0 +1,66 @@
+.page {
+  position: relative;
+  z-index: 1;
+  min-height: 100svh;
+  display: grid;
+  align-content: end;
+  padding: calc(var(--nav-h) + 4vh) var(--gutter) clamp(32px, 8vh, 80px);
+  overflow: clip;
+}
+
+/* The only other place the stencil cut appears: the gaps read as a broken signal. */
+.code {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-stencil), var(--font-display);
+  font-weight: 900;
+  font-size: clamp(10rem, 38vw, 44rem);
+  line-height: 0.8;
+  color: var(--forest);
+  -webkit-text-stroke: 1px var(--moss-hi);
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.copy {
+  position: relative;
+  display: grid;
+  gap: 18px;
+  max-width: 40rem;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-weight: 880;
+  font-variation-settings: "opsz" 72;
+  text-transform: uppercase;
+  font-size: var(--step-5);
+  line-height: 0.84;
+  color: var(--bone);
+}
+
+.lede {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: var(--step-1);
+  line-height: 1.4;
+  color: var(--paper);
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 28px;
+  font-family: var(--font-mono);
+  font-variation-settings: "wdth" 84;
+  font-size: var(--step--1);
+}
+
+.links a {
+  border-bottom: 1px solid var(--signal);
+  padding-bottom: 3px;
+  color: var(--bone);
+}
