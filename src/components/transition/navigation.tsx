@@ -6,16 +6,17 @@ import { forwardRef, useCallback, useEffect, useRef, type AnchorHTMLAttributes, 
 import { ScrollTrigger } from "@/lib/motion";
 import { ui } from "@/lib/store";
 import { recordPage } from "@/lib/telemetry";
+import { track } from "@/lib/analytics";
 import { scrollToTop } from "@/components/providers/SmoothScroll";
 import { curtain, expectRoute, routeCommitted } from "./curtainControl";
 
 const ROUTE_LABELS: Record<string, string> = {
-  "/": "Home",
-  "/product": "The product",
-  "/services": "Studio",
-  "/work": "Work",
-  "/team": "Team",
-  "/contact": "Contact",
+  "/": "home",
+  "/product": "the product",
+  "/services": "the studio",
+  "/work": "work",
+  "/team": "the team",
+  "/contact": "contact",
 };
 
 const labelFor = (href: string) => {
@@ -41,6 +42,7 @@ export const useTransitionRouter = () => {
         router.push(href);
         return;
       }
+      track("navigate", { to: path });
       ui.set({ transition: "covering", menuOpen: false });
       const o = origin ?? { x: window.innerWidth / 2, y: window.innerHeight / 2 };
       await curtain.cover(o, labelFor(href));

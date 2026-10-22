@@ -6,6 +6,7 @@ import { StageWindow } from "@/components/stage/StageControls";
 import { bridge } from "@/components/stage/bridge";
 import { TEAM, displayName, hexId } from "@/data/team";
 import { prefersReducedMotion } from "@/lib/motion";
+import { useMedia } from "@/lib/useMedia";
 import { sfx } from "@/lib/sound";
 import { Thumbs } from "./Thumbs";
 import { TeamHud } from "./TeamHud";
@@ -19,19 +20,13 @@ const ATTRACT_EVERY_MS = 2900;
 export function Team() {
   const [active, setActive] = useState(-1);
   const [open, setOpen] = useState(-1);
+  const [openFrom, setOpenFrom] = useState<HTMLElement | null>(null);
   const [attract, setAttract] = useState(false);
-  const [touch, setTouch] = useState(false);
   const [origin, setOrigin] = useState(STRIPS / 2);
   const dock = useRef<HTMLDivElement>(null);
   const userTookOver = useRef(false);
 
-  useEffect(() => {
-    const mq = window.matchMedia("(hover: none), (max-width: 900px)");
-    const update = () => setTouch(mq.matches);
-    update();
-    mq.addEventListener("change", update);
-    return () => mq.removeEventListener("change", update);
-  }, []);
+  const touch = useMedia("(hover: none), (max-width: 900px)");
 
   // Deep link: /team?member=slug opens that dossier.
   useEffect(() => {
@@ -39,6 +34,8 @@ export function Team() {
     const i = TEAM.findIndex((m) => m.slug === slug);
     if (i >= 0) {
       userTookOver.current = true;
+      // The URL is only known in the browser, after hydration.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setActive(i);
       setOpen(i);
     }
@@ -55,6 +52,8 @@ export function Team() {
   }, []);
   useEffect(() => {
     if (!attract) return;
+    // Attract mode starts by locking the first member; a timer steps it on from there.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setActive((a) => (a < 0 ? 0 : a));
     const id = window.setInterval(() => setActive((a) => (a + 1) % TEAM.length), ATTRACT_EVERY_MS);
     return () => window.clearInterval(id);
@@ -86,6 +85,7 @@ export function Team() {
   const openDossier = (i: number) => {
     takeOver();
     setActive(i);
+    setOpenFrom((dock.current?.children[i] as HTMLElement | undefined) ?? null);
     setOpen(i);
     sfx.lock();
     window.history.pushState({ dossier: TEAM[i].slug }, "", `?member=${TEAM[i].slug}`);
@@ -176,7 +176,7 @@ export function Team() {
         <Dossier
           key={TEAM[open].slug}
           member={TEAM[open]}
-          fromEl={(dock.current?.children[open] as HTMLElement | undefined) ?? null}
+          fromEl={openFrom}
           onClose={closeDossier}
         />
       ) : null}

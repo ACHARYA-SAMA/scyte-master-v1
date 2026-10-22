@@ -39,7 +39,8 @@ type Props = {
 const DIR = Array.from({ length: STRIPS }, (_, i) => ((i * 7) % 5 < 2 ? -1 : 1));
 const DIST = Array.from({ length: STRIPS }, (_, i) => 100 + ((i * 37) % 41));
 
-let capRatio = 0.72;
+const DEFAULT_CAP = 0.72;
+let capRatio = DEFAULT_CAP;
 let capMeasured = false;
 const measureCap = () => {
   if (capMeasured || typeof document === "undefined") return capRatio;
@@ -73,12 +74,15 @@ function FaceArt({ face, capH }: { face: Face; capH: number }) {
 
 export function SliceWord({ face, tone = "bone", origin = STRIPS / 2, className, style, onStrips, label }: Props) {
   const [layers, setLayers] = useState<Layer[]>(() => [{ face, tone, key: 0, state: "in" }]);
-  const [capH, setCapH] = useState(capRatio);
+  // Start from the constant so server and client render the same; measure after mount.
+  const [capH, setCapH] = useState(DEFAULT_CAP);
   const keyRef = useRef(1);
   const rootRef = useRef<HTMLDivElement>(null);
   const firstRef = useRef(true);
   const originRef = useRef(origin);
-  originRef.current = origin;
+  useLayoutEffect(() => {
+    originRef.current = origin;
+  }, [origin]);
 
   useEffect(() => {
     document.fonts?.ready.then(() => setCapH(measureCap()));

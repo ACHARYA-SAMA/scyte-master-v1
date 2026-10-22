@@ -52,13 +52,9 @@ function Driver() {
 
 export function Stage() {
   const unsupported = useStore(ui, (s) => s.webgl === "unsupported");
-  const [tier, setTier] = useState(2);
-  const [dpr, setDpr] = useState(1.5);
-
-  useEffect(() => {
-    setTier(initialTier());
-    setDpr(Math.min(1.75, window.devicePixelRatio || 1));
-  }, []);
+  // Client-only (loaded with ssr: false), so initial state may read the device.
+  const [tier, setTier] = useState(initialTier);
+  const [dpr, setDpr] = useState(() => Math.min(1.75, window.devicePixelRatio || 1));
 
   if (unsupported) return null;
 

@@ -4,6 +4,7 @@ import { useActionState, useEffect, useRef, useState } from "react";
 import { submitContact } from "@/app/contact/actions";
 import { PAINS, REVENUE_RANGES, contactSchema, type ContactState } from "@/lib/contact-schema";
 import { emit } from "@/lib/telemetry";
+import { track } from "@/lib/analytics";
 import { sfx } from "@/lib/sound";
 import { SITE } from "@/config/site";
 import styles from "./ContactForm.module.css";
@@ -18,11 +19,16 @@ export function ContactForm() {
   const form = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
+    // The URL hash is only known in the browser, after hydration.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (window.location.hash === "#project") setIntent("project");
   }, []);
 
   useEffect(() => {
-    if (state.status === "sent") sfx.ok();
+    if (state.status === "sent") {
+      sfx.ok();
+      track("contact_sent", { intent: state.intent });
+    }
     if (state.status === "error") sfx.deny();
   }, [state]);
 
@@ -74,7 +80,10 @@ export function ContactForm() {
       action={action}
       className={styles.form}
       noValidate
-      onSubmit={() => emit("click", { detail: `contact_submit_${intent}` })}
+      onSubmit={() => {
+        emit("click", { detail: `contact_submit_${intent}` });
+        track("contact_submit", { intent });
+      }}
       aria-describedby={state.status === "error" ? "form-error" : undefined}
     >
       <input type="hidden" name="intent" value={intent} />

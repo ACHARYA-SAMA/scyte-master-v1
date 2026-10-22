@@ -18,12 +18,10 @@ export function Portrait({
   alt?: string;
   size?: "thumb" | "large";
 }) {
-  const [src, setSrc] = useState<string | null>(member.photo);
+  const key = `${member.slug}:${size}`;
+  const [src, setSrc] = useState<string | null>(() => member.photo ?? cache.get(key) ?? null);
   useEffect(() => {
-    if (member.photo) return setSrc(member.photo);
-    const key = `${member.slug}:${size}`;
-    const hit = cache.get(key);
-    if (hit) return setSrc(hit);
+    if (member.photo || cache.has(key)) return;
     // Off the critical path: thumbnails are drawn when the main thread is idle.
     const w = window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number; cancelIdleCallback?: (id: number) => void };
     const run = () => {
@@ -34,7 +32,7 @@ export function Portrait({
     if (size === "large" || !w.requestIdleCallback) return run();
     const id = w.requestIdleCallback(run, { timeout: 800 });
     return () => w.cancelIdleCallback?.(id);
-  }, [member.photo, member.slug, size]);
+  }, [member.photo, member.slug, size, key]);
 
   const label = alt ?? (member.photo ? `Portrait of ${member.name ?? member.roleShort}` : `Placeholder silhouette for the ${member.roleShort} seat`);
   if (!src) return <span className={className} role="img" aria-label={label} />;

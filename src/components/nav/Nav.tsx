@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useSyncExternalStore } from "react";
 import { usePathname } from "next/navigation";
 import { Logo } from "@/components/brand/Logo";
 import { TransitionLink } from "@/components/transition/navigation";
@@ -19,13 +19,13 @@ const istClock = () =>
     hour12: false,
   }).format(new Date());
 
+const subscribeSecond = (onTick: () => void) => {
+  const id = window.setInterval(onTick, 1000);
+  return () => window.clearInterval(id);
+};
+
 function Clock() {
-  const [time, setTime] = useState("--:--:--");
-  useEffect(() => {
-    setTime(istClock());
-    const id = window.setInterval(() => setTime(istClock()), 1000);
-    return () => window.clearInterval(id);
-  }, []);
+  const time = useSyncExternalStore(subscribeSecond, istClock, () => "--:--:--");
   return (
     <span className={styles.readout}>
       <span className={styles.key}>Hyderabad</span> <time className="t-num">{time}</time>

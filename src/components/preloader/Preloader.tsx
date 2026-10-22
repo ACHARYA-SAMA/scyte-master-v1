@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Logo } from "@/components/brand/Logo";
 import { LOGO_ASPECT, LOGO_OVERSHOOT, LOGO_WIDTH, logoCells } from "@/lib/logo/geometry";
 import { gsap, prefersReducedMotion } from "@/lib/motion";
@@ -36,6 +36,8 @@ export function Preloader() {
   useEffect(() => {
     const done = document.documentElement.dataset.preloaded === "1";
     if (done) {
+      // Decided by the boot script before paint; React learns it after hydration.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setActive(false);
       ui.set({ preloaderDone: true });
       return;
@@ -62,6 +64,53 @@ export function Preloader() {
   }, []);
 
   const target = tasks.reduce((s, t) => s + (t.state === "waiting" ? 0 : t.weight), 0);
+
+  const finished = useRef(false);
+  const finish = useCallback(() => {
+    if (finished.current) return;
+    finished.current = true;
+    const el = root.current;
+    const vec = vector.current;
+    const cnv = canvas.current;
+    try {
+      sessionStorage.setItem(PRELOADED_KEY, "1");
+    } catch {
+      /* fine: it will simply run again next time */
+    }
+    const end = () => {
+      document.documentElement.classList.remove("is-preloading");
+      ui.set({ preloaderDone: true });
+      if (ui.get().transition === "idle" && !ui.get().menuOpen) scroller.lenis?.start();
+      setActive(false);
+    };
+    if (!el || !vec || !cnv) return end();
+
+    const reduced = prefersReducedMotion();
+    const destination =
+      document.querySelector<HTMLElement>("[data-hero-logo]") ??
+      document.querySelector<HTMLElement>("[data-nav-logo] svg");
+
+    // Hand over from cells to the exact vector mark.
+    const tl = gsap.timeline({ onComplete: end });
+    tl.set(vec, { opacity: 1 });
+    tl.to(cnv, { opacity: 0, duration: 0.12, ease: "none" });
+    tl.to(el.querySelectorAll("[data-meta]"), { opacity: 0, duration: 0.2, ease: "cut" }, "<");
+
+    if (reduced || !destination) {
+      tl.to(el, { opacity: 0, duration: 0.35, ease: "none" });
+      return;
+    }
+
+    const from = vec.getBoundingClientRect();
+    const to = destination.getBoundingClientRect();
+    const scale = to.width / from.width;
+    const dx = to.left + to.width / 2 - (from.left + from.width / 2);
+    const dy = to.top + to.height / 2 - (from.top + from.height / 2);
+    tl.to(vec, { x: dx, y: dy, scale, duration: 0.95, ease: "latch" }, "+=0.08");
+    tl.to(el.querySelector("[data-bg]"), { opacity: 0, duration: 0.55, ease: "drift" }, "<0.35");
+    tl.set(destination, { opacity: 1 });
+    tl.to(vec, { opacity: 0, duration: 0.01 });
+  }, []);
 
   // Draw: cells are placed in a fixed scan order as progress rises.
   const shown = useRef(0);
@@ -117,55 +166,7 @@ export function Preloader() {
     return () => {
       tween.kill();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [target, active]);
-
-  const finished = useRef(false);
-  const finish = () => {
-    if (finished.current) return;
-    finished.current = true;
-    const el = root.current;
-    const vec = vector.current;
-    const cnv = canvas.current;
-    try {
-      sessionStorage.setItem(PRELOADED_KEY, "1");
-    } catch {
-      /* fine: it will simply run again next time */
-    }
-    const end = () => {
-      document.documentElement.classList.remove("is-preloading");
-      ui.set({ preloaderDone: true });
-      if (ui.get().transition === "idle" && !ui.get().menuOpen) scroller.lenis?.start();
-      setActive(false);
-    };
-    if (!el || !vec || !cnv) return end();
-
-    const reduced = prefersReducedMotion();
-    const destination =
-      document.querySelector<HTMLElement>("[data-hero-logo]") ??
-      document.querySelector<HTMLElement>("[data-nav-logo] svg");
-
-    // Hand over from cells to the exact vector mark.
-    const tl = gsap.timeline({ onComplete: end });
-    tl.set(vec, { opacity: 1 });
-    tl.to(cnv, { opacity: 0, duration: 0.12, ease: "none" });
-    tl.to(el.querySelectorAll("[data-meta]"), { opacity: 0, duration: 0.2, ease: "cut" }, "<");
-
-    if (reduced || !destination) {
-      tl.to(el, { opacity: 0, duration: 0.35, ease: "none" });
-      return;
-    }
-
-    const from = vec.getBoundingClientRect();
-    const to = destination.getBoundingClientRect();
-    const scale = to.width / from.width;
-    const dx = to.left + to.width / 2 - (from.left + from.width / 2);
-    const dy = to.top + to.height / 2 - (from.top + from.height / 2);
-    tl.to(vec, { x: dx, y: dy, scale, duration: 0.95, ease: "latch" }, "+=0.08");
-    tl.to(el.querySelector("[data-bg]"), { opacity: 0, duration: 0.55, ease: "drift" }, "<0.35");
-    tl.set(destination, { opacity: 1 });
-    tl.to(vec, { opacity: 0, duration: 0.01 });
-  };
+  }, [target, active, finish]);
 
   if (!active) return null;
 

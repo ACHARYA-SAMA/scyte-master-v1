@@ -8,6 +8,7 @@ export function LostSignal() {
   const [path, setPath] = useState("");
   const [at, setAt] = useState("");
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setPath(window.location.pathname);
     setAt(new Date().toISOString().replace("T", " ").slice(0, 19));
   }, []);
