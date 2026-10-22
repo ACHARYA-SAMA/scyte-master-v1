@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Scyte round 2: palette and type</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=block">
+<style>
+  :root {
+    --ground: #1B261D; --ground-deep: #152018; --surface: #253026; --raised: #2B3A2F; --line: #334638;
+    --khaki: #C2B897; --khaki-light: #CFC7AA; --cream: #E6D5B8;
+    --abyss: #09120B; --muted: #929884; --lumen: #F9DC7D;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--ground); color: var(--khaki-light); font-family: "Archivo", sans-serif; font-variation-settings: "wdth" 100, "wght" 400; }
+  .board { width: 1600px; padding: 56px 64px 72px; }
+  .hud { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; font-variant-numeric: tabular-nums; font-variation-settings: "wdth" 75, "wght" 560; color: var(--muted); }
+  .top { display: grid; grid-template-columns: 1fr auto; align-items: end; border-bottom: 1px solid var(--line); padding-bottom: 28px; }
+  .top svg { width: 420px; color: var(--khaki); display: block; }
+  .top .meta { text-align: right; line-height: 1.9; }
+  h2 { margin: 44px 0 18px; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; font-variation-settings: "wdth" 75, "wght" 620; color: var(--khaki); }
+  .sw { display: grid; grid-template-columns: repeat(8, 1fr); gap: 12px; }
+  .sw.d { grid-template-columns: repeat(8, 1fr); }
+  .chip { border: 1px solid var(--line); }
+  .chip .c { height: 116px; border-bottom: 1px solid var(--line); }
+  .chip .t { padding: 10px 10px 12px; font-size: 12px; line-height: 1.45; }
+  .chip .t b { display: block; font-variation-settings: "wdth" 100, "wght" 650; color: var(--cream); font-size: 13px; }
+  .chip .t i { font-style: normal; color: var(--muted); display: block; font-variant-numeric: tabular-nums; }
+  .chip.derived { border-style: dashed; border-color: var(--muted); }
+  .chip.derived .t b::after { content: "  derived"; color: var(--lumen); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; }
+  .gone { display: flex; gap: 18px; margin-top: 14px; font-size: 12px; color: var(--muted); }
+  .gone s { color: var(--khaki-light); }
+  .type { display: grid; grid-template-columns: 1fr; margin-top: 8px; }
+  .giant { font-size: 300px; line-height: .8; letter-spacing: -0.035em; color: var(--khaki); font-variation-settings: "wdth" 62, "wght" 900; white-space: nowrap; margin: 8px 0 0 -10px; }
+  .wide { font-size: 112px; line-height: .95; letter-spacing: -0.02em; font-variation-settings: "wdth" 125, "wght" 160; color: var(--cream); margin-top: 18px; white-space: nowrap; }
+  .grid3 { display: grid; grid-template-columns: 1.1fr 1fr 1fr; gap: 40px; margin-top: 34px; border-top: 1px solid var(--line); padding-top: 26px; }
+  .h1 { font-size: 54px; line-height: 1; letter-spacing: -0.03em; font-variation-settings: "wdth" 100, "wght" 720; color: var(--cream); margin: 0; }
+  .b16 { font-size: 16px; line-height: 1.55; margin: 0 0 14px; max-width: 60ch; }
+  .b12 { font-size: 12px; line-height: 1.55; margin: 0 0 14px; max-width: 64ch; font-variation-settings: "wdth" 100, "wght" 440; letter-spacing: .005em; }
+  .readout { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; font-variant-numeric: tabular-nums; font-variation-settings: "wdth" 62, "wght" 580; color: var(--khaki); margin: 0 0 8px; }
+  .num { font-size: 56px; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; font-variation-settings: "wdth" 88, "wght" 640; color: var(--cream); margin: 6px 0 0; }
+  .axes { display: grid; grid-template-columns: 80px repeat(5, 1fr); gap: 0; margin-top: 10px; border: 1px solid var(--line); }
+  .axes div { border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); height: 104px; display: flex; align-items: center; justify-content: center; font-size: 64px; color: var(--khaki-light); }
+  .axes div.l { font-size: 11px; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; justify-content: flex-start; padding-left: 10px; font-variation-settings: "wdth" 75, "wght" 560; }
+  .inv { margin-top: 44px; background: var(--khaki); color: var(--ground); padding: 34px 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: end; }
+  .inv .h1 { color: var(--ground); }
+  .inv .b16 { color: var(--ground-deep); }
+  .inv .readout { color: var(--surface); }
+  .light { margin-top: 44px; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
+  .pipe { height: 76px; border: 1px solid var(--line); background: var(--abyss); position: relative; overflow: hidden; }
+  .pipe i { position: absolute; top: 30px; height: 16px; border-radius: 8px; background: var(--lumen); box-shadow: 0 0 18px 4px rgba(249, 220, 125, .45), 0 0 60px 10px rgba(249, 220, 125, .16); }
+  .contrast { width: 100%; border-collapse: collapse; font-size: 12px; font-variant-numeric: tabular-nums; }
+  .contrast td, .contrast th { border-bottom: 1px solid var(--line); padding: 7px 8px; text-align: left; }
+  .contrast th { color: var(--muted); font-weight: normal; font-variation-settings: "wdth" 75, "wght" 560; letter-spacing: .1em; text-transform: uppercase; font-size: 10px; }
+</style>
+</head>
+<body>
+<div class="board">
+  <div class="top">
+    <svg viewBox="0 -0.264 140 37.264" fill="currentColor" role="img" aria-label="Scyte"><path d="M0 0L28 0L28 5L5 5L5 16L29 16L29 37L1 37L1 32L24 32L24 21L0 21ZM32 0L60 0L60 5L37 5L37 32L60 32L60 37L32 37ZM63.533 2.027L67.719 -0.264L74.5 13.189L81.281 -0.264L85.467 2.027L77 18.812L77 36L72 36L72 18.812ZM89 0L116 0L116 5L105 5L105 36L100 36L100 5L89 5ZM120 0L140 0L140 5L125 5L125 16L134.5 16L134.5 21L125 21L125 32L140 32L140 37L120 37Z"/></svg>
+    <div class="meta hud">Round 2 recon board<br>Palette recovered from commit ebd6bbd and the live scyte.vercel.app<br>Type: Archivo variable, one family</div>
+  </div>
+
+  <h2>Recovered from the original site's source</h2>
+  <div class="sw">
+    <div class="chip"><div class="c" style="background:#1B261D"></div><div class="t"><b>Ground #1B261D</b><i>globals.css:5 --oak-green</i>Page background</div></div>
+    <div class="chip"><div class="c" style="background:#152018"></div><div class="t"><b>Ground deep #152018</b><i>HeroScrollSequence:590</i>Deep panels, wells</div></div>
+    <div class="chip"><div class="c" style="background:#253026"></div><div class="t"><b>Surface #253026</b><i>AnimatedFooter:91</i>Footer, raised bands</div></div>
+    <div class="chip"><div class="c" style="background:#2B3A2F"></div><div class="t"><b>Raised #2B3A2F</b><i>HeroScrollSequence:703</i>Controls, device bezels</div></div>
+    <div class="chip"><div class="c" style="background:#334638"></div><div class="t"><b>Line #334638</b><i>HeroScrollSequence:744</i>Hairlines, grid, inactive</div></div>
+    <div class="chip"><div class="c" style="background:#C2B897"></div><div class="t"><b>Khaki #C2B897</b><i>globals.css:4 --neon-accent</i>Logo, accent, inverted band</div></div>
+    <div class="chip"><div class="c" style="background:#CFC7AA"></div><div class="t"><b>Khaki light #CFC7AA</b><i>HeroScrollSequence:484</i>Body text</div></div>
+    <div class="chip"><div class="c" style="background:#E6D5B8"></div><div class="t"><b>Cream #E6D5B8</b><i>HeroScrollSequence:576</i>Headlines, key figures</div></div>
+  </div>
+
+  <h2>Derived, on the same hues, for jobs the original had no colour for</h2>
+  <div class="sw d">
+    <div class="chip derived"><div class="c" style="background:#09120B"></div><div class="t"><b>Abyss #09120B</b><i>ground hue 151, L 0.17</i>Replaces the original neutral #050505: 3D depth, fog</div></div>
+    <div class="chip derived"><div class="c" style="background:#929884"></div><div class="t"><b>Muted #929884</b><i>5.3:1 on ground</i>Secondary text. The original used white at 50 %</div></div>
+    <div class="chip derived"><div class="c" style="background:#F9DC7D"></div><div class="t"><b>Lumen #F9DC7D</b><i>khaki hue 93, L 0.90 C 0.12</i>Emitted light only: the liquid, a recovered order</div></div>
+  </div>
+  <div class="gone hud">Removed from v1 and the original: <s>#FF3D2E red signal</s> <s>#FFFFFF text</s> <s>#050505 neutral black</s> <s>#EDE8D8 paper</s> <s>chart gold and teal</s></div>
+
+  <h2>Archivo at 300 px: width 62, weight 900</h2>
+  <div class="type">
+    <div class="giant">PAYMENT FAILED</div>
+    <div class="wide">Aarav still wants it</div>
+  </div>
+
+  <div class="grid3">
+    <div>
+      <p class="h1">Your shopper didn’t leave. Their UPI timed out at 3:05.</p>
+    </div>
+    <div>
+      <p class="b16">A UPI timeout looks like abandonment in most dashboards, though the shopper often still wants to buy. We read the gateway’s reason code and send the matching fix: a retry link, a switch to UPI, or cash on delivery.</p>
+      <p class="b12">12 px. Marketing consent is a separate, unticked checkbox with a stored record of who agreed, when, to what wording, on which channel. If consent is off, the pipeline blocks the send. STOP is honoured instantly.</p>
+    </div>
+    <div>
+      <p class="readout">payment_failed &nbsp; reason upi_timeout &nbsp; ₹1,499.00</p>
+      <p class="readout">03:05:12 &nbsp; intent 0.74 &nbsp; holdout 10 %</p>
+      <p class="num">₹54,400 0123456789</p>
+    </div>
+  </div>
+
+  <h2>One family, two axes</h2>
+  <div class="axes">
+    <div class="l">wght / wdth</div>
+    <div class="l">62</div><div class="l">75</div><div class="l">88</div><div class="l">100</div><div class="l">125</div>
+    <div class="l">900</div>
+    <div style='font-variation-settings:"wdth" 62,"wght" 900'>Rg</div><div style='font-variation-settings:"wdth" 75,"wght" 900'>Rg</div><div style='font-variation-settings:"wdth" 88,"wght" 900'>Rg</div><div style='font-variation-settings:"wdth" 100,"wght" 900'>Rg</div><div style='font-variation-settings:"wdth" 125,"wght" 900'>Rg</div>
+    <div class="l">600</div>
+    <div style='font-variation-settings:"wdth" 62,"wght" 600'>Rg</div><div style='font-variation-settings:"wdth" 75,"wght" 600'>Rg</div><div style='font-variation-settings:"wdth" 88,"wght" 600'>Rg</div><div style='font-variation-settings:"wdth" 100,"wght" 600'>Rg</div><div style='font-variation-settings:"wdth" 125,"wght" 600'>Rg</div>
+    <div class="l">300</div>
+    <div style='font-variation-settings:"wdth" 62,"wght" 300'>Rg</div><div style='font-variation-settings:"wdth" 75,"wght" 300'>Rg</div><div style='font-variation-settings:"wdth" 88,"wght" 300'>Rg</div><div style='font-variation-settings:"wdth" 100,"wght" 300'>Rg</div><div style='font-variation-settings:"wdth" 125,"wght" 300'>Rg</div>
+  </div>
+
+  <div class="inv">
+    <div>
+      <p class="readout">Inverted band, used once or twice a page</p>
+      <p class="h1">Cash on delivery is a maybe. Confirm it before the parcel leaves.</p>
+    </div>
+    <p class="b16">Ground on khaki is 7.9:1. The band is where the page changes subject, so the eye gets a rest from the dark before the next dense moment.</p>
+  </div>
+
+  <div class="light">
+    <div class="pipe"><i style="left:6%;width:9%"></i><i style="left:22%;width:4%"></i><i style="left:31%;width:14%"></i><i style="left:52%;width:6%"></i><i style="left:63%;width:11%"></i><i style="left:81%;width:5%"></i></div>
+    <table class="contrast">
+      <tr><th>Text on</th><th>Ground</th><th>Surface</th><th>Raised</th><th>Deep</th></tr>
+      <tr><td>Cream</td><td>10.9</td><td>9.5</td><td>8.3</td><td>11.6</td></tr>
+      <tr><td>Khaki light</td><td>9.2</td><td>8.1</td><td>7.1</td><td>9.9</td></tr>
+      <tr><td>Khaki</td><td>7.9</td><td>6.9</td><td>6.1</td><td>8.5</td></tr>
+      <tr><td>Muted</td><td>5.3</td><td>4.6</td><td>4.0, large text only</td><td>5.6</td></tr>
+    </table>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,414 @@
+{
+ "Bricolage Grotesque": {
+  "axes": [
+   [
+    "opsz",
+    12.0,
+    96.0
+   ],
+   [
+    "wdth",
+    75.0,
+    100.0
+   ],
+   [
+    "wght",
+    200.0,
+    800.0
+   ]
+  ],
+  "latin_kb": 128,
+  "latinext_kb": 52,
+  "rupee": "(latin-ext)",
+  "tnum": true,
+  "ss": [],
+  "subsets": [
+   "vietnamese",
+   "latin-ext",
+   "latin"
+  ],
+  "glyphs": 226,
+  "designer": [
+   "Mathieu Triay"
+  ]
+ },
+ "Host Grotesk": {
+  "axes": [
+   [
+    "wght",
+    300.0,
+    800.0
+   ]
+  ],
+  "latin_kb": 20,
+  "latinext_kb": 12,
+  "rupee": "(latin-ext)",
+  "tnum": false,
+  "ss": [],
+  "subsets": [
+   "latin-ext",
+   "latin"
+  ],
+  "glyphs": 222,
+  "designer": [
+   "Element Type",
+   "Doğukan Karapınar",
+   "İbrahim Kaçtıoğlu"
+  ]
+ },
+ "Funnel Display": {
+  "axes": [
+   [
+    "wght",
+    300.0,
+    800.0
+   ]
+  ],
+  "latin_kb": 17,
+  "latinext_kb": 9,
+  "rupee": false,
+  "tnum": true,
+  "ss": [],
+  "subsets": [
+   "latin-ext",
+   "latin"
+  ],
+  "glyphs": 217,
+  "designer": [
+   "NORD ID",
+   "Kristian Möller"
+  ]
+ },
+ "Schibsted Grotesk": {
+  "axes": [
+   [
+    "wght",
+    400.0,
+    900.0
+   ]
+  ],
+  "latin_kb": 46,
+  "latinext_kb": 20,
+  "rupee": "(latin-ext)",
+  "tnum": true,
+  "ss": [],
+  "subsets": [
+   "latin-ext",
+   "latin"
+  ],
+  "glyphs": 227,
+  "designer": [
+   "Bakken & Bæck",
+   "Henrik Kongsvoll"
+  ]
+ },
+ "Familjen Grotesk": {
+  "axes": [
+   [
+    "wght",
+    400.0,
+    700.0
+   ]
+  ],
+  "latin_kb": 18,
+  "latinext_kb": 15,
+  "rupee": "(latin-ext)",
+  "tnum": true,
+  "ss": [],
+  "subsets": [
+   "vietnamese",
+   "latin-ext",
+   "latin"
+  ],
+  "glyphs": 231,
+  "designer": [
+   "Familjen STHLM AB"
+  ]
+ },
+ "Archivo": {
+  "axes": [
+   [
+    "wdth",
+    62.0,
+    125.0
+   ],
+   [
+    "wght",
+    100.0,
+    900.0
+   ]
+  ],
+  "latin_kb": 88,
+  "latinext_kb": 84,
+  "rupee": "(latin-ext)",
+  "tnum": true,
+  "ss": [],
+  "subsets": [
+   "vietnamese",
+   "latin-ext",
+   "latin"
+  ],
+  "glyphs": 230,
+  "designer": [
+   "Omnibus-Type"
+  ]
+ },
+ "Mona Sans": {
+  "axes": [
+   [
+    "wdth",
+    75.0,
+    125.0
+   ],
+   [
+    "wght",
+    200.0,
+    900.0
+   ]
+  ],
+  "latin_kb": 96,
+  "latinext_kb": 32,
+  "rupee": "(latin-ext)",
+  "tnum": true,
+  "ss": [],
+  "subsets": [
+   "vietnamese",
+   "latin-ext",
+   "latin"
+  ],
+  "glyphs": 221,
+  "designer": [
+   "Tobias Bjerrome Ahlin",
+   "Github",
+   "Degarism Studio",
+   "Sebastian Carewe"
+  ]
+ },
+ "Hubot Sans": {
+  "axes": [
+   [
+    "wdth",
+    75.0,
+    125.0
+   ],
+   [
+    "wght",
+    200.0,
+    900.0
+   ]
+  ],
+  "latin_kb": 91,
+  "latinext_kb": 30,
+  "rupee": "(latin-ext)",
+  "tnum": true,
+  "ss": [],
+  "subsets": [
+   "vietnamese",
+   "latin-ext",
+   "latin"
+  ],
+  "glyphs": 221,
+  "designer": [
+   "Tobias Bjerrome Ahlin",
+   "Github",
+   "Degarism Studio",
+   "Sebastian Carewe"
+  ]
+ },
+ "Anek Latin": {
+  "axes": [
+   [
+    "wdth",
+    75.0,
+    125.0
+   ],
+   [
+    "wght",
+    100.0,
+    800.0
+   ]
+  ],
+  "latin_kb": 101,
+  "latinext_kb": 80,
+  "rupee": "(latin-ext)",
+  "tnum": true,
+  "ss": [],
+  "subsets": [
+   "vietnamese",
+   "latin-ext",
+   "latin"
+  ],
+  "glyphs": 228,
+  "designer": [
+   "Ek Type"
+  ]
+ },
+ "Google Sans Flex": {
+  "axes": [
+   [
+    "opsz",
+    1.0,
+    144.0
+   ],
+   [
+    "slnt",
+    -10.0,
+    0.0
+   ],
+   [
+    "wdth",
+    25.0,
+    151.0
+   ],
+   [
+    "wght",
+    1.0,
+    1000.0
+   ],
+   [
+    "ROND",
+    0.0,
+    100.0
+   ]
+  ],
+  "latin_kb": 1009,
+  "latinext_kb": 514,
+  "rupee": "(latin-ext)",
+  "tnum": true,
+  "ss": [
+   "ss01",
+   "ss02"
+  ],
+  "subsets": [
+   "canadian-aboriginal",
+   "cherokee",
+   "math",
+   "nushu",
+   "symbols",
+   "syriac",
+   "tifinagh",
+   "vietnamese",
+   "latin-ext",
+   "latin"
+  ],
+  "glyphs": 228,
+  "designer": [
+   "Google"
+  ]
+ },
+ "Zalando Sans": {
+  "axes": [
+   [
+    "wdth",
+    75.0,
+    125.0
+   ],
+   [
+    "wght",
+    200.0,
+    900.0
+   ]
+  ],
+  "latin_kb": 84,
+  "latinext_kb": 37,
+  "rupee": false,
+  "tnum": true,
+  "ss": [],
+  "subsets": [
+   "vietnamese",
+   "latin-ext",
+   "latin"
+  ],
+  "glyphs": 228,
+  "designer": [
+   "Jakob Ekelund",
+   "KH Type",
+   "Zalando"
+  ]
+ },
+ "Science Gothic": {
+  "axes": [
+   [
+    "slnt",
+    -10.0,
+    0.0
+   ],
+   [
+    "wdth",
+    50.0,
+    200.0
+   ],
+   [
+    "wght",
+    100.0,
+    900.0
+   ],
+   [
+    "CTRS",
+    0.0,
+    85.0
+   ]
+  ],
+  "latin_kb": 234,
+  "latinext_kb": 241,
+  "rupee": "(latin-ext)",
+  "tnum": true,
+  "ss": [],
+  "subsets": [
+   "cyrillic-ext",
+   "cyrillic",
+   "vietnamese",
+   "latin-ext",
+   "latin"
+  ],
+  "glyphs": 234,
+  "designer": [
+   "Thomas Phinney",
+   "Vassil Kateliev",
+   "Brandon Buerkle"
+  ]
+ },
+ "TikTok Sans": {
+  "axes": [
+   [
+    "opsz",
+    12.0,
+    36.0
+   ],
+   [
+    "slnt",
+    -6.0,
+    0.0
+   ],
+   [
+    "wdth",
+    75.0,
+    150.0
+   ],
+   [
+    "wght",
+    300.0,
+    900.0
+   ]
+  ],
+  "latin_kb": 124,
+  "latinext_kb": 82,
+  "rupee": "(latin-ext)",
+  "tnum": true,
+  "ss": [],
+  "subsets": [
+   "cyrillic-ext",
+   "cyrillic",
+   "greek",
+   "vietnamese",
+   "latin-ext",
+   "latin"
+  ],
+  "glyphs": 225,
+  "designer": [
+   "Grilli Type",
+   "Contrast Foundry",
+   "Type Network"
+  ]
+ }
+}
