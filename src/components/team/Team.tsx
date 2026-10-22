@@ -46,7 +46,8 @@ export function Team() {
 
   // Attract mode: until someone takes over, the scanner steps through the team.
   useEffect(() => {
-    if (prefersReducedMotion() || TEAM.length < 2) return;
+    // Not on touch screens: there, a self-opening bottom sheet would read as a bug.
+    if (prefersReducedMotion() || TEAM.length < 2 || window.matchMedia("(hover: none), (max-width: 900px)").matches) return;
     const start = window.setTimeout(() => {
       if (!userTookOver.current) setAttract(true);
     }, ATTRACT_AFTER_MS);

@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
 
 /** The event this visit just produced, written the way the platform would log it. */
 export function LostSignal() {
-  const pathname = usePathname();
+  // Read on the client only: the 404 is prerendered once, for every missing path.
+  const [path, setPath] = useState("");
   const [at, setAt] = useState("");
   useEffect(() => {
+    setPath(window.location.pathname);
     setAt(new Date().toISOString().replace("T", " ").slice(0, 19));
   }, []);
   return (
@@ -22,7 +23,7 @@ export function LostSignal() {
         whiteSpace: "pre-wrap",
       }}
     >
-      {`page_view {path: "${pathname}", status: 404}\n`}
+      {`page_view {path: "${path || "unknown"}", status: 404}\n`}
       {`intent_score unchanged\n`}
       {`message_sent none, by design${at ? `\n${at} UTC` : ""}`}
     </pre>

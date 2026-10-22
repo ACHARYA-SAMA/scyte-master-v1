@@ -1,7 +1,10 @@
 "use client";
 
 import { forwardRef, type KeyboardEvent } from "react";
+import { LazyMotion, MotionConfig, domAnimation } from "motion/react";
+import * as m from "motion/react-m";
 import { displayName, type Member } from "@/data/team";
+import { SPRING } from "@/lib/motion";
 import { Portrait } from "./Portrait";
 import styles from "./Team.module.css";
 
@@ -14,9 +17,19 @@ type Props = {
   touch: boolean;
 };
 
+/** Lift and part, in px and scale, by distance from the active thumb. */
+const pose = (d: number, side: "left" | "right" | undefined, touch: boolean) => {
+  if (d === 0) return { y: touch ? -4 : -10, x: 0, scale: touch ? 1.2 : 1.55 };
+  const dir = side === "left" ? -1 : 1;
+  if (d === 1) return { y: 0, x: dir * (touch ? 4 : 10), scale: touch ? 1.04 : 1.12 };
+  if (d === 2) return { y: 0, x: dir * (touch ? 2 : 5), scale: touch ? 1 : 1.04 };
+  return { y: 0, x: 0, scale: 1 };
+};
+
 /**
  * The dock. Hover or focus previews a member; the hovered thumb lifts out and its
- * neighbours part. Arrow keys move between members, Enter opens the dossier.
+ * neighbours part, on springs, so sweeping across the row keeps its momentum.
+ * Arrow keys move between members, Enter opens the dossier.
  */
 export const Thumbs = forwardRef<HTMLDivElement, Props>(function Thumbs(
   { team, active, onPreview, onOpen, onLeave, touch },
@@ -37,6 +50,8 @@ export const Thumbs = forwardRef<HTMLDivElement, Props>(function Thumbs(
   };
 
   return (
+    <LazyMotion features={domAnimation} strict>
+    <MotionConfig reducedMotion="user">
     <div
       ref={ref}
       className={styles.dock}
@@ -46,17 +61,21 @@ export const Thumbs = forwardRef<HTMLDivElement, Props>(function Thumbs(
       onPointerLeave={touch ? undefined : onLeave}
       style={{ "--n": team.length } as React.CSSProperties}
     >
-      {team.map((m, i) => {
+      {team.map((member, i) => {
         const d = active < 0 ? 99 : Math.abs(i - active);
+        const side = active < 0 || i === active ? undefined : i < active ? "left" : "right";
         return (
-          <button
-            key={m.slug}
+          <m.button
+            key={member.slug}
+            animate={pose(d, side, touch)}
+            transition={SPRING.dock}
+            style={{ originY: 1 }}
             type="button"
             className={styles.thumb}
             data-dist={d > 2 ? "far" : String(d)}
-            data-side={active < 0 || i === active ? undefined : i < active ? "left" : "right"}
+            data-side={side}
             aria-pressed={i === active}
-            aria-label={`${displayName(m)}, ${m.role}. Open dossier.`}
+            aria-label={`${displayName(member)}, ${member.role}. Open dossier.`}
             tabIndex={i === Math.max(0, active) ? 0 : -1}
             data-cursor="lock"
             onPointerEnter={touch ? undefined : () => onPreview(i)}
@@ -64,13 +83,15 @@ export const Thumbs = forwardRef<HTMLDivElement, Props>(function Thumbs(
             onClick={() => (touch && active !== i ? onPreview(i) : onOpen(i))}
             onKeyDown={(e) => onKey(e, i)}
           >
-            <Portrait member={m} className={styles.thumbImg} alt="" />
+            <Portrait member={member} className={styles.thumbImg} alt="" />
             <span className={styles.thumbTag} aria-hidden>
-              {m.roleShort}
+              {member.roleShort}
             </span>
-          </button>
+          </m.button>
         );
       })}
     </div>
+    </MotionConfig>
+    </LazyMotion>
   );
 });

@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { StageScene } from "@/components/stage/StageControls";
 import { Hero } from "@/components/home/Hero";
 import { ProofStack } from "@/components/home/ProofStack";
@@ -10,10 +11,18 @@ export default function Home() {
     <>
       <StageScene scene="home" />
       <Hero />
-      <ProofStack />
-      <Marquee />
-      <ProductTeaser />
-      <Services />
+      <Suspense>
+        <ProofStack />
+      </Suspense>
+      <Suspense>
+        <Marquee />
+      </Suspense>
+      <Suspense>
+        <ProductTeaser />
+      </Suspense>
+      <Suspense>
+        <Services />
+      </Suspense>
     </>
   );
 }

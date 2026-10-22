@@ -34,7 +34,7 @@
   font-family: var(--font-mono);
   font-variation-settings: "wdth" 84;
   font-size: var(--step--2);
-  color: var(--moss-hi);
+  color: var(--muted);
 }
 
 .ticks li {

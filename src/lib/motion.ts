@@ -5,8 +5,6 @@ import { CustomEase } from "gsap/CustomEase";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/SplitText";
 import { ScrambleTextPlugin } from "gsap/ScrambleTextPlugin";
-import { DrawSVGPlugin } from "gsap/DrawSVGPlugin";
-import { Flip } from "gsap/Flip";
 import { useGSAP } from "@gsap/react";
 
 /**
@@ -48,7 +46,7 @@ let registered = false;
 
 export const registerMotion = () => {
   if (registered || typeof window === "undefined") return;
-  gsap.registerPlugin(CustomEase, ScrollTrigger, SplitText, ScrambleTextPlugin, DrawSVGPlugin, Flip, useGSAP);
+  gsap.registerPlugin(CustomEase, ScrollTrigger, SplitText, ScrambleTextPlugin, useGSAP);
   for (const [name, curve] of Object.entries(EASE)) CustomEase.create(name, curve);
   gsap.defaults({ ease: "glide", duration: DUR.ui });
   ScrollTrigger.config({ ignoreMobileResize: true });
@@ -90,4 +88,4 @@ export const easeDrift = bezier(...parse(EASE.drift));
 export const prefersReducedMotion = () =>
   typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-export { gsap, ScrollTrigger, SplitText, Flip, useGSAP };
+export { gsap, ScrollTrigger, SplitText, useGSAP };

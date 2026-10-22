@@ -22,12 +22,14 @@ export const stencil = Big_Shoulders_Stencil({
   adjustFontFallback: false,
 });
 
-/** The human voice: italic for moments, roman for long-form reading. */
+/**
+ * The human voice: italic for moments, roman for long-form reading. The optical-size
+ * axis is left out here: it doubled the file size, and the display face carries opsz.
+ */
 export const serif = Newsreader({
   subsets: ["latin"],
   weight: "variable",
   style: ["normal", "italic"],
-  axes: ["opsz"],
   variable: "--font-newsreader",
   display: "swap",
 });

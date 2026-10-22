@@ -135,6 +135,7 @@ export function Pipeline() {
                 className={styles.railItem}
                 data-state={i < active ? "done" : i === active ? "on" : "off"}
                 aria-current={i === active ? "step" : undefined}
+                aria-label={`Go to ${st.name}`}
                 onClick={() => jump(i)}
               >
                 <span className={styles.railTick} />

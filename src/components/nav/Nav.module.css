@@ -182,7 +182,13 @@
 }
 
 @media (max-width: 480px) {
+  /* hidden from sight, still the button's name */
   .soundLabel {
-    display: none;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
   }
 }

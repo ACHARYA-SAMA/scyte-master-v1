@@ -23,9 +23,17 @@ function Driver() {
   const { gl, scene, camera } = useThree();
   useEffect(() => {
     let frames = 0;
-    // Compile every program up front so the first visible frame never stalls.
-    gl.compile(scene, camera);
+    let compiled = false;
+    let alive = true;
+    // Compile programs off the main thread where the driver allows it
+    // (KHR_parallel_shader_compile), so warm-up never blocks scrolling.
+    gl.compileAsync(scene, camera)
+      .catch(() => gl.compile(scene, camera))
+      .finally(() => {
+        compiled = true;
+      });
     const tick = () => {
+      if (!alive || !compiled) return;
       const s = stage.get();
       if (!s.visible && frames > 2) return;
       // frameloop="never": R3F reads this timestamp in seconds
@@ -34,7 +42,10 @@ function Driver() {
       if (frames === 2) ui.set({ webgl: "ready" });
     };
     gsap.ticker.add(tick);
-    return () => gsap.ticker.remove(tick);
+    return () => {
+      alive = false;
+      gsap.ticker.remove(tick);
+    };
   }, [gl, scene, camera]);
   return null;
 }

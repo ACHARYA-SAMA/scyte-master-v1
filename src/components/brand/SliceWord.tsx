@@ -43,7 +43,7 @@ let capRatio = 0.72;
 let capMeasured = false;
 const measureCap = () => {
   if (capMeasured || typeof document === "undefined") return capRatio;
-  const c = document.createElement("canvas").getContext("2d");
+  const c = document.createElement("canvas").getContext("2d", { willReadFrequently: true });
   const family = getComputedStyle(document.documentElement).getPropertyValue("--font-big-shoulders").trim();
   if (!c || !family) return capRatio;
   c.font = `900 200px ${family}`;

@@ -20,13 +20,16 @@ const seedOf = (slug: string) => {
   return h >>> 0;
 };
 
-export const silhouetteCanvas = (slug: string) => {
+/** Draws at `scale` of the 480 x 600 design size: callers ask for what they sample. */
+export const silhouetteCanvas = (slug: string, scale = 1) => {
   const W = SIL_W;
   const H = SIL_H;
   const c = document.createElement("canvas");
-  c.width = W;
-  c.height = H;
-  const g = c.getContext("2d")!;
+  c.width = Math.max(1, Math.round(W * scale));
+  c.height = Math.max(1, Math.round(H * scale));
+  // CPU-backed: these canvases are read straight back, and a GPU canvas would stall on readback.
+  const g = c.getContext("2d", { willReadFrequently: true })!;
+  g.scale(scale, scale);
   const r = rng(seedOf(slug));
 
   g.fillStyle = "#000";
@@ -86,20 +89,21 @@ export const FACE = { x: 0.63, y: 0.38 };
  * of the WebGL portrait, for thumbnails and the dossier.
  */
 export const halftoneDataUrl = (slug: string, width = 160, cell = 8) => {
-  const src = silhouetteCanvas(slug);
   const height = Math.round((width * SIL_H) / SIL_W);
   const cols = Math.floor(width / cell);
   const rows = Math.floor(height / cell);
+  // Paint the silhouette only as large as the halftone samples it (4 px per cell).
+  const src = silhouetteCanvas(slug, (cols * 4) / SIL_W);
   const sample = document.createElement("canvas");
   sample.width = cols;
   sample.height = rows;
-  const sg = sample.getContext("2d")!;
+  const sg = sample.getContext("2d", { willReadFrequently: true })!;
   sg.drawImage(src, 0, 0, cols, rows);
   const px = sg.getImageData(0, 0, cols, rows).data;
   const out = document.createElement("canvas");
   out.width = cols * cell;
   out.height = rows * cell;
-  const g = out.getContext("2d")!;
+  const g = out.getContext("2d", { willReadFrequently: true })!;
   g.fillStyle = "#1c261f";
   g.fillRect(0, 0, out.width, out.height);
   g.fillStyle = "#c2b897";

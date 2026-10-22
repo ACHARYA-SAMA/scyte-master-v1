@@ -93,11 +93,11 @@
 .badge {
   flex: none;
   padding: 3px 7px;
-  border: 1px solid var(--signal);
+  background: var(--signal);
   font-family: var(--font-mono);
   font-variation-settings: "wdth" 80;
   font-size: var(--step--2);
-  color: var(--signal);
+  color: var(--ink);
 }
 
 /* The lens: fixed corner brackets the list scrolls through. */

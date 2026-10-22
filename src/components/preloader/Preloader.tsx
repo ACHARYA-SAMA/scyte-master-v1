@@ -47,11 +47,13 @@ export function Preloader() {
     mark("dom");
     document.fonts?.ready.then(() => mark("fonts"));
 
-    const unsub = ui.subscribe(() => {
+    const check = () => {
       const w = ui.get().webgl;
       if (w === "ready") mark("stage");
-      if (w === "unsupported") mark("stage", "skipped");
-    });
+      if (w === "unsupported" || w === "deferred") mark("stage", "skipped");
+    };
+    check();
+    const unsub = ui.subscribe(check);
     const timeout = window.setTimeout(() => mark("stage", "skipped"), STAGE_TIMEOUT_MS);
     return () => {
       unsub();

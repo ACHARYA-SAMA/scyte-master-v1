@@ -69,7 +69,7 @@ function SoundToggle() {
       type="button"
       className={styles.sound}
       aria-pressed={on}
-      aria-label={on ? "Turn interface sound off" : "Turn interface sound on"}
+      title={on ? "Turn interface sound off" : "Turn interface sound on"}
       onClick={() => setSound(!on)}
       data-on={on ? "1" : "0"}
     >
@@ -80,7 +80,9 @@ function SoundToggle() {
         <i />
         <i />
       </span>
-      <span className={styles.soundLabel}>{on ? "Sound on" : "Sound off"}</span>
+      <span className={styles.soundLabel}>
+        Sound<span aria-hidden> {on ? "on" : "off"}</span>
+      </span>
     </button>
   );
 }

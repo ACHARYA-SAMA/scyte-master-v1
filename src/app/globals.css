@@ -10,6 +10,8 @@
   --moss-hi: #3a4d40;
   --bone: #c2b897;
   --bone-dim: #9a9379;
+  /* inactive text: quieter than bone-dim, still AA on ink and forest */
+  --muted: #858f7c;
   --paper: #ede8d8;
   --signal: #ff3d2e;
   --signal-deep: #b8291c; /* signal on paper (5.1:1) */
@@ -290,6 +292,7 @@ html.lenis body {
   color: var(--forest);
   --bone: var(--forest);
   --bone-dim: #4c5a4f;
+  --muted: #5d6a5f;
   --signal: var(--signal-deep);
   --moss: #cfc8b3;
   --moss-hi: #b6ae96;

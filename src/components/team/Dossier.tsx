@@ -2,7 +2,7 @@
 
 import { useEffect, useLayoutEffect, useRef } from "react";
 import { displayName, hexId, type Member } from "@/data/team";
-import { Flip, gsap, prefersReducedMotion } from "@/lib/motion";
+import { gsap, prefersReducedMotion } from "@/lib/motion";
 import { scroller } from "@/components/providers/SmoothScroll";
 import { Portrait } from "./Portrait";
 import styles from "./Dossier.module.css";
@@ -105,7 +105,6 @@ export function Dossier({ member, fromEl, onClose }: Props) {
   }, []);
 
   const name = displayName(member);
-  void Flip;
 
   return (
     <div ref={root} className={styles.dossier} role="dialog" aria-modal="true" aria-labelledby="dossier-name">

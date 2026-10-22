@@ -14,7 +14,7 @@ export const portraitTexture = (slug: string, photo: string | null): Promise<THR
       t.generateMipmaps = false;
       resolve(t);
     };
-    if (!photo) return finish(silhouetteCanvas(slug));
+    if (!photo) return finish(silhouetteCanvas(slug, 0.5));
     const img = new Image();
     img.decoding = "async";
     img.onload = () => {
@@ -23,12 +23,12 @@ export const portraitTexture = (slug: string, photo: string | null): Promise<THR
       const scale = Math.min(1, 900 / img.height);
       c.width = Math.round(img.width * scale);
       c.height = Math.round(img.height * scale);
-      const g = c.getContext("2d")!;
+      const g = c.getContext("2d", { willReadFrequently: true })!;
       g.filter = "grayscale(1) contrast(1.15)";
       g.drawImage(img, 0, 0, c.width, c.height);
       finish(c);
     };
-    img.onerror = () => finish(silhouetteCanvas(slug));
+    img.onerror = () => finish(silhouetteCanvas(slug, 0.5));
     img.src = photo;
   });
 

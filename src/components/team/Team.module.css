@@ -49,10 +49,6 @@
   height: var(--size);
   border-radius: 10px;
   overflow: visible;
-  transition:
-    transform 420ms var(--ease-latch),
-    margin 420ms var(--ease-latch);
-  transform-origin: 50% 100%;
 }
 
 .thumbImg {
@@ -69,7 +65,6 @@
 }
 
 .thumb[aria-pressed="true"] {
-  transform: translateY(-14%) scale(1.55);
   z-index: 2;
 }
 
@@ -78,18 +73,6 @@
   outline-color: var(--signal);
 }
 
-.thumb[data-dist="1"][data-side="left"] {
-  transform: translateX(-10px) scale(1.12);
-}
-.thumb[data-dist="1"][data-side="right"] {
-  transform: translateX(10px) scale(1.12);
-}
-.thumb[data-dist="2"][data-side="left"] {
-  transform: translateX(-5px) scale(1.04);
-}
-.thumb[data-dist="2"][data-side="right"] {
-  transform: translateX(5px) scale(1.04);
-}
 
 .thumbTag {
   position: absolute;
@@ -143,9 +126,6 @@
   }
   .thumb {
     scroll-snap-align: center;
-  }
-  .thumb[aria-pressed="true"] {
-    transform: translateY(-6%) scale(1.2);
   }
   .word {
     align-self: start;

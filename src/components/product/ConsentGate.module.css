@@ -39,6 +39,7 @@
 }
 
 .controls {
+  min-width: 0;
   display: grid;
   gap: 28px;
 }
@@ -169,6 +170,7 @@
 }
 
 .machine {
+  min-width: 0;
   position: relative;
   display: grid;
   gap: 20px;
@@ -298,6 +300,11 @@
   margin-bottom: 6px;
 }
 
+.recordRows {
+  margin: 0;
+  display: grid;
+}
+
 .record div {
   display: grid;
   grid-template-columns: 9ch 1fr;
@@ -359,6 +366,7 @@
 .phone {
   display: grid;
   justify-items: center;
+  min-width: 0;
 }
 
 .phone > div[role="img"] {

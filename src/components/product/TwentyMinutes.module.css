@@ -142,7 +142,7 @@
   font-family: var(--font-mono);
   font-variation-settings: "wdth" 80;
   font-size: var(--step--2);
-  color: var(--moss-hi);
+  color: var(--muted);
 }
 
 .rules li {
@@ -206,7 +206,7 @@
   font-family: var(--font-mono);
   font-variation-settings: "wdth" 80;
   font-size: var(--step--2);
-  color: var(--moss-hi);
+  color: var(--muted);
 }
 
 .ticks li::before {

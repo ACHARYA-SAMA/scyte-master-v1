@@ -250,8 +250,9 @@ export function ConsentGate() {
             ) : null}
           </div>
 
-          <dl className={styles.record}>
+          <div className={styles.record}>
             <p className={styles.recordTitle}>Consent record, marketing</p>
+            <dl className={styles.recordRows}>
             <div>
               <dt>Who</dt>
               <dd className="t-num">{record.who}</dd>
@@ -276,7 +277,8 @@ export function ConsentGate() {
               <dt>Flow</dt>
               <dd data-state={flow === "running" ? "granted" : "withdrawn"}>Cart recovery {flow}</dd>
             </div>
-          </dl>
+            </dl>
+          </div>
 
           <ol className={styles.log} aria-label="Pipeline log">
             {log.length === 0 ? <li className={styles.empty}>Nothing sent yet. Use the controls.</li> : null}

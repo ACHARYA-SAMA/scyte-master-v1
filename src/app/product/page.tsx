@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { PRODUCT_NAME } from "@/config/site";
 import { StageScene } from "@/components/stage/StageControls";
 import { ProductHero } from "@/components/product/ProductHero";
@@ -23,12 +24,25 @@ export default function ProductPage() {
     <>
       <StageScene scene="product" />
       <ProductHero />
-      <Pipeline />
-      <TwentyMinutes />
-      <Playbooks />
-      <ConsentGate />
-      <Economics />
-      <Dashboard />
+      {/* Each boundary lets React hydrate in short, yieldable pieces. */}
+      <Suspense>
+        <Pipeline />
+      </Suspense>
+      <Suspense>
+        <TwentyMinutes />
+      </Suspense>
+      <Suspense>
+        <Playbooks />
+      </Suspense>
+      <Suspense>
+        <ConsentGate />
+      </Suspense>
+      <Suspense>
+        <Economics />
+      </Suspense>
+      <Suspense>
+        <Dashboard />
+      </Suspense>
       <Pilot />
     </>
   );

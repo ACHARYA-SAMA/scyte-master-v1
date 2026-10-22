@@ -104,6 +104,7 @@
 
 .slot {
   position: relative;
+  min-width: 0;
   aspect-ratio: 4 / 5;
   display: grid;
   align-content: end;
@@ -141,6 +142,11 @@
   bottom: 0;
   border-right-width: 1px;
   border-bottom-width: 1px;
+}
+
+.slot :global(.fill) {
+  white-space: normal;
+  justify-self: start;
 }
 
 .slotKind {

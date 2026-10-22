@@ -127,7 +127,7 @@
 }
 
 .field input::placeholder {
-  color: var(--moss-hi);
+  color: var(--muted);
 }
 
 .field input:focus,

@@ -42,7 +42,7 @@ export const ui = createStore({
   menuOpen: false,
   transition: "idle" as TransitionPhase,
   preloaderDone: false,
-  webgl: "pending" as "pending" | "ready" | "unsupported",
+  webgl: "pending" as "pending" | "deferred" | "ready" | "unsupported",
 });
 
 /** Which formation the persistent event-pixel field should take, and its inputs. */

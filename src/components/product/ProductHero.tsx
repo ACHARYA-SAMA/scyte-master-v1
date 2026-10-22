@@ -55,7 +55,7 @@ export function ProductHero() {
           ))}
         </h1>
         <div className={styles.foot}>
-          <p className={styles.lede} data-fade>
+          <p className={styles.lede}>
             A behaviour-to-WhatsApp recovery platform for online brands, starting with Shopify stores in India. It
             watches how shoppers behave, works out who still wants to buy, and sends one consented message that
             recovers the abandoned cart, the failed payment or the risky COD order. Then it proves the revenue.
