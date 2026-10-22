@@ -1,0 +1,232 @@
+.team {
+  position: relative;
+  z-index: 1;
+  min-height: 100svh;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  padding: calc(var(--nav-h) + clamp(8px, 2vh, 20px)) var(--gutter) clamp(24px, 4vh, 44px);
+  overflow: clip;
+}
+
+.top {
+  position: relative;
+  z-index: 5;
+  display: grid;
+  justify-items: center;
+  gap: clamp(14px, 2.4vh, 24px);
+}
+
+.intro {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: var(--step-0);
+  color: var(--bone);
+  text-align: center;
+}
+
+.hint {
+  font-family: var(--font-mono);
+  font-style: normal;
+  font-variation-settings: "wdth" 82;
+  font-size: var(--step--2);
+  color: var(--bone-dim);
+  margin-left: 10px;
+}
+
+/* --- the dock --------------------------------------------------------------------- */
+.dock {
+  --size: clamp(44px, min(6.2vw, calc(680px / var(--n))), 78px);
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 12px 26px;
+}
+
+.thumb {
+  position: relative;
+  flex: none;
+  width: var(--size);
+  height: var(--size);
+  border-radius: 10px;
+  overflow: visible;
+  transition:
+    transform 420ms var(--ease-latch),
+    margin 420ms var(--ease-latch);
+  transform-origin: 50% 100%;
+}
+
+.thumbImg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+  background: var(--forest);
+  outline: 1px solid var(--moss-hi);
+  outline-offset: -1px;
+  opacity: 0.72;
+  transition: opacity var(--dur-ui) linear;
+}
+
+.thumb[aria-pressed="true"] {
+  transform: translateY(-14%) scale(1.55);
+  z-index: 2;
+}
+
+.thumb[aria-pressed="true"] .thumbImg {
+  opacity: 1;
+  outline-color: var(--signal);
+}
+
+.thumb[data-dist="1"][data-side="left"] {
+  transform: translateX(-10px) scale(1.12);
+}
+.thumb[data-dist="1"][data-side="right"] {
+  transform: translateX(10px) scale(1.12);
+}
+.thumb[data-dist="2"][data-side="left"] {
+  transform: translateX(-5px) scale(1.04);
+}
+.thumb[data-dist="2"][data-side="right"] {
+  transform: translateX(5px) scale(1.04);
+}
+
+.thumbTag {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 6px);
+  transform: translateX(-50%) scale(0.65);
+  font-family: var(--font-mono);
+  font-variation-settings: "wdth" 80;
+  font-size: 10px;
+  color: var(--bone);
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity var(--dur-ui) linear;
+}
+
+.thumb[aria-pressed="true"] .thumbTag {
+  opacity: 1;
+}
+
+/* --- the word --------------------------------------------------------------------- */
+.word {
+  position: relative;
+  z-index: 3;
+  align-self: center;
+  width: 100%;
+  color: var(--bone);
+}
+
+/* Over the halftone, the name inverts what is behind it. */
+.word[data-member="1"] {
+  mix-blend-mode: difference;
+}
+
+/* --- touch: carousel and bottom sheet ------------------------------------------------ */
+@media (hover: none), (max-width: 900px) {
+  .team {
+    grid-template-rows: auto 1fr auto;
+  }
+  .dock {
+    --size: 64px;
+    justify-content: flex-start;
+    width: calc(100% + var(--gutter) * 2);
+    margin-inline: calc(var(--gutter) * -1);
+    padding-inline: var(--gutter);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+  .dock::-webkit-scrollbar {
+    display: none;
+  }
+  .thumb {
+    scroll-snap-align: center;
+  }
+  .thumb[aria-pressed="true"] {
+    transform: translateY(-6%) scale(1.2);
+  }
+  .word {
+    align-self: start;
+    margin-top: 18vh;
+  }
+}
+
+.sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 6;
+  display: grid;
+  gap: 6px;
+  padding: 10px var(--gutter) calc(16px + env(safe-area-inset-bottom));
+  background: rgba(10, 15, 12, 0.94);
+  border-top: 1px solid var(--moss-hi);
+  animation: sheetIn 420ms var(--ease-latch) both;
+}
+
+@keyframes sheetIn {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+.sheetGrip {
+  justify-self: center;
+  width: 36px;
+  height: 3px;
+  background: var(--moss-hi);
+  margin-bottom: 6px;
+}
+
+.sheetId {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-variation-settings: "wdth" 82;
+  font-size: var(--step--2);
+  color: var(--signal);
+}
+
+.sheetName {
+  font-family: var(--font-display);
+  font-weight: 860;
+  font-variation-settings: "opsz" 72;
+  text-transform: uppercase;
+  font-size: var(--step-2);
+  line-height: 0.95;
+  color: var(--paper);
+}
+
+.sheetRole {
+  font-style: italic;
+  font-size: var(--step--1);
+  color: var(--bone);
+}
+
+.sheetChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  font-family: var(--font-mono);
+  font-variation-settings: "wdth" 82;
+  font-size: 10.5px;
+}
+
+.sheetChips li {
+  padding: 2px 6px;
+  border: 1px solid var(--moss-hi);
+}
+
+.sheetOpen {
+  margin-top: 6px;
+  padding: 12px;
+  background: var(--bone);
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-weight: 800;
+  text-transform: uppercase;
+  font-size: var(--step-0);
+}

@@ -1,0 +1,240 @@
+.dossier {
+  position: fixed;
+  inset: 0;
+  z-index: 6800;
+}
+
+.bg {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 15, 12, 0.96);
+}
+
+.scroll {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.inner {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: clamp(24px, 5vw, 96px);
+  padding: calc(var(--nav-h) + 40px) var(--gutter) 80px;
+  align-items: start;
+}
+
+.close {
+  position: fixed;
+  right: calc(var(--gutter) + 18px);
+  top: calc(var(--nav-h) + 8px);
+  z-index: 2;
+  display: inline-flex;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 14px;
+  border: 1px solid var(--bone);
+  background: var(--ink);
+  font-family: var(--font-mono);
+  font-variation-settings: "wdth" 84;
+  font-size: var(--step--1);
+  color: var(--bone);
+}
+
+.close span {
+  padding: 1px 5px;
+  border: 1px solid var(--moss-hi);
+  font-size: 10px;
+  color: var(--bone-dim);
+}
+
+.portraitCol {
+  position: sticky;
+  top: calc(var(--nav-h) + 40px);
+  display: grid;
+  gap: 10px;
+}
+
+.portrait {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  background: var(--forest);
+  overflow: hidden;
+  will-change: transform;
+}
+
+.portraitImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  image-rendering: pixelated;
+}
+
+.corner {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 26px;
+  height: 26px;
+  border-left: 2px solid var(--signal);
+  border-top: 2px solid var(--signal);
+}
+
+.caption {
+  font-family: var(--font-mono);
+  font-variation-settings: "wdth" 82;
+  font-size: var(--step--2);
+  color: var(--bone-dim);
+}
+
+.body {
+  display: grid;
+  gap: 18px;
+  max-width: 60ch;
+}
+
+.id {
+  display: flex;
+  gap: 20px;
+  font-family: var(--font-mono);
+  font-variation-settings: "wdth" 84;
+  font-size: var(--step--1);
+  color: var(--bone-dim);
+}
+
+.id span:first-child {
+  color: var(--signal);
+}
+
+.name {
+  font-family: var(--font-display);
+  font-weight: 880;
+  font-variation-settings: "opsz" 72;
+  text-transform: uppercase;
+  font-size: clamp(3.4rem, 1rem + 7vw, 9rem);
+  line-height: 0.84;
+  color: var(--paper);
+}
+
+.role {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: var(--step-2);
+  line-height: 1.2;
+  color: var(--bone);
+}
+
+.fillNote {
+  font-size: var(--step--1);
+  color: var(--bone-dim);
+  line-height: 1.5;
+}
+
+.block {
+  display: grid;
+  gap: 10px;
+  padding-top: 16px;
+  border-top: 1px solid var(--moss-hi);
+}
+
+.block h3 {
+  font-family: var(--font-mono);
+  font-variation-settings: "wdth" 84;
+  font-weight: 400;
+  font-size: var(--step--1);
+  color: var(--bone-dim);
+}
+
+.bio {
+  font-size: var(--step-1);
+  line-height: 1.5;
+  color: var(--paper);
+}
+
+.skills {
+  display: grid;
+  gap: 8px;
+}
+
+.skills li {
+  display: grid;
+  grid-template-columns: minmax(0, 10rem) minmax(0, 1fr) 10ch;
+  gap: 12px;
+  align-items: center;
+  font-size: var(--step--1);
+  color: var(--paper);
+}
+
+.skills li > span:last-child {
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+  color: var(--bone-dim);
+  text-align: right;
+}
+
+.meter {
+  height: 6px;
+  background: var(--moss);
+}
+
+.meter i {
+  display: block;
+  height: 100%;
+  background: var(--bone);
+}
+
+.meter[data-empty] {
+  background: repeating-linear-gradient(90deg, var(--moss) 0 6px, transparent 6px 9px);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-variation-settings: "wdth" 84;
+  font-size: var(--step--2);
+}
+
+.chips li {
+  padding: 4px 8px;
+  border: 1px solid var(--moss-hi);
+  color: var(--paper);
+}
+
+.chips a {
+  text-transform: capitalize;
+}
+
+.list {
+  display: grid;
+  gap: 6px;
+  font-size: var(--step--1);
+}
+
+.list li {
+  display: grid;
+  grid-template-columns: 6ch auto 1fr;
+  gap: 12px;
+}
+
+.empty {
+  font-size: var(--step--1);
+  color: var(--bone-dim);
+}
+
+@media (max-width: 860px) {
+  .inner {
+    grid-template-columns: 1fr;
+    padding-top: calc(var(--nav-h) + 64px);
+  }
+  .portraitCol {
+    position: static;
+    max-width: 280px;
+  }
+  .close {
+    top: calc(var(--nav-h) + 4px);
+  }
+}
