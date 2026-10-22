@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+:root {
+  --neon-accent: #C2B897; /* Matches the muted khaki/beige SCYTE signature */
+  --oak-green: #1B261D; /* Deep, muted oak green */
+}
+
+@theme inline {
+  --color-neon-accent: var(--neon-accent);
+  --color-oak-green: var(--oak-green);
+}
+
+body {
+  background-color: var(--oak-green);
+  color: #ffffff;
+}
+
+/* Official Lenis smooth scroll layout adjustments */
+html.lenis,
+html.lenis body {
+  height: auto !important;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
