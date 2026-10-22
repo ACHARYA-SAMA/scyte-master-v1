@@ -1,36 +1,31 @@
 .preloader {
   position: fixed;
   inset: 0;
-  z-index: 9500;
-  display: none;
-  place-items: center;
-  color: var(--bone);
-}
-
-:global(html.is-preloading) .preloader {
+  z-index: 9800;
   display: grid;
+  place-items: center;
+  pointer-events: auto;
 }
 
 .bg {
   position: absolute;
   inset: 0;
-  background: var(--ink);
+  background: var(--ground);
 }
 
 .stack {
   position: relative;
-  width: min(62vw, 560px);
+  width: min(72vw, 980px);
   display: grid;
-  gap: clamp(18px, 3vh, 32px);
+  gap: var(--s6);
 }
 
 .mark {
   position: relative;
-  width: 100%;
   aspect-ratio: 140 / 37.264;
 }
 
-.canvas,
+.vessel,
 .vector {
   position: absolute;
   inset: 0;
@@ -40,69 +35,67 @@
 
 .vector {
   opacity: 0;
+  color: var(--khaki);
   transform-origin: 50% 50%;
-  will-change: transform;
 }
 
 .vector svg {
   width: 100%;
-  height: auto;
+  height: 100%;
+}
+
+.glass {
+  fill: var(--ground-deep);
+  stroke: var(--line);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.liquid {
+  fill: var(--khaki);
+}
+
+.meniscus {
+  fill: none;
+  stroke: var(--lumen);
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
 }
 
 .meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  gap: 24px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  gap: var(--s5);
+  border-top: var(--hair) solid var(--line);
+  padding-top: var(--s4);
 }
 
 .tasks {
-  margin: 0;
-  display: grid;
-  gap: 2px;
-  font-family: var(--font-mono);
-  font-variation-settings: "wdth" 82;
-  font-size: var(--step--2);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s3) var(--s6);
 }
 
-.tasks div {
-  display: grid;
-  grid-template-columns: 7ch auto;
-  gap: 12px;
+.tasks > div {
+  display: flex;
+  gap: 8px;
+  color: var(--muted);
 }
 
-.tasks dt {
-  color: var(--bone-dim);
+.tasks > div dt {
+  color: var(--khaki-light);
 }
 
-.tasks dd {
-  margin: 0;
-}
-
-.tasks div[data-state="ready"] dd {
-  color: var(--bone);
-}
-
-.tasks div[data-state="waiting"] dd {
-  color: var(--signal);
+.tasks > div[data-state="ready"] dd {
+  color: var(--khaki);
 }
 
 .pct {
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-variation-settings: "opsz" 72;
-  font-size: clamp(2.4rem, 5vw, 4rem);
+  font-size: clamp(2.5rem, 1.5rem + 3vw, 4.5rem);
   line-height: 0.8;
-}
-
-.pctSign {
-  font-size: 0.45em;
-  margin-left: 2px;
-  color: var(--bone-dim);
-}
-
-@media (max-width: 600px) {
-  .stack {
-    width: 78vw;
-  }
+  font-weight: 860;
+  font-stretch: 62%;
+  letter-spacing: -0.03em;
+  color: var(--cream);
 }

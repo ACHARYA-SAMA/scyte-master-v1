@@ -5,23 +5,25 @@ import dynamic from "next/dynamic";
 import { SmoothScroll } from "@/components/providers/SmoothScroll";
 import { Nav } from "@/components/nav/Nav";
 import { Cursor } from "@/components/cursor/Cursor";
-import { Curtain } from "@/components/transition/Curtain";
+import { LiquidWipe } from "@/components/transition/LiquidWipe";
 import { RouteWatcher } from "@/components/transition/navigation";
 import { Preloader } from "@/components/preloader/Preloader";
-import { ScrollRuler } from "./ScrollRuler";
-import { Footer } from "./Footer";
-import { startTelemetry } from "@/lib/telemetry";
 import { loadSoundPreference } from "@/lib/sound";
-import { ui } from "@/lib/store";
+import { loadPrefs } from "@/lib/prefs";
+import { loadSession, ui } from "@/lib/store";
+import { Footer } from "./Footer";
+import { Rail } from "./Rail";
+import { AuditButton } from "./AuditButton";
+import { CommandPalette } from "./CommandPalette";
+import { Toasts } from "./Toasts";
 
-// The WebGL stage is its own chunk, fetched after hydration so first paint is plain HTML.
-const Stage = dynamic(() => import("@/components/stage/Stage").then((m) => m.Stage), {
+// The WebGL stage is its own chunk, fetched after first paint so the page is plain HTML first.
+const Stage = dynamic(() => import("@/components/gl/Stage").then((m) => m.Stage), {
   ssr: false,
   loading: () => null,
 });
 
-// A feature check that costs nothing. Creating a throwaway context to probe support
-// is slow on weak devices; if the real context fails, the boundary below catches it.
+// A feature check that costs nothing; if the real context fails, the boundary catches it.
 const webglAvailable = () => typeof window !== "undefined" && "WebGL2RenderingContext" in window;
 
 /** If the WebGL stage fails for any reason, the site carries on without it. */
@@ -30,7 +32,8 @@ class StageBoundary extends Component<{ children: ReactNode }, { failed: boolean
   static getDerivedStateFromError() {
     return { failed: true };
   }
-  componentDidCatch() {
+  componentDidCatch(error: unknown) {
+    console.warn("WebGL stage stopped:", error);
     ui.set({ webgl: "unsupported" });
   }
   render() {
@@ -39,9 +42,9 @@ class StageBoundary extends Component<{ children: ReactNode }, { failed: boolean
 }
 
 /**
- * When the WebGL chunk loads. Desktop: once the page is idle after load, so the
- * preloader can include the warm-up. Touch and low-power devices: at the first scroll,
- * tap or key, because the page is complete without it and first paint matters more.
+ * When the WebGL chunk loads. Capable desktops: once the page is idle after load, so
+ * the preloader can count the warm-up. Touch and low-power devices: at the first
+ * scroll, tap or key, because the page is complete without it and first paint matters more.
  */
 const useStageLoading = () => {
   const [load, setLoad] = useState(false);
@@ -60,8 +63,8 @@ const useStageLoading = () => {
     if (strong) {
       const idle = () => {
         const w = window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number };
-        if (w.requestIdleCallback) w.requestIdleCallback(go, { timeout: 1200 });
-        else setTimeout(go, 300);
+        if (w.requestIdleCallback) w.requestIdleCallback(go, { timeout: 900 });
+        else setTimeout(go, 200);
       };
       if (document.readyState === "complete") idle();
       else window.addEventListener("load", idle, { once: true });
@@ -78,8 +81,9 @@ const useStageLoading = () => {
 export function Shell({ children }: { children: ReactNode }) {
   const loadStage = useStageLoading();
   useEffect(() => {
+    loadPrefs();
     loadSoundPreference();
-    return startTelemetry();
+    return loadSession();
   }, []);
 
   return (
@@ -94,9 +98,12 @@ export function Shell({ children }: { children: ReactNode }) {
         {children}
       </main>
       <Footer />
-      <ScrollRuler />
+      <Rail />
+      <AuditButton />
+      <Toasts />
+      <CommandPalette />
       <Cursor />
-      <Curtain />
+      <LiquidWipe />
       <Preloader />
       <RouteWatcher />
     </SmoothScroll>

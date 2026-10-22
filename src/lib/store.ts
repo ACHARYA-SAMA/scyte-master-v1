@@ -17,12 +17,14 @@ export const createStore = <T extends object>(initial: T) => {
   };
   const subscribe = (l: () => void) => {
     listeners.add(l);
-    return () => listeners.delete(l);
+    return () => {
+      listeners.delete(l);
+    };
   };
   return { get, set, subscribe, initial };
 };
 
-type Store<T> = ReturnType<typeof createStore<T & object>>;
+export type Store<T extends object> = ReturnType<typeof createStore<T>>;
 
 export const useStore = <T extends object, S>(store: Store<T>, select: (s: T) => S): S =>
   useSyncExternalStore(
@@ -31,28 +33,105 @@ export const useStore = <T extends object, S>(store: Store<T>, select: (s: T) =>
     () => select(store.initial),
   );
 
-export type CursorState = "default" | "link" | "view" | "drag" | "lock" | "hidden";
-export type SceneKey = "home" | "product" | "team" | "quiet" | "lost";
+/** The verbs the cursor can show. Elements opt in with data-cursor. */
+export type CursorState = "default" | "link" | "view" | "drag" | "tap" | "scrub" | "open" | "hold" | "hidden";
 export type TransitionPhase = "idle" | "covering" | "covered" | "revealing";
+export type MotionChoice = "auto" | "full" | "reduced";
+export type PerfChoice = "auto" | "low";
+
+export type Toast = { id: number; text: string; tone?: "ok" | "info" };
 
 export const ui = createStore({
   cursor: "default" as CursorState,
   cursorLabel: "",
+  /** Set by 3D objects under the pointer, which have no DOM element to carry data-cursor. */
+  glCursor: null as CursorState | null,
+  glCursorLabel: "",
+  /** 0..1 while a press-and-hold control is being held. */
+  hold: 0,
   soundOn: false,
   menuOpen: false,
+  paletteOpen: false,
   transition: "idle" as TransitionPhase,
   preloaderDone: false,
   webgl: "pending" as "pending" | "deferred" | "ready" | "unsupported",
+  motion: "auto" as MotionChoice,
+  perf: "auto" as PerfChoice,
+  toasts: [] as Toast[],
 });
 
-/** Which formation the persistent event-pixel field should take, and its inputs. */
-export const stage = createStore({
-  scene: "quiet" as SceneKey,
-  /** 0..1 scroll progress through the product pipeline. */
-  pipeline: 0,
-  /** Index of the team member in focus, -1 for none. */
-  member: -1,
-  /** Whether the stage is visible behind the current viewport. */
-  visible: true,
-  consent: true,
+let toastId = 0;
+export const toast = (text: string, tone: Toast["tone"] = "info") => {
+  const id = ++toastId;
+  ui.set((s) => ({ toasts: [...s.toasts.slice(-2), { id, text, tone }] }));
+  window.setTimeout(() => ui.set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })), 4200);
+};
+
+/** Chapters the current page registers for the rail and the command palette. */
+export type Chapter = { id: string; label: string; /** short tick label, e.g. "0:40" */ mark?: string };
+export const rail = createStore({
+  chapters: [] as Chapter[],
+  active: 0,
+  /** 0..1 progress through the page. */
+  progress: 0,
+  /** Whether the rail's playhead scrubs the page (the product page's 20 minutes). */
+  scrub: false,
 });
+
+/**
+ * Which 3D scene the persistent canvas shows, and the scroll inputs it reads.
+ * Scenes own their own detail stores; this is only the shared switchboard.
+ */
+export type SceneKey =
+  | "none"
+  | "home"
+  | "collect"
+  | "identify"
+  | "understand"
+  | "send"
+  | "measure"
+  | "assembly"
+  | "team"
+  | "work"
+  | "lost";
+
+export const gl = createStore({
+  scene: "none" as SceneKey,
+  /** 0..1 scroll progress through the active scene's section. */
+  progress: 0,
+  /** Whether any part of the active scene's section is on screen. */
+  visible: false,
+  /** Pointer in normalised device coordinates, -1..1. */
+  px: 0,
+  py: 0,
+  quality: 2 as 0 | 1 | 2,
+});
+
+/** What this visit has done, kept for the tab session. */
+const SESSION_KEY = "scyte.session";
+export const session = createStore({ recovered: 0, playbooksRun: [] as string[] });
+
+export const loadSession = () => {
+  try {
+    const raw = sessionStorage.getItem(SESSION_KEY);
+    if (raw) session.set(JSON.parse(raw));
+  } catch {
+    /* a fresh session is fine */
+  }
+  return session.subscribe(() => {
+    try {
+      sessionStorage.setItem(SESSION_KEY, JSON.stringify(session.get()));
+    } catch {
+      /* counter just won't survive a reload */
+    }
+  });
+};
+
+export const recordRecovery = (playbook: string) =>
+  session.set((s) => ({
+    recovered: s.recovered + 1,
+    playbooksRun: s.playbooksRun.includes(playbook) ? s.playbooksRun : [...s.playbooksRun, playbook],
+  }));
+
+// v1 compatibility: the old stage store, still read by pages not yet rebuilt.
+export const stage = createStore({ scene: "quiet" as string, pipeline: 0, member: -1, visible: true, consent: true });

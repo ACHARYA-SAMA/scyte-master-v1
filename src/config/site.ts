@@ -24,17 +24,33 @@ export const SITE = {
   coordinates: { lat: 17.385, lon: 78.4867 },
   socials: {
     instagram: "https://www.instagram.com/scyte.in/",
+    /**
+     * FLAG FOR THE CLIENT: inherited from the original site and contains "undefined".
+     * Replace with the real company page before launch.
+     */
     linkedin: "https://www.linkedin.com/in/scyte-undefined-056131412/",
   },
 } as const;
 
-export const NAV = [
-  { href: "/product", label: "Product", index: "01" },
-  { href: "/services", label: "Studio", index: "02" },
-  { href: "/work", label: "Work", index: "03" },
-  { href: "/team", label: "Team", index: "04" },
-  { href: "/contact", label: "Contact", index: "05" },
+/**
+ * Every page, in story order. `chapter` is the page's name inside the story; the menu,
+ * the route wipe and the command palette all read from here.
+ */
+export const ROUTES = [
+  { href: "/", label: "Home", chapter: "The Leak", blurb: "Where a store loses shoppers it never knew it had, and one recovery, start to finish." },
+  { href: "/product", label: "Product", chapter: "The Machine", blurb: "Six stations from a page view to proof: collect, identify, understand, decide, send, measure." },
+  { href: "/studio", label: "Studio", chapter: "The Assembly", blurb: "Websites, mobile apps and social media, designed and built in Hyderabad." },
+  { href: "/work", label: "Work", chapter: "The Archive", blurb: "Case studies, added as they can be verified." },
+  { href: "/team", label: "Team", chapter: "The Scan", blurb: "The people who build the machine." },
+  { href: "/contact", label: "Contact", chapter: "The Conversation", blurb: "Talk to us the way your customers will talk to you." },
 ] as const;
+
+export type RouteHref = (typeof ROUTES)[number]["href"];
+
+export const NAV = ROUTES.filter((r) => r.href !== "/").map((r, i) => ({ ...r, index: String(i + 1).padStart(2, "0") }));
+
+export const routeFor = (path: string) =>
+  ROUTES.find((r) => (r.href === "/" ? path === "/" : path === r.href || path.startsWith(r.href + "/")));
 
 /**
  * Facts that change often. They are used for internal modelling only and are NOT

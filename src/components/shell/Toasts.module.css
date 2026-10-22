@@ -1,0 +1,44 @@
+.toasts {
+  position: fixed;
+  left: var(--margin);
+  bottom: clamp(16px, 2.4vw, 32px);
+  z-index: 9000;
+  display: grid;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px 10px;
+  background: var(--ground-deep);
+  border: var(--hair) solid var(--line);
+  color: var(--cream);
+  animation: rise var(--dur-panel) var(--ease-glide) both;
+}
+
+.mark {
+  width: 6px;
+  height: 6px;
+  background: var(--khaki);
+}
+
+.toast[data-tone="ok"] .mark {
+  background: var(--lumen);
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+@media (max-width: 480px) {
+  .toasts {
+    bottom: 84px;
+    right: var(--margin);
+  }
+}

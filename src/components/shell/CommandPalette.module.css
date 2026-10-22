@@ -1,0 +1,119 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9200;
+  display: grid;
+  justify-items: center;
+  align-items: start;
+  padding: clamp(72px, 16vh, 180px) var(--margin) var(--margin);
+  background: color-mix(in srgb, var(--abyss) 78%, transparent);
+  animation: fade var(--dur-ui) linear both;
+}
+
+.panel {
+  width: min(640px, 100%);
+  max-height: min(560px, 70vh);
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  background: var(--ground-deep);
+  border: var(--hair) solid var(--line);
+  animation: drop var(--dur-panel) var(--ease-glide) both;
+}
+
+.field {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--s4);
+  padding: var(--s4) var(--s5);
+  border-bottom: var(--hair) solid var(--line);
+}
+
+.prompt {
+  color: var(--khaki);
+}
+
+.input {
+  width: 100%;
+  min-width: 0;
+  padding: 6px 0;
+  background: none;
+  border: 0;
+  color: var(--cream);
+  font-size: var(--t-lead);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.input::placeholder {
+  color: var(--muted);
+}
+
+.input:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
+.esc {
+  padding: 3px 6px 2px;
+  border: var(--hair) solid var(--line);
+  color: var(--muted);
+}
+
+.list {
+  overflow-y: auto;
+  padding: var(--s2) 0 var(--s3);
+  overscroll-behavior: contain;
+}
+
+.group {
+  padding: var(--s4) var(--s5) var(--s2);
+  color: var(--muted);
+}
+
+.item {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--s4);
+  padding: 10px var(--s5);
+  color: var(--khaki-light);
+}
+
+.item[aria-selected="true"] {
+  background: var(--raised);
+  color: var(--cream);
+  box-shadow: inset 2px 0 0 var(--khaki);
+}
+
+.hint {
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.empty {
+  padding: var(--s5);
+  color: var(--muted);
+}
+
+.foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s3) var(--s5);
+  padding: var(--s3) var(--s5);
+  border-top: var(--hair) solid var(--line);
+  color: var(--muted);
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes drop {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+}

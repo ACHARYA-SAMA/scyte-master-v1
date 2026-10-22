@@ -1,46 +1,20 @@
-import { Big_Shoulders, Big_Shoulders_Stencil, Martian_Mono, Newsreader } from "next/font/google";
-
-/** Display: squared, condensed, variable optical size. Echoes the logo's grid. */
-export const display = Big_Shoulders({
-  subsets: ["latin"],
-  weight: "variable",
-  axes: ["opsz"],
-  variable: "--font-big-shoulders",
-  display: "swap",
-  fallback: ["Arial Narrow", "Impact", "sans-serif"],
-  adjustFontFallback: false,
-});
-
-/** Used exactly twice: the 404 and the consent refusal. Not preloaded. */
-export const stencil = Big_Shoulders_Stencil({
-  subsets: ["latin"],
-  weight: "900",
-  variable: "--font-stencil",
-  display: "swap",
-  preload: false,
-  fallback: ["Impact", "sans-serif"],
-  adjustFontFallback: false,
-});
+import localFont from "next/font/local";
 
 /**
- * The human voice: italic for moments, roman for long-form reading. The optical-size
- * axis is left out here: it doubled the file size, and the display face carries opsz.
+ * The one typeface: Archivo, variable on weight (100 to 900) and width (62 to 125).
+ * Self-hosted as a 58 KB subset (Basic Latin, punctuation, ₹, arrows) built by
+ * scripts/build-font.py, so first paint never waits on a third-party font host.
  */
-export const serif = Newsreader({
-  subsets: ["latin"],
-  weight: "variable",
-  style: ["normal", "italic"],
-  variable: "--font-newsreader",
+export const archivo = localFont({
+  src: "./fonts/archivo-var.woff2",
+  weight: "100 900",
+  style: "normal",
+  variable: "--font-archivo",
   display: "swap",
+  preload: true,
+  declarations: [{ prop: "font-stretch", value: "62% 125%" }],
+  fallback: ["Arial Narrow", "Helvetica Neue", "Arial", "sans-serif"],
+  adjustFontFallback: "Arial",
 });
 
-/** Readouts and data. Tabular by nature. */
-export const mono = Martian_Mono({
-  subsets: ["latin"],
-  weight: "variable",
-  axes: ["wdth"],
-  variable: "--font-martian",
-  display: "swap",
-});
-
-export const fontVariables = [display.variable, stencil.variable, serif.variable, mono.variable].join(" ");
+export const fontVariables = archivo.variable;

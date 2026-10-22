@@ -1,82 +1,124 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
-import { ReactiveLogo } from "@/components/brand/ReactiveLogo";
+import { Logo } from "@/components/brand/Logo";
 import { TransitionLink } from "@/components/transition/navigation";
-import { useStore } from "@/lib/store";
-import { visit } from "@/lib/telemetry";
-import { SITE } from "@/config/site";
+import { Clock } from "@/components/nav/Nav";
+import { gsap, ScrollTrigger, prefersReducedMotion } from "@/lib/motion";
+import { session, useStore } from "@/lib/store";
+import { ROUTES, SITE } from "@/config/site";
+import { CopyEmail } from "./CopyEmail";
 import styles from "./Footer.module.css";
 
-const fmtDuration = (ms: number) => {
-  const s = Math.round(ms / 1000);
-  if (s < 60) return `${s} s`;
-  return `${Math.floor(s / 60)} min ${String(s % 60).padStart(2, "0")} s`;
-};
-
-function VisitReadout() {
-  const events = useStore(visit, (v) => v.events);
-  const engaged = useStore(visit, (v) => v.engagedMs);
-  const pages = useStore(visit, (v) => v.pages.length);
-  return (
-    <p className={styles.visit}>
-      This visit so far: <strong className="t-num">{events}</strong> events,{" "}
-      <strong className="t-num">{fmtDuration(engaged)}</strong> engaged, <strong className="t-num">{pages}</strong>{" "}
-      {pages === 1 ? "page" : "pages"}. Counted in your browser the way our platform counts a store&rsquo;s shoppers, and
-      sent nowhere.
-    </p>
-  );
-}
-
+/** The closing band: the offer, the ways in, and the exact wordmark rising from below. */
 export function Footer() {
   const pathname = usePathname();
+  const root = useRef<HTMLElement>(null);
+  const mark = useRef<HTMLDivElement>(null);
+  const recovered = useStore(session, (s) => s.recovered);
+
+  useEffect(() => {
+    const el = root.current;
+    const m = mark.current;
+    if (!el || !m || prefersReducedMotion()) return;
+    const tween = gsap.fromTo(
+      m,
+      { yPercent: 58 },
+      {
+        yPercent: 0,
+        ease: "none",
+        scrollTrigger: { trigger: el, start: "top bottom", end: "bottom bottom", scrub: true },
+      },
+    );
+    const refresh = () => ScrollTrigger.refresh();
+    window.addEventListener("load", refresh);
+    return () => {
+      tween.scrollTrigger?.kill();
+      tween.kill();
+      window.removeEventListener("load", refresh);
+    };
+  }, [pathname]);
+
   return (
-    <footer className={styles.footer} data-route={pathname}>
-      <div className={styles.top}>
-        <p className={styles.closing}>
-          Fewer messages.
-          <br />
-          Better timed.
-          <br />
-          Provably yours.
-        </p>
-        <div className={styles.contact}>
-          <TransitionLink href="/contact#audit" className={styles.cta} data-magnetic="0.18">
-            <span>Book a 20-minute store audit</span>
-          </TransitionLink>
-          <dl className={styles.facts}>
-            <div>
-              <dt>Write</dt>
-              <dd>
-                <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
-              </dd>
-            </div>
-            <div>
-              <dt>Visit</dt>
-              <dd>{SITE.city}, India</dd>
-            </div>
-            <div>
-              <dt>Follow</dt>
-              <dd className={styles.socials}>
-                <a href={SITE.socials.instagram} target="_blank" rel="noopener noreferrer">
+    <footer ref={root} className={styles.footer}>
+      <div className={`${styles.top} frame`}>
+        <div className={styles.offer}>
+          <p className={`${styles.closing} t-h1`}>Tell us where your store leaks.</p>
+          <div className={styles.offerActions}>
+            <TransitionLink href="/contact?intent=audit" className={styles.cta} data-magnetic data-cursor="open">
+              Book a 20-minute store audit
+            </TransitionLink>
+            <CopyEmail big />
+          </div>
+        </div>
+
+        <nav className={styles.cols} aria-label="Footer">
+          <div>
+            <p className={`${styles.head} t-hud`}>Pages</p>
+            <ul>
+              {ROUTES.map((r) => (
+                <li key={r.href}>
+                  <TransitionLink href={r.href} className={styles.link} aria-current={pathname === r.href ? "page" : undefined}>
+                    {r.label}
+                    <span className={`${styles.chapter} t-hud`}>{r.chapter}</span>
+                  </TransitionLink>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <p className={`${styles.head} t-hud`}>Elsewhere</p>
+            <ul>
+              <li>
+                <a className={styles.link} href={SITE.socials.instagram} target="_blank" rel="noopener noreferrer">
                   Instagram
                 </a>
-                <a href={SITE.socials.linkedin} target="_blank" rel="noopener noreferrer">
+              </li>
+              <li>
+                <a className={styles.link} href={SITE.socials.linkedin} target="_blank" rel="noopener noreferrer">
                   LinkedIn
                 </a>
-              </dd>
-            </div>
-          </dl>
+              </li>
+              <li>
+                <a className={styles.link} href={`mailto:${SITE.email}`}>
+                  Email
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <p className={`${styles.head} t-hud`}>Studio</p>
+            <ul className={styles.facts}>
+              <li>{SITE.city}, India</li>
+              <li className="t-num">17.385° N, 78.487° E</li>
+              <li>
+                <Clock />
+              </li>
+            </ul>
+          </div>
+          <div>
+            <p className={`${styles.head} t-hud`}>This visit</p>
+            <p className={styles.visit}>
+              Orders you recovered: <b className="t-fig">{recovered}</b>
+              <span className={`${styles.visitNote} t-small`}>
+                {recovered ? "Counted in this tab only." : "Run a phone on the home or product page."}
+              </span>
+            </p>
+          </div>
+        </nav>
+      </div>
+
+      <div className={styles.markWrap} aria-hidden>
+        <div ref={mark} className={styles.mark}>
+          <Logo title={null} />
         </div>
       </div>
 
-      <ReactiveLogo className={styles.logo} assembleOnEnter strength={18} />
-
-      <div className={styles.bottom}>
-        <VisitReadout />
-        <p className={styles.legal}>
-          &copy; {new Date().getFullYear()} Scyte. Made in Hyderabad.
-        </p>
+      <div className={`${styles.base} frame t-hud`}>
+        <span>© {new Date().getFullYear()} Scyte</span>
+        <span>Set in Archivo. Built in Hyderabad.</span>
+        <span>No cookies. No trackers.</span>
       </div>
     </footer>
   );

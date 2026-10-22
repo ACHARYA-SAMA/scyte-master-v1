@@ -8,23 +8,16 @@ import { ui } from "@/lib/store";
 import { recordPage } from "@/lib/telemetry";
 import { track } from "@/lib/analytics";
 import { scrollToTop } from "@/components/providers/SmoothScroll";
+import { routeFor } from "@/config/site";
 import { curtain, expectRoute, routeCommitted } from "./curtainControl";
 
-const ROUTE_LABELS: Record<string, string> = {
-  "/": "home",
-  "/product": "the product",
-  "/services": "the studio",
-  "/work": "work",
-  "/team": "the team",
-  "/contact": "contact",
-};
-
+/** The wipe names the chapter it is pouring you into. */
 const labelFor = (href: string) => {
   const path = href.split(/[?#]/)[0] || "/";
-  return `Loading ${ROUTE_LABELS[path] ?? path}`;
+  return routeFor(path)?.chapter ?? "Somewhere new";
 };
 
-/** Navigate behind the cell curtain. Falls back to a plain push if a transition is running. */
+/** Navigate behind the liquid wipe. Falls back to a plain push if a transition is running. */
 export const useTransitionRouter = () => {
   const router = useRouter();
   const pathname = usePathname();
@@ -65,7 +58,7 @@ export const useTransitionRouter = () => {
 type TransitionLinkProps = Omit<AnchorHTMLAttributes<HTMLAnchorElement>, keyof LinkProps> &
   LinkProps & { children?: React.ReactNode };
 
-/** next/link with the cell curtain. Modified clicks and external links behave natively. */
+/** next/link with the liquid wipe. Modified clicks and external links behave natively. */
 export const TransitionLink = forwardRef<HTMLAnchorElement, TransitionLinkProps>(function TransitionLink(
   { href, onClick, children, ...rest },
   ref,

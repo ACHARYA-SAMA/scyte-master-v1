@@ -4,7 +4,7 @@ import { WORK } from "@/data/work";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
-  const routes = ["", "/product", "/services", "/work", "/team", "/contact"];
+  const routes = ["", "/product", "/studio", "/work", "/team", "/contact"];
   return [
     ...routes.map((r) => ({
       url: `${SITE.url}${r}`,

@@ -1,41 +1,55 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { Logo } from "@/components/brand/Logo";
-import { LOGO_ASPECT, LOGO_OVERSHOOT, LOGO_WIDTH, logoCells } from "@/lib/logo/geometry";
+import { LOGO_CAP_HEIGHT, LOGO_OVERSHOOT, LOGO_PATH, LOGO_VIEWBOX, LOGO_WIDTH } from "@/lib/logo/geometry";
 import { gsap, prefersReducedMotion } from "@/lib/motion";
 import { ui } from "@/lib/store";
 import { scroller } from "@/components/providers/SmoothScroll";
 import { PRELOADED_KEY } from "./boot";
 import styles from "./Preloader.module.css";
 
-const STAGE_TIMEOUT_MS = 2400;
+const STAGE_TIMEOUT_MS = 2600;
+const H = LOGO_CAP_HEIGHT + LOGO_OVERSHOOT;
 
 type Task = { id: string; label: string; weight: number; state: "waiting" | "ready" | "skipped" };
 
 const INITIAL: Task[] = [
   { id: "dom", label: "Page", weight: 0.15, state: "waiting" },
-  { id: "fonts", label: "Type", weight: 0.35, state: "waiting" },
-  { id: "stage", label: "WebGL", weight: 0.5, state: "waiting" },
+  { id: "fonts", label: "Type", weight: 0.3, state: "waiting" },
+  { id: "stage", label: "Light", weight: 0.55, state: "waiting" },
 ];
 
+/** The surface of the liquid inside the letters, as an SVG path in logo units. */
+const surfacePath = (level: number, t: number, closed: boolean) => {
+  const y0 = -LOGO_OVERSHOOT + H * (1 - level);
+  const amp = 0.9 * Math.sin(Math.PI * Math.min(1, level)) + 0.05;
+  let d = "";
+  for (let x = -2; x <= LOGO_WIDTH + 2; x += 2) {
+    const y = y0 + Math.sin(x * 0.12 - t * 4) * amp + Math.sin(x * 0.31 + t * 2.6) * amp * 0.35;
+    d += (x === -2 ? "M" : "L") + x.toFixed(2) + " " + y.toFixed(3);
+  }
+  if (closed) d += `L${LOGO_WIDTH + 2} ${H + 2}L-2 ${H + 2}Z`;
+  return d;
+};
+
 /**
- * The logo assembles cell by cell, driven by real work: hydration, font loading and
- * the WebGL context plus shader compile. At 100 % the cells hand over to the exact
- * vector mark, which flies into the hero (or the nav logo) as one continuous move.
- * Runs once per tab session.
+ * The wordmark fills with khaki from the bottom as real work completes: hydration,
+ * the font, and the WebGL context with its shaders. Full is the exact mark, which then
+ * flies into the hero (or the nav logo). Runs once per tab session.
  */
 export function Preloader() {
+  const clipId = useId().replace(/:/g, "");
   const root = useRef<HTMLDivElement>(null);
-  const canvas = useRef<HTMLCanvasElement>(null);
   const vector = useRef<HTMLDivElement>(null);
+  const liquid = useRef<SVGPathElement>(null);
+  const meniscus = useRef<SVGPathElement>(null);
   const pctRef = useRef<HTMLSpanElement>(null);
   const [tasks, setTasks] = useState(INITIAL);
   const [active, setActive] = useState(true);
 
   useEffect(() => {
-    const done = document.documentElement.dataset.preloaded === "1";
-    if (done) {
+    if (document.documentElement.dataset.preloaded === "1") {
       // Decided by the boot script before paint; React learns it after hydration.
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setActive(false);
@@ -71,7 +85,6 @@ export function Preloader() {
     finished.current = true;
     const el = root.current;
     const vec = vector.current;
-    const cnv = canvas.current;
     try {
       sessionStorage.setItem(PRELOADED_KEY, "1");
     } catch {
@@ -83,88 +96,64 @@ export function Preloader() {
       if (ui.get().transition === "idle" && !ui.get().menuOpen) scroller.lenis?.start();
       setActive(false);
     };
-    if (!el || !vec || !cnv) return end();
+    if (!el || !vec) return end();
 
     const reduced = prefersReducedMotion();
     const destination =
       document.querySelector<HTMLElement>("[data-hero-logo]") ??
       document.querySelector<HTMLElement>("[data-nav-logo] svg");
 
-    // Hand over from cells to the exact vector mark.
     const tl = gsap.timeline({ onComplete: end });
+    // the full liquid mark and the exact vector are the same shape: swap them
     tl.set(vec, { opacity: 1 });
-    tl.to(cnv, { opacity: 0, duration: 0.12, ease: "none" });
-    tl.to(el.querySelectorAll("[data-meta]"), { opacity: 0, duration: 0.2, ease: "cut" }, "<");
+    tl.to(el.querySelectorAll("[data-meta]"), { opacity: 0, duration: 0.25, ease: "cut" });
 
     if (reduced || !destination) {
       tl.to(el, { opacity: 0, duration: 0.35, ease: "none" });
       return;
     }
-
     const from = vec.getBoundingClientRect();
     const to = destination.getBoundingClientRect();
     const scale = to.width / from.width;
     const dx = to.left + to.width / 2 - (from.left + from.width / 2);
     const dy = to.top + to.height / 2 - (from.top + from.height / 2);
-    tl.to(vec, { x: dx, y: dy, scale, duration: 0.95, ease: "latch" }, "+=0.08");
-    tl.to(el.querySelector("[data-bg]"), { opacity: 0, duration: 0.55, ease: "drift" }, "<0.35");
+    tl.to(vec, { x: dx, y: dy, scale, duration: 1, ease: "snap" }, "+=0.06");
+    tl.to(el.querySelector("[data-bg]"), { opacity: 0, duration: 0.6, ease: "drift" }, "<0.35");
     tl.set(destination, { opacity: 1 });
     tl.to(vec, { opacity: 0, duration: 0.01 });
   }, []);
 
-  // Draw: cells are placed in a fixed scan order as progress rises.
+  // the level eases towards the share of finished work; the surface keeps moving
   const shown = useRef(0);
-  const cellsRef = useRef<ReturnType<typeof logoCells> | null>(null);
   useEffect(() => {
     if (!active) return;
-    const c = canvas.current;
-    if (!c) return;
-    const ctx = c.getContext("2d");
-    if (!ctx) return;
-    if (!cellsRef.current) {
-      const cells = logoCells(1);
-      // Scan order: column sweeps with a little jitter, like a plotter laying ink.
-      cells.sort((a, b) => a.x + ((a.y * 13) % 7) * 0.9 - (b.x + ((b.y * 13) % 7) * 0.9));
-      cellsRef.current = cells;
-    }
-    const cells = cellsRef.current;
-    const dpr = Math.min(2, window.devicePixelRatio || 1);
-    const resize = () => {
-      const w = c.clientWidth;
-      c.width = Math.round(w * dpr);
-      c.height = Math.round((w / LOGO_ASPECT) * dpr);
-    };
-    resize();
-
     const state = { p: shown.current };
+    let t = 0;
+    const paint = () => {
+      t += 1 / 60;
+      liquid.current?.setAttribute("d", surfacePath(state.p, t, true));
+      meniscus.current?.setAttribute("d", surfacePath(state.p, t, false));
+      if (meniscus.current) meniscus.current.style.opacity = state.p > 0.995 ? "0" : "1";
+    };
+    gsap.ticker.add(paint);
     const tween = gsap.to(state, {
       p: target,
-      duration: prefersReducedMotion() ? 0.01 : 0.9,
-      ease: "drift",
+      duration: prefersReducedMotion() ? 0.01 : 1.1,
+      ease: "pour",
       onUpdate: () => {
         shown.current = state.p;
-        const n = Math.floor(cells.length * state.p);
-        const s = c.width / LOGO_WIDTH;
-        ctx.clearRect(0, 0, c.width, c.height);
-        ctx.fillStyle = "#c2b897";
-        for (let i = 0; i < n; i++) {
-          const cell = cells[i];
-          ctx.fillRect(cell.x * s, (cell.y + LOGO_OVERSHOOT) * s, s * 0.86, s * 0.86);
-        }
-        // the leading edge glows signal for a few cells
-        ctx.fillStyle = "#ff3d2e";
-        for (let i = Math.max(0, n - 6); i < n; i++) {
-          const cell = cells[i];
-          ctx.fillRect(cell.x * s, (cell.y + LOGO_OVERSHOOT) * s, s * 0.86, s * 0.86);
-        }
         if (pctRef.current) pctRef.current.textContent = String(Math.round(state.p * 100)).padStart(3, "0");
       },
       onComplete: () => {
-        if (state.p >= 0.999) finish();
+        if (state.p >= 0.999) {
+          paint();
+          finish();
+        }
       },
     });
     return () => {
       tween.kill();
+      gsap.ticker.remove(paint);
     };
   }, [target, active, finish]);
 
@@ -175,7 +164,18 @@ export function Preloader() {
       <div className={styles.bg} data-bg />
       <div className={styles.stack}>
         <div className={styles.mark}>
-          <canvas ref={canvas} className={styles.canvas} aria-hidden />
+          <svg viewBox={LOGO_VIEWBOX} className={styles.vessel} aria-hidden overflow="visible">
+            <defs>
+              <clipPath id={clipId}>
+                <path d={LOGO_PATH} />
+              </clipPath>
+            </defs>
+            <path d={LOGO_PATH} className={styles.glass} />
+            <g clipPath={`url(#${clipId})`}>
+              <path ref={liquid} className={styles.liquid} />
+              <path ref={meniscus} className={styles.meniscus} />
+            </g>
+          </svg>
           <div ref={vector} className={styles.vector} aria-hidden>
             <Logo title={null} />
           </div>
@@ -184,8 +184,8 @@ export function Preloader() {
           <dl className={styles.tasks}>
             {tasks.map((t) => (
               <div key={t.id} data-state={t.state}>
-                <dt>{t.label}</dt>
-                <dd>{t.state === "waiting" ? "loading" : t.state === "ready" ? "ready" : "deferred"}</dd>
+                <dt className="t-hud">{t.label}</dt>
+                <dd className="t-hud">{t.state === "waiting" ? "loading" : t.state === "ready" ? "ready" : "later"}</dd>
               </div>
             ))}
           </dl>
@@ -193,7 +193,6 @@ export function Preloader() {
             <span ref={pctRef} className="t-num">
               000
             </span>
-            <span className={styles.pctSign}>%</span>
           </p>
         </div>
       </div>

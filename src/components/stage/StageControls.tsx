@@ -1,10 +1,11 @@
 "use client";
+// v1 compatibility: pages not yet rebuilt still declare a scene; it is ignored.
 
 import { useEffect, useRef, type ReactNode, type CSSProperties } from "react";
-import { stage, type SceneKey } from "@/lib/store";
+import { stage } from "@/lib/store";
 
 /** Every page declares which formation the persistent field takes. */
-export function StageScene({ scene }: { scene: SceneKey }) {
+export function StageScene({ scene }: { scene: string }) {
   useEffect(() => {
     stage.set({ scene });
   }, [scene]);

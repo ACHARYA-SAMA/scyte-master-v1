@@ -1,0 +1,34 @@
+"use client";
+
+import { Bloom, DepthOfField, EffectComposer, Noise, SMAA, ToneMapping, Vignette } from "@react-three/postprocessing";
+import { BlendFunction, ToneMappingMode } from "postprocessing";
+import type { Vector3 } from "three";
+import { gl, useStore } from "@/lib/store";
+
+type Props = {
+  bloom?: number;
+  /** Only light above this luminance blooms: in practice, only Lumen. */
+  threshold?: number;
+  /** Depth of field that keeps this point sharp. Omit for no depth of field. */
+  focus?: { target: Vector3; range: number; bokeh: number } | null;
+  grain?: number;
+  vignette?: number;
+};
+
+/**
+ * The restrained post chain. Quality 2: everything, with MSAA. Quality 1: no depth of
+ * field, half-resolution bloom, SMAA. Quality 0: tone mapping, bloom and SMAA only.
+ */
+export function Post({ bloom = 0.9, threshold = 0.85, focus = null, grain = 0.035, vignette = 0.42 }: Props) {
+  const q = useStore(gl, (s) => s.quality);
+  return (
+    <EffectComposer multisampling={q === 2 ? 4 : 0} enableNormalPass={false}>
+      <Bloom intensity={bloom} luminanceThreshold={threshold} luminanceSmoothing={0.12} mipmapBlur resolutionScale={q === 2 ? 1 : 0.5} />
+      {focus && q === 2 ? <DepthOfField target={focus.target} focusRange={focus.range} bokehScale={focus.bokeh} resolutionScale={0.5} /> : <></>}
+      <ToneMapping mode={ToneMappingMode.NEUTRAL} />
+      {q > 0 ? <Vignette offset={0.32} darkness={vignette} /> : <></>}
+      {q > 0 ? <Noise premultiply blendFunction={BlendFunction.SOFT_LIGHT} opacity={grain * 4} /> : <></>}
+      {q < 2 ? <SMAA /> : <></>}
+    </EffectComposer>
+  );
+}

@@ -1,0 +1,36 @@
+.wrap {
+  display: inline-flex;
+}
+
+.copy {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 10px;
+  text-align: left;
+}
+
+.address {
+  color: var(--cream);
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size var(--dur-panel) var(--ease-snap);
+}
+
+.copy:hover .address,
+.copy:focus-visible .address {
+  background-size: 100% 1px;
+}
+
+.state {
+  color: var(--muted);
+  min-width: 6ch;
+}
+
+.big .address {
+  font-size: var(--t-h3);
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}

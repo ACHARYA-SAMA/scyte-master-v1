@@ -1,0 +1,16 @@
+.stage {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 420ms var(--ease-drift);
+}
+
+.stage[data-visible="1"] {
+  opacity: 1;
+}
+
+.stage canvas {
+  display: block;
+}
