@@ -1,0 +1,401 @@
+.section {
+  --series-1: #b08f3a;
+  --series-2: #2a835b;
+  position: relative;
+  z-index: 1;
+  background: var(--ink);
+  padding: clamp(80px, 14vh, 150px) var(--gutter);
+  border-top: 1px solid var(--moss);
+}
+
+.intro {
+  display: grid;
+  gap: 16px;
+  margin-bottom: clamp(32px, 6vh, 64px);
+}
+
+.flag {
+  justify-self: start;
+  padding: 4px 8px;
+  border: 1px dashed var(--bone-dim);
+  font-family: var(--font-mono);
+  font-variation-settings: "wdth" 82;
+  font-size: var(--step--2);
+  color: var(--bone);
+}
+
+.title {
+  font-family: var(--font-display);
+  font-weight: 880;
+  font-variation-settings: "opsz" 72;
+  text-transform: uppercase;
+  font-size: clamp(2.8rem, 1rem + 6vw, 7.6rem);
+  line-height: 0.86;
+  color: var(--bone);
+  max-width: 14ch;
+}
+
+/* One console, hairline-divided. Not a stack of cards. */
+.console {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  border-top: 1px solid var(--moss-hi);
+  border-left: 1px solid var(--moss-hi);
+}
+
+.panel {
+  padding: clamp(16px, 2vw, 26px);
+  border-right: 1px solid var(--moss-hi);
+  border-bottom: 1px solid var(--moss-hi);
+  min-width: 0;
+  display: grid;
+  align-content: start;
+  gap: 14px;
+}
+
+.funnel {
+  grid-column: span 5;
+}
+.rate {
+  grid-column: span 7;
+}
+.cumulative {
+  grid-column: span 6;
+}
+.failures {
+  grid-column: span 6;
+}
+.flows {
+  grid-column: span 7;
+}
+.tiles {
+  grid-column: span 5;
+}
+
+.panelTitle {
+  font-family: var(--font-mono);
+  font-variation-settings: "wdth" 84;
+  font-weight: 400;
+  font-size: var(--step--1);
+  color: var(--bone);
+}
+
+.bars {
+  display: grid;
+  gap: 8px;
+}
+
+.bars li {
+  display: grid;
+  grid-template-columns: minmax(0, 8.5rem) minmax(0, 1fr) minmax(0, 8rem);
+  align-items: center;
+  gap: 12px;
+  font-size: var(--step--1);
+}
+
+.barLabel {
+  color: var(--paper);
+}
+
+.barTrack {
+  height: 12px;
+}
+
+.bar {
+  display: block;
+  height: 100%;
+  width: var(--w);
+  background: var(--series-1);
+  border-radius: 0 2px 2px 0;
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+  transition: transform 900ms var(--ease-latch);
+  transition-delay: calc(var(--i) * 70ms);
+}
+
+.console[data-in="1"] .bar {
+  transform: none;
+}
+
+.barValue {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-variation-settings: "wdth" 84;
+  font-size: var(--step--2);
+  color: var(--paper);
+}
+
+.barValue em {
+  font-style: normal;
+  color: var(--bone-dim);
+}
+
+.legend {
+  display: flex;
+  gap: 20px;
+  font-size: var(--step--1);
+  color: var(--paper);
+}
+
+.legend i,
+.tooltip i {
+  display: inline-block;
+  width: 10px;
+  height: 3px;
+  margin-right: 6px;
+  vertical-align: 3px;
+}
+
+.section [data-s="1"] {
+  --c: var(--series-1);
+}
+.section [data-s="2"] {
+  --c: var(--series-2);
+}
+
+.legend i,
+.tooltip i {
+  background: var(--c);
+}
+
+.chartWrap {
+  position: relative;
+}
+
+.chart {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  touch-action: pan-y;
+}
+
+.grid {
+  stroke: var(--moss);
+  stroke-width: 1;
+}
+
+.tick {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  fill: var(--bone-dim);
+}
+
+.line {
+  fill: none;
+  stroke: var(--c);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 1600ms var(--ease-drift);
+}
+
+.console[data-in="1"] .line {
+  stroke-dashoffset: 0;
+}
+
+.band {
+  fill: var(--series-1);
+  opacity: 0.18;
+}
+
+.endLabel {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  fill: var(--paper);
+}
+
+.cross {
+  stroke: var(--bone-dim);
+  stroke-width: 1;
+}
+
+.dot {
+  fill: var(--c);
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+
+.tooltip {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  display: grid;
+  gap: 2px;
+  padding: 8px 10px;
+  background: var(--forest);
+  border: 1px solid var(--moss-hi);
+  font-family: var(--font-mono);
+  font-variation-settings: "wdth" 82;
+  font-size: 10.5px;
+  color: var(--paper);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.tooltip strong {
+  font-weight: 500;
+  color: var(--bone);
+}
+
+.tableScroll {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--step--1);
+}
+
+.table th,
+.table td {
+  padding: 8px 10px 8px 0;
+  border-top: 1px solid var(--moss);
+  text-align: right;
+  font-weight: 400;
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-variation-settings: "wdth" 82;
+  font-size: var(--step--2);
+  font-variant-numeric: tabular-nums;
+  color: var(--paper);
+}
+
+.table thead th {
+  color: var(--bone-dim);
+  border-top: 0;
+}
+
+.table th[scope="row"],
+.table thead th:first-child {
+  text-align: left;
+  font-family: var(--font-serif);
+  font-size: var(--step--1);
+}
+
+.inline {
+  display: inline-block;
+  width: 36px;
+  height: 6px;
+  margin-right: 8px;
+  background: var(--moss);
+  vertical-align: 1px;
+}
+
+.inline span {
+  display: block;
+  height: 100%;
+  width: var(--w);
+  background: var(--series-1);
+}
+
+.stats {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 18px;
+}
+
+.stats div {
+  padding-block: 10px;
+  border-top: 1px solid var(--moss);
+}
+
+.stats dt {
+  font-size: var(--step--2);
+  font-family: var(--font-mono);
+  font-variation-settings: "wdth" 82;
+  color: var(--bone-dim);
+}
+
+.stats dd {
+  margin: 4px 0 0;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-variation-settings: "opsz" 48;
+  font-size: var(--step-3);
+  line-height: 0.9;
+  color: var(--paper);
+}
+
+.to {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 0.4em;
+  color: var(--bone-dim);
+  vertical-align: middle;
+}
+
+/* Status is shape + label, never colour alone. */
+.status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.status i {
+  width: 14px;
+  height: 14px;
+}
+
+.status[data-status="High"] i {
+  background: var(--series-2);
+}
+
+.status[data-status="Medium"] i {
+  background: var(--series-1);
+  transform: rotate(45deg) scale(0.8);
+}
+
+.status[data-status="Low"] i {
+  background: var(--signal);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+
+.fine {
+  font-family: var(--font-mono);
+  font-variation-settings: "wdth" 80;
+  font-size: 10.5px;
+  color: var(--bone-dim);
+}
+
+.dataTable {
+  margin-top: 20px;
+}
+
+.dataTable summary {
+  font-family: var(--font-mono);
+  font-variation-settings: "wdth" 84;
+  font-size: var(--step--1);
+  color: var(--bone);
+}
+
+.dataTable .table {
+  max-width: 640px;
+  margin-top: 10px;
+}
+
+@media (max-width: 1000px) {
+  .funnel,
+  .rate,
+  .cumulative,
+  .failures,
+  .flows,
+  .tiles {
+    grid-column: span 12;
+  }
+}
+
+@media (max-width: 520px) {
+  .bars li {
+    grid-template-columns: minmax(0, 6.5rem) minmax(0, 1fr) auto;
+  }
+  .barValue em {
+    display: none;
+  }
+}

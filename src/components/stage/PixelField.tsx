@@ -37,11 +37,14 @@ const SCENE_TO_FORMATION = {
 
 const MORPH_SECONDS = 1.35;
 
-/** Camera rail for the pipeline: dwell at each station, then glide to the next. */
+/**
+ * Camera rail for the pipeline: dwell at each station, glide between them. The glide
+ * is centred on the half-way point, which is where the DOM label switches station.
+ */
 const railX = (station: number) => {
   const k = Math.floor(station);
   const f = station - k;
-  const e = easeLatch(Math.min(1, Math.max(0, (f - 0.42) / 0.58)));
+  const e = easeLatch(Math.min(1, Math.max(0, (f - 0.22) / 0.56)));
   return (k + e) * STATION_SPACING;
 };
 
@@ -238,7 +241,9 @@ export function PixelField({ count }: Props) {
     u.uScan.value = bridge.scan;
 
     // pipeline camera rail
-    station.current += (s.pipeline * 5 - station.current) * Math.min(1, delta * 6);
+    // six equal slices of scroll, each centred on its station
+    const targetStation = Math.min(5, Math.max(0, s.pipeline * 6 - 0.5));
+    station.current += (targetStation - station.current) * Math.min(1, delta * 6);
     u.uStation.value = station.current;
     const pipelineWeight =
       (m.to === FORMATION.pipeline ? 1 : 0) * (m.active ? Number(u.uMorph.value) : 1) +
@@ -246,12 +251,17 @@ export function PixelField({ count }: Props) {
     const x = railX(station.current);
     const px = p.x >= 0 ? p.x - 0.5 : 0;
     const py = p.y >= 0 ? p.y - 0.5 : 0;
+    // Landscape: the station sits right of the text panel. Portrait: centred, pulled back to fit.
+    const aspect = size.width / Math.max(1, size.height);
+    const wide = aspect > 1.05;
+    const offset = wide ? 4.4 : 0;
+    const dist = wide ? 16.5 : THREE.MathUtils.clamp(4.6 / (0.2867 * aspect), 16.5, 42);
     camera.position.set(
-      THREE.MathUtils.lerp(camHome.x, x - 1.6 + px * 1.6, pipelineWeight),
-      THREE.MathUtils.lerp(camHome.y, 1.4 - py * 1.0, pipelineWeight),
-      THREE.MathUtils.lerp(camHome.z, 13.5, pipelineWeight),
+      THREE.MathUtils.lerp(camHome.x, x - offset - 1.2 + px * 1.6, pipelineWeight),
+      THREE.MathUtils.lerp(camHome.y, (wide ? 1.4 : 0.2) - py * 1.0, pipelineWeight),
+      THREE.MathUtils.lerp(camHome.z, dist, pipelineWeight),
     );
-    lookAt.set(x + 0.6, -0.1, 0);
+    lookAt.set(x - offset + 0.4, wide ? -0.1 : 1.6, 0);
     camera.lookAt(lookAt);
     camera.updateMatrixWorld();
 

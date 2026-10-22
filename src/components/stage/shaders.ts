@@ -247,8 +247,8 @@ vec3 eventHome(int k, bool consent, bool holdout, bool suppressed) {
   float X = float(k) * SP;
   float jitter = 0.05 * sin(uTime * (1.0 + aRand.w * 2.0) + aRand.x * 40.0);
   if (k == 0) {
-    vec2 p = vec2((aRand.x * 2.0 - 1.0) * 3.2, (aRand.y * 2.0 - 1.0) * 1.9 - 0.25);
-    p = snapCell(p, 0.24);
+    vec2 p = vec2((aRand.x * 2.0 - 1.0) * 3.2, (aRand.y * 2.0 - 1.0) * 1.85 - 0.3);
+    p = snapCell(p, 0.3);
     return vec3(X + p.x, p.y + jitter, (aRand.z - 0.5) * 0.4);
   }
   if (!consent) {
@@ -296,7 +296,7 @@ Pix formPipeline() {
     float q = fract(u * 6.0);
     vec2 p = stationOutline(k, q);
     float near = 1.0 - smoothstep(0.6, 1.6, abs(uStation - float(k)));
-    o.clip = worldClip(vec3(float(k) * SP + p.x, p.y, 0.0), 0.075);
+    o.clip = worldClip(vec3(float(k) * SP + p.x, p.y, 0.0), 0.06);
     o.color = mix(uMoss * 1.9, uBone, near);
     o.alpha = mix(0.55, 1.0, near);
     return o;
@@ -331,7 +331,7 @@ Pix formPipeline() {
     float h = (pos.y + 2.5) / 5.0;
     col = h > 0.4 ? mix(uBone, uSignal, step(0.97, aRand.x * 2.5)) : uBone * 0.62;
   }
-  o.clip = worldClip(pos, 0.11);
+  o.clip = worldClip(pos, 0.075);
   o.color = col;
   o.alpha = alpha;
   return o;

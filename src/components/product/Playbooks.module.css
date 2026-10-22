@@ -1,0 +1,353 @@
+.section {
+  position: relative;
+  z-index: 1;
+  background: var(--forest);
+}
+
+.track {
+  height: 560svh;
+}
+
+.sticky {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  display: grid;
+  grid-template-columns: minmax(0, 4fr) minmax(0, 5fr) minmax(0, 3fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-areas:
+    "heading heading heading"
+    "lens detail phone";
+  gap: clamp(16px, 2.4vh, 28px) clamp(20px, 3vw, 56px);
+  padding: calc(var(--nav-h) + 2vh) var(--gutter) clamp(20px, 4vh, 40px);
+}
+
+.heading {
+  grid-area: heading;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 300;
+  font-size: var(--step-3);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--paper);
+  max-width: 20ch;
+}
+
+.lensCol {
+  grid-area: lens;
+  position: relative;
+  min-height: 0;
+}
+
+.listWindow {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  mask-image: linear-gradient(transparent, #000 22%, #000 78%, transparent);
+}
+
+.list {
+  display: grid;
+  will-change: transform;
+}
+
+.item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 62px;
+  padding: 8px 18px;
+  text-align: left;
+  color: var(--bone-dim);
+  transition: color var(--dur-ui) linear;
+}
+
+.item[data-weight="wedge"] {
+  min-height: 124px;
+}
+
+.itemName {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-variation-settings: "opsz" 48;
+  text-transform: uppercase;
+  font-size: var(--step-2);
+  line-height: 0.92;
+}
+
+.item[data-weight="wedge"] .itemName {
+  font-size: clamp(1.9rem, 1.1rem + 1.9vw, 3rem);
+}
+
+.item[aria-selected="true"] {
+  color: var(--paper);
+}
+
+.item:hover {
+  color: var(--bone);
+}
+
+.badge {
+  flex: none;
+  padding: 3px 7px;
+  border: 1px solid var(--signal);
+  font-family: var(--font-mono);
+  font-variation-settings: "wdth" 80;
+  font-size: var(--step--2);
+  color: var(--signal);
+}
+
+/* The lens: fixed corner brackets the list scrolls through. */
+.lens {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 132px;
+  transform: translateY(-50%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.lens i {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border: 0 solid var(--signal);
+}
+.lens i:nth-child(1) {
+  left: 0;
+  top: 0;
+  border-left-width: 2px;
+  border-top-width: 2px;
+}
+.lens i:nth-child(2) {
+  right: 0;
+  top: 0;
+  border-right-width: 2px;
+  border-top-width: 2px;
+}
+.lens i:nth-child(3) {
+  left: 0;
+  bottom: 0;
+  border-left-width: 2px;
+  border-bottom-width: 2px;
+}
+.lens i:nth-child(4) {
+  right: 0;
+  bottom: 0;
+  border-right-width: 2px;
+  border-bottom-width: 2px;
+}
+
+.detail {
+  grid-area: detail;
+  align-self: center;
+  display: grid;
+  gap: 14px;
+  min-height: 0;
+}
+
+.name {
+  font-family: var(--font-display);
+  font-weight: 880;
+  font-variation-settings: "opsz" 72;
+  text-transform: uppercase;
+  font-size: clamp(2.4rem, 1rem + 3.6vw, 5rem);
+  line-height: 0.86;
+  color: var(--bone);
+}
+
+.detail[data-weight="wedge"] .name {
+  color: var(--paper);
+}
+
+.line {
+  font-size: var(--step-1);
+  line-height: 1.4;
+  color: var(--paper);
+  max-width: 40ch;
+}
+
+.facts {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 20px;
+}
+
+.facts div {
+  padding-block: 8px;
+  border-top: 1px solid var(--moss-hi);
+}
+
+.facts dt {
+  font-family: var(--font-mono);
+  font-variation-settings: "wdth" 82;
+  font-size: var(--step--2);
+  color: var(--bone-dim);
+}
+
+.facts dd {
+  margin: 2px 0 0;
+  font-size: var(--step-0);
+  color: var(--paper);
+  line-height: 1.3;
+}
+
+.chain {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 0;
+  font-family: var(--font-mono);
+  font-variation-settings: "wdth" 80;
+  font-size: var(--step--2);
+}
+
+.chain li {
+  display: flex;
+  align-items: center;
+}
+
+.chain code {
+  font: inherit;
+  padding: 5px 8px;
+  border: 1px solid var(--moss-hi);
+  color: var(--bone);
+  background: var(--ink);
+}
+
+.chain li + li::before {
+  content: "";
+  width: 18px;
+  height: 1px;
+  background: var(--bone-dim);
+}
+
+.chain li:last-child code {
+  border-color: var(--bone);
+}
+
+.wedge {
+  display: grid;
+  gap: 10px;
+  padding: 14px 16px;
+  border-left: 2px solid var(--signal);
+  background: rgba(10, 15, 12, 0.5);
+}
+
+.wedgeTitle {
+  font-style: italic;
+  font-size: var(--step-0);
+  color: var(--paper);
+}
+
+.routes {
+  display: grid;
+  gap: 6px;
+  font-size: var(--step--1);
+}
+
+.routes li {
+  display: grid;
+  grid-template-columns: minmax(0, 14ch) 28px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+}
+
+.routes code {
+  font-family: var(--font-mono);
+  font-variation-settings: "wdth" 80;
+  font-size: var(--step--2);
+  color: var(--signal);
+}
+
+.arrow {
+  height: 1px;
+  background: var(--bone-dim);
+  position: relative;
+}
+
+.arrow::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: -3px;
+  width: 6px;
+  height: 7px;
+  background: var(--bone-dim);
+}
+
+.phone {
+  grid-area: phone;
+  align-self: center;
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+}
+
+.phone > div[role="img"] {
+  height: min(560px, calc(100svh - var(--nav-h) - 220px));
+  width: auto;
+}
+
+.fine {
+  font-family: var(--font-mono);
+  font-variation-settings: "wdth" 80;
+  font-size: 10px;
+  color: var(--bone-dim);
+  text-align: center;
+  max-width: 34ch;
+}
+
+@media (max-width: 1100px) {
+  .sticky {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+    grid-template-areas:
+      "heading heading"
+      "lens detail";
+  }
+  .phone {
+    display: none;
+  }
+}
+
+@media (max-width: 720px) {
+  .sticky {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 120px 1fr;
+    grid-template-areas:
+      "heading"
+      "lens"
+      "detail";
+    gap: 12px;
+  }
+  .heading {
+    font-size: var(--step-2);
+  }
+  .item[data-weight="wedge"] {
+    min-height: 62px;
+  }
+  .item[data-weight="wedge"] .itemName {
+    font-size: var(--step-2);
+  }
+  .lens {
+    height: 68px;
+  }
+  .detail {
+    align-self: start;
+    gap: 10px;
+  }
+  .name {
+    font-size: 2.4rem;
+  }
+  .line {
+    font-size: var(--step-0);
+  }
+  .wedge {
+    display: none;
+  }
+}
