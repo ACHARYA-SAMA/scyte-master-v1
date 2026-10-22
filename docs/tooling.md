@@ -13,7 +13,11 @@ What was available in the build environment, and how each was used. "Skipped" en
 | **@resvg/resvg-js** | Reference SVG renderer for the logo proof (`npm run logo:verify`) and for raster icon generation. |
 | **Next.js bundled docs** (`node_modules/next/dist/docs`) | Version-matched API reference for Next 16.4: async params, metadata files, ImageResponse, server actions, view transitions. |
 | **npm registry** | Picking current, mutually compatible versions to pin. |
-| **dataviz skill** | Chart forms, colour roles and labelling for the product dashboard. |
+| **dataviz skill and its palette validator** | Chart forms, labelling, hover and table views for the dashboard and economics model. The two chart series (`#B08F3A`, `#2A835B`) were derived from bone and moss and pass every check of the validator on ink and forest. |
+| **Lighthouse 13.5** (via npx, against the production build) | Performance, accessibility, best-practice and SEO audits on every route, desktop and mobile; results in `docs/performance.md`. |
+| **Chrome DevTools Protocol** (through Playwright) | CPU profiles and long-task traces under 4x throttling, which found the GPU-canvas readback and the throwaway WebGL context. |
+| **ESLint with the React Compiler rules** | Caught refs read during render and a hoisting bug; the remaining annotations each say why the pattern is intended. |
+| **Motion** | Spring physics for the team dock, so sweeping across thumbnails keeps its momentum. Loaded with `LazyMotion` on `/team` only. |
 | **git** | Staged commits. |
 
 ## Available, skipped, and why

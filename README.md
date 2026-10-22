@@ -78,4 +78,13 @@ Design rationale: `docs/design-thesis.md`. Tools used: `docs/tooling.md`.
 
 Lighthouse 13.5 against `next start`, in headless Chromium with SwiftShader software WebGL. Software GL runs the GPU work on the CPU, so these numbers are pessimistic for real devices.
 
-See `docs/performance.md` for the per-route table. Accessibility is 100 on every audited route; CLS is 0 to 0.001 everywhere.
+| Route | Desktop | Mobile |
+|---|---|---|
+| `/` | 98 | 82 |
+| `/product` | 89 | 77 |
+| `/team` | 95 | 86 |
+| `/services` | 99 | 86 |
+| `/work` | 96 | 85 |
+| `/contact` | 94 | 83 |
+
+Accessibility, best practices and SEO are 100 on every audited route. Desktop LCP is 0.8 to 1.1 s; CLS is 0 to 0.002 everywhere. Mobile LCP is 4 to 5 s in Lighthouse's slow-4G simulation, mostly web-font bytes. Details and what moved each number: `docs/performance.md`.
