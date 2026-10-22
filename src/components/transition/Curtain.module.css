@@ -1,0 +1,49 @@
+.curtain {
+  position: fixed;
+  inset: 0;
+  z-index: 8000;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.curtain[data-active="1"] {
+  pointer-events: auto;
+}
+
+.grid {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  overflow: hidden;
+}
+
+.cell {
+  display: block;
+  background: var(--forest);
+  transform: scale(0);
+  will-change: transform;
+}
+
+.cell:nth-child(7n + 3) {
+  background: #19221c;
+}
+
+.mark {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 14px;
+  color: var(--bone);
+  opacity: 0;
+}
+
+.logo {
+  width: clamp(96px, 12vw, 160px);
+  height: auto;
+}
+
+.mark span {
+  color: var(--bone-dim);
+}

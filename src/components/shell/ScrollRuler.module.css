@@ -1,0 +1,62 @@
+.ruler {
+  position: fixed;
+  right: clamp(8px, 1.2vw, 18px);
+  top: 50%;
+  z-index: 6500;
+  height: min(46vh, 420px);
+  width: 14px;
+  transform: translateY(-50%);
+  container-type: size;
+  pointer-events: none;
+  color: var(--bone);
+  mix-blend-mode: difference;
+}
+
+.ticks {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.ticks i {
+  display: block;
+  width: 4px;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.45;
+  transition:
+    width var(--dur-ui) var(--ease-latch),
+    opacity var(--dur-ui) linear;
+}
+
+.ticks i[data-major] {
+  width: 8px;
+  opacity: 0.8;
+}
+
+.ticks i[data-lit] {
+  width: 14px;
+  opacity: 1;
+}
+
+.marker {
+  position: absolute;
+  right: 18px;
+  top: -3px;
+  width: 6px;
+  height: 6px;
+  background: currentColor;
+}
+
+@media (max-width: 720px) {
+  .ruler {
+    height: 30vh;
+    right: 4px;
+  }
+  .marker {
+    right: 12px;
+  }
+}

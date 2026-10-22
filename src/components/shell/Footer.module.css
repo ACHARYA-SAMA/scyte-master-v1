@@ -1,0 +1,139 @@
+.footer {
+  position: relative;
+  z-index: 2;
+  background: var(--ink);
+  border-top: 1px solid var(--moss);
+  padding: clamp(64px, 12vh, 140px) var(--gutter) clamp(20px, 3vh, 32px);
+  overflow: hidden;
+}
+
+.top {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  gap: clamp(32px, 6vw, 96px);
+  align-items: end;
+}
+
+.closing {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 300;
+  font-size: var(--step-4);
+  line-height: 0.98;
+  letter-spacing: -0.02em;
+  color: var(--paper);
+}
+
+.contact {
+  display: grid;
+  gap: 36px;
+}
+
+.cta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 22px 24px;
+  background: var(--bone);
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-variation-settings: "opsz" 40;
+  font-size: var(--step-2);
+  text-transform: uppercase;
+  line-height: 1;
+  transition: background var(--dur-ui) var(--ease-latch);
+}
+
+.cta::after {
+  content: "";
+  width: 14px;
+  height: 14px;
+  background: var(--signal);
+  flex: none;
+  transition: transform var(--dur-ui) var(--ease-latch);
+}
+
+.cta:hover {
+  background: var(--paper);
+}
+
+.cta:hover::after {
+  transform: scale(1.6);
+}
+
+.facts {
+  margin: 0;
+  display: grid;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-variation-settings: "wdth" 85;
+  font-size: var(--step--1);
+}
+
+.facts div {
+  display: grid;
+  grid-template-columns: 8ch 1fr;
+  gap: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--moss);
+}
+
+.facts dt {
+  color: var(--bone-dim);
+}
+
+.facts dd {
+  margin: 0;
+}
+
+.facts a:hover {
+  color: var(--paper);
+}
+
+.socials {
+  display: flex;
+  gap: 20px;
+}
+
+.logo {
+  width: 100%;
+  margin-top: clamp(56px, 10vh, 120px);
+  color: var(--bone);
+}
+
+.bottom {
+  margin-top: clamp(20px, 3vh, 36px);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+  font-family: var(--font-mono);
+  font-variation-settings: "wdth" 85;
+  font-size: var(--step--2);
+  color: var(--bone-dim);
+}
+
+.visit {
+  max-width: 62ch;
+}
+
+.visit strong {
+  color: var(--bone);
+  font-weight: 500;
+}
+
+.legal {
+  white-space: nowrap;
+}
+
+@media (max-width: 860px) {
+  .top {
+    grid-template-columns: 1fr;
+  }
+  .bottom {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

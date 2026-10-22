@@ -1,38 +1,329 @@
 @import "tailwindcss";
 
+/* ------------------------------------------------------------------------------------
+   Tokens. Derived from the wordmark: bone #C2B897 on forest #1C261F.
+   ------------------------------------------------------------------------------------ */
 :root {
-  --neon-accent: #C2B897; /* Matches the muted khaki/beige SCYTE signature */
-  --oak-green: #1B261D; /* Deep, muted oak green */
+  --ink: #0a0f0c;
+  --forest: #1c261f;
+  --moss: #2a3a2f;
+  --moss-hi: #3a4d40;
+  --bone: #c2b897;
+  --bone-dim: #9a9379;
+  --paper: #ede8d8;
+  --signal: #ff3d2e;
+  --signal-deep: #b8291c; /* signal on paper (5.1:1) */
+
+  /* the logo's stroke as a length: one event pixel */
+  --cell: clamp(6px, 0.42vw + 3px, 11px);
+
+  --font-display: var(--font-big-shoulders), "Arial Narrow", sans-serif;
+  --font-serif: var(--font-newsreader), Georgia, serif;
+  --font-mono: var(--font-martian), ui-monospace, monospace;
+
+  /* fluid type scale */
+  --step--2: clamp(0.6875rem, 0.67rem + 0.08vw, 0.75rem);
+  --step--1: clamp(0.78rem, 0.75rem + 0.12vw, 0.875rem);
+  --step-0: clamp(1.0625rem, 1rem + 0.25vw, 1.25rem);
+  --step-1: clamp(1.25rem, 1.1rem + 0.6vw, 1.625rem);
+  --step-2: clamp(1.6rem, 1.3rem + 1.4vw, 2.5rem);
+  --step-3: clamp(2.25rem, 1.6rem + 3vw, 4.25rem);
+  --step-4: clamp(3rem, 1.9rem + 5.4vw, 7.5rem);
+  --step-5: clamp(4rem, 1.8rem + 11vw, 14rem);
+  --step-6: clamp(4.5rem, 0.6rem + 19.5vw, 25rem);
+
+  /* motion */
+  --ease-latch: cubic-bezier(0.62, 0, 0.06, 1);
+  --ease-glide: cubic-bezier(0.2, 0.84, 0.16, 1);
+  --ease-cut: cubic-bezier(0.6, 0, 0.84, 0.24);
+  --ease-drift: cubic-bezier(0.38, 0, 0.22, 1);
+  --dur-feedback: 120ms;
+  --dur-ui: 280ms;
+  --dur-hud: 600ms;
+  --dur-route: 900ms;
+
+  --gutter: clamp(16px, 3.2vw, 56px);
+  --nav-h: clamp(56px, 6vw, 76px);
+
+  color-scheme: dark;
 }
 
 @theme inline {
-  --color-neon-accent: var(--neon-accent);
-  --color-oak-green: var(--oak-green);
+  --color-ink: var(--ink);
+  --color-forest: var(--forest);
+  --color-moss: var(--moss);
+  --color-bone: var(--bone);
+  --color-bone-dim: var(--bone-dim);
+  --color-paper: var(--paper);
+  --color-signal: var(--signal);
+  --font-display: var(--font-display);
+  --font-serif: var(--font-serif);
+  --font-mono: var(--font-mono);
+}
+
+/* ------------------------------------------------------------------------------------
+   Base
+   ------------------------------------------------------------------------------------ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--ink);
+  color: var(--bone);
+  -webkit-text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scrollbar-color: var(--moss-hi) var(--ink);
+  scrollbar-width: thin;
+  hanging-punctuation: first allow-end last;
 }
 
 body {
-  background-color: var(--oak-green);
-  color: #ffffff;
+  margin: 0;
+  min-height: 100svh;
+  background: var(--ink);
+  color: var(--bone);
+  font-family: var(--font-serif);
+  font-size: var(--step-0);
+  line-height: 1.55;
+  font-optical-sizing: auto;
+  font-kerning: normal;
+  font-variant-ligatures: common-ligatures;
+  overflow-x: clip;
 }
 
-/* Official Lenis smooth scroll layout adjustments */
+::selection {
+  background: var(--signal);
+  color: var(--ink);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--ink);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--moss-hi);
+  border: 3px solid var(--ink);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--bone-dim);
+}
+
+img,
+svg,
+video,
+canvas {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+h1,
+h2,
+h3,
+h4,
+p,
+figure,
+blockquote,
+ul,
+ol,
+dl,
+dd {
+  margin: 0;
+}
+
+ul,
+ol {
+  padding: 0;
+  list-style: none;
+}
+
+/* Designed focus: a signal outline offset outside the element, never removed. */
+:focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 4px;
+}
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Custom cursor: hide the native one only when ours is running on a fine pointer. */
+html.has-cursor,
+html.has-cursor * {
+  cursor: none !important;
+}
+html.has-cursor input,
+html.has-cursor textarea,
+html.has-cursor select,
+html.has-cursor [contenteditable="true"] {
+  cursor: text !important;
+}
+
+/* Lenis */
 html.lenis,
 html.lenis body {
-  height: auto !important;
+  height: auto;
 }
-
 .lenis.lenis-smooth {
   scroll-behavior: auto !important;
 }
-
 .lenis.lenis-smooth [data-lenis-prevent] {
   overscroll-behavior: contain;
 }
-
 .lenis.lenis-stopped {
-  overflow: hidden;
+  overflow: clip;
+}
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
 }
 
-.lenis.lenis-scrolling iframe {
-  pointer-events: none;
+/* ------------------------------------------------------------------------------------
+   Type voices
+   ------------------------------------------------------------------------------------ */
+.t-display {
+  font-family: var(--font-display);
+  font-weight: 860;
+  font-variation-settings: "opsz" 72;
+  line-height: 0.84;
+  letter-spacing: -0.012em;
+  text-transform: uppercase;
+  font-kerning: normal;
+}
+
+.t-serif {
+  font-family: var(--font-serif);
+  font-optical-sizing: auto;
+}
+
+.t-italic {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-optical-sizing: auto;
+}
+
+.t-mono {
+  font-family: var(--font-mono);
+  font-variation-settings: "wdth" 88;
+  font-variant-numeric: tabular-nums slashed-zero;
+  font-size: var(--step--1);
+  line-height: 1.45;
+  letter-spacing: 0;
+}
+
+.t-num {
+  font-variant-numeric: tabular-nums;
+}
+
+.t-balance {
+  text-wrap: balance;
+}
+.t-pretty {
+  text-wrap: pretty;
+}
+
+/* ------------------------------------------------------------------------------------
+   Layout helpers
+   ------------------------------------------------------------------------------------ */
+.wrap {
+  padding-inline: var(--gutter);
+}
+
+.sr-only {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: fixed;
+  left: var(--gutter);
+  top: 10px;
+  z-index: 10000;
+  padding: 10px 14px;
+  background: var(--bone);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  transform: translateY(-160%);
+  transition: transform var(--dur-ui) var(--ease-latch);
+}
+.skip-link:focus-visible {
+  transform: none;
+}
+
+/* Paper sections invert the palette for rhythm. */
+.on-paper {
+  background: var(--paper);
+  color: var(--forest);
+  --bone: var(--forest);
+  --bone-dim: #4c5a4f;
+  --signal: var(--signal-deep);
+  --moss: #cfc8b3;
+  --moss-hi: #b6ae96;
+  color-scheme: light;
+}
+
+/* Visible placeholder for content only the founders can supply. */
+.fill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  padding: 0.05em 0.45em;
+  border: 1px dashed currentColor;
+  font-family: var(--font-mono);
+  font-variation-settings: "wdth" 88;
+  font-size: 0.8em;
+  letter-spacing: 0.04em;
+  color: var(--bone-dim);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* While the preloader runs, the marks it will fly into stay hidden. */
+html.is-preloading [data-hero-logo],
+html.is-preloading [data-nav-logo] svg {
+  opacity: 0;
 }

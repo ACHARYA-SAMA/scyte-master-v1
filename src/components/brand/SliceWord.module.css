@@ -1,0 +1,61 @@
+.root {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  contain: layout paint;
+  /* The strips travel inside a box exactly the size of the wordmark. */
+}
+
+.sizer {
+  width: 100%;
+}
+
+.layer {
+  position: absolute;
+  inset: 0;
+}
+
+.strip {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+
+.strip svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.text {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-variation-settings: "opsz" 72;
+  letter-spacing: 0;
+}
+
+.bone {
+  color: var(--bone);
+}
+.signal {
+  color: var(--signal);
+}
+.paper {
+  color: var(--paper);
+}
+.ink {
+  color: var(--ink);
+}
+
+.whole,
+.strips {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.layer:not([data-sliced="1"]) .strips,
+.layer[data-sliced="1"] .whole {
+  visibility: hidden;
+}

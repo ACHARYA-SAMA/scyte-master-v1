@@ -1,0 +1,138 @@
+.menu {
+  position: fixed;
+  inset: 0;
+  z-index: 6900;
+  opacity: 0;
+  pointer-events: none;
+  color: var(--bone);
+}
+
+.menu[data-open="1"] {
+  pointer-events: auto;
+}
+
+.cells {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  grid-template-rows: repeat(6, 1fr);
+}
+
+.cells span {
+  background: var(--forest);
+  transform: scaleY(0);
+  margin: -0.5px;
+}
+
+.inner {
+  position: relative;
+  height: 100%;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  padding: calc(var(--nav-h) + 3vh) var(--gutter) clamp(20px, 4vh, 40px);
+}
+
+.list {
+  align-self: center;
+  display: grid;
+  gap: 0;
+}
+
+.row {
+  border-top: 1px solid var(--moss);
+}
+.row:last-child {
+  border-bottom: 1px solid var(--moss);
+}
+
+.mask {
+  overflow: hidden;
+}
+
+.link {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 22rem);
+  align-items: center;
+  gap: 24px;
+  padding-block: clamp(2px, 0.6vh, 8px);
+}
+
+.label {
+  display: flex;
+  font-family: var(--font-display);
+  font-weight: 860;
+  font-variation-settings: "opsz" 72;
+  text-transform: uppercase;
+  font-size: clamp(2.6rem, 1rem + 6.6vw, 7.2rem);
+  line-height: 0.92;
+  letter-spacing: -0.005em;
+}
+
+/* Hover: each character slides up on its own column, revealing a signal copy. */
+.ch {
+  display: inline-block;
+  overflow: hidden;
+  white-space: pre;
+  vertical-align: top;
+}
+
+.chi {
+  position: relative;
+  display: inline-block;
+  transition: transform 460ms var(--ease-latch);
+  transition-delay: calc(var(--i) * 22ms);
+}
+
+.chi::after {
+  content: attr(data-ch);
+  position: absolute;
+  left: 0;
+  top: 100%;
+  color: var(--signal);
+}
+
+.link:hover .chi,
+.link:focus-visible .chi {
+  transform: translateY(-100%);
+}
+
+.link[aria-current="page"] .label {
+  color: var(--bone-dim);
+}
+
+.note {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: var(--step-1);
+  color: var(--bone-dim);
+  justify-self: end;
+  text-align: right;
+}
+
+.foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 32px;
+  font-family: var(--font-mono);
+  font-variation-settings: "wdth" 85;
+  font-size: var(--step--1);
+  color: var(--bone-dim);
+}
+
+.foot a:hover {
+  color: var(--bone);
+}
+
+@media (max-width: 720px) {
+  .link {
+    grid-template-columns: 1fr;
+    gap: 0;
+    padding-block: 6px;
+  }
+  .note {
+    justify-self: start;
+    text-align: left;
+    font-size: var(--step--1);
+  }
+}

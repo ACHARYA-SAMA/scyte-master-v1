@@ -1,0 +1,12 @@
+.stage {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  contain: strict;
+}
+
+.stage canvas {
+  width: 100% !important;
+  height: 100% !important;
+}

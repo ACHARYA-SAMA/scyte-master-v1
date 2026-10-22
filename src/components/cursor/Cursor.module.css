@@ -1,0 +1,180 @@
+.cursor {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 9000;
+  pointer-events: none;
+  width: 0;
+  height: 0;
+  color: var(--bone);
+  opacity: 0;
+  transition: opacity var(--dur-ui) linear;
+  mix-blend-mode: difference;
+}
+
+.cursor[data-visible="1"] {
+  opacity: 1;
+}
+
+.cursor[data-state="hidden"] {
+  opacity: 0;
+}
+
+/* default: one event pixel */
+.cell {
+  position: absolute;
+  left: -4px;
+  top: -4px;
+  width: 8px;
+  height: 8px;
+  background: var(--paper);
+  transition:
+    transform var(--dur-ui) var(--ease-latch),
+    opacity var(--dur-feedback) linear;
+}
+
+.cursor[data-down="1"] .cell {
+  transform: scale(0.5);
+}
+
+.cursor[data-state="link"] .cell,
+.cursor[data-state="view"] .cell,
+.cursor[data-state="drag"] .cell {
+  transform: scale(0.5);
+}
+
+.cursor[data-state="lock"] .cell {
+  opacity: 0;
+}
+
+/* link / view / drag: four corner brackets */
+.brackets {
+  position: absolute;
+  left: -14px;
+  top: -14px;
+  width: 28px;
+  height: 28px;
+  opacity: 0;
+  transform: scale(0.4);
+  transition:
+    transform var(--dur-ui) var(--ease-latch),
+    opacity var(--dur-feedback) linear,
+    width var(--dur-ui) var(--ease-latch),
+    height var(--dur-ui) var(--ease-latch),
+    left var(--dur-ui) var(--ease-latch),
+    top var(--dur-ui) var(--ease-latch);
+}
+
+.brackets i {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border: 0 solid var(--paper);
+}
+.brackets i:nth-child(1) {
+  left: 0;
+  top: 0;
+  border-left-width: 2px;
+  border-top-width: 2px;
+}
+.brackets i:nth-child(2) {
+  right: 0;
+  top: 0;
+  border-right-width: 2px;
+  border-top-width: 2px;
+}
+.brackets i:nth-child(3) {
+  left: 0;
+  bottom: 0;
+  border-left-width: 2px;
+  border-bottom-width: 2px;
+}
+.brackets i:nth-child(4) {
+  right: 0;
+  bottom: 0;
+  border-right-width: 2px;
+  border-bottom-width: 2px;
+}
+
+.cursor[data-state="link"] .brackets {
+  opacity: 1;
+  transform: none;
+}
+
+.cursor[data-state="view"] .brackets,
+.cursor[data-state="drag"] .brackets {
+  opacity: 1;
+  transform: none;
+  left: -44px;
+  top: -44px;
+  width: 88px;
+  height: 88px;
+}
+
+.label {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-mono);
+  font-variation-settings: "wdth" 80;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  color: var(--paper);
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity var(--dur-feedback) linear;
+}
+
+.cursor[data-state="view"] .label,
+.cursor[data-state="drag"] .label {
+  opacity: 1;
+}
+
+/* lock: segmented signal ring with the arrow glyph. Not blended, it must read as signal. */
+.ring,
+.arrow {
+  position: absolute;
+  opacity: 0;
+  color: var(--signal);
+  fill: var(--signal);
+}
+
+.ring {
+  left: -34px;
+  top: -34px;
+  width: 68px;
+  height: 68px;
+  transform: scale(1.8) rotate(-45deg);
+  transition:
+    transform 420ms var(--ease-latch),
+    opacity var(--dur-feedback) linear;
+}
+
+.arrow {
+  left: -7px;
+  top: -7px;
+  width: 14px;
+  height: 14px;
+  transition: opacity var(--dur-feedback) linear;
+}
+
+.cursor[data-state="lock"] {
+  mix-blend-mode: normal;
+}
+
+.cursor[data-state="lock"] .ring {
+  opacity: 1;
+  transform: scale(1) rotate(0deg);
+  animation: spin 3.2s linear infinite 420ms;
+}
+
+.cursor[data-state="lock"] .arrow {
+  opacity: 1;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -1,0 +1,229 @@
+.phone {
+  --pw: min(100%, 340px);
+  position: relative;
+  width: var(--pw);
+  aspect-ratio: 9 / 18.6;
+  padding: 10px;
+  background: #050806;
+  border: 1px solid var(--moss-hi);
+  border-radius: 38px;
+  box-shadow:
+    0 0 0 1px #000 inset,
+    0 30px 80px -30px rgba(0, 0, 0, 0.7);
+  color: var(--paper);
+  font-family: var(--font-serif);
+}
+
+.screen {
+  position: relative;
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+  overflow: hidden;
+  border-radius: 29px;
+  background-color: #141c17;
+  background-image: radial-gradient(rgba(194, 184, 151, 0.07) 1px, transparent 1px);
+  background-size: 14px 14px;
+}
+
+.status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px 4px;
+  font-family: var(--font-mono);
+  font-variation-settings: "wdth" 85;
+  font-size: 10px;
+  color: var(--bone);
+}
+
+.signal {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 9px;
+}
+.signal i {
+  width: 3px;
+  background: var(--bone);
+}
+.signal i:nth-child(1) {
+  height: 3px;
+}
+.signal i:nth-child(2) {
+  height: 5px;
+}
+.signal i:nth-child(3) {
+  height: 7px;
+}
+.signal i:nth-child(4) {
+  height: 9px;
+  opacity: 0.35;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px 10px;
+  border-bottom: 1px solid rgba(194, 184, 151, 0.12);
+  background: rgba(10, 15, 12, 0.6);
+}
+
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  background: var(--bone);
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 17px;
+}
+
+.who {
+  display: grid;
+  line-height: 1.15;
+}
+
+.who strong {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.who small {
+  font-family: var(--font-mono);
+  font-variation-settings: "wdth" 85;
+  font-size: 9.5px;
+  color: var(--bone-dim);
+}
+
+.thread {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 12px 12px 16px;
+  overflow: hidden;
+}
+
+.msg {
+  display: grid;
+  gap: 4px;
+  max-width: 86%;
+}
+
+.msg[data-from="brand"] {
+  justify-self: start;
+  align-self: flex-start;
+}
+
+.msg[data-from="shopper"] {
+  align-self: flex-end;
+}
+
+.msg[data-from="system"] {
+  align-self: center;
+  max-width: 100%;
+}
+
+.bubble {
+  position: relative;
+  padding: 8px 10px 16px;
+  background: var(--moss);
+  color: var(--paper);
+  font-size: 13.5px;
+  line-height: 1.35;
+  border-radius: 2px 12px 12px 12px;
+}
+
+.msg[data-from="shopper"] .bubble {
+  background: var(--bone);
+  color: var(--ink);
+  border-radius: 12px 2px 12px 12px;
+}
+
+.tag {
+  display: inline-block;
+  margin-bottom: 4px;
+  font-family: var(--font-mono);
+  font-variation-settings: "wdth" 80;
+  font-size: 9px;
+  letter-spacing: 0.02em;
+  color: var(--bone);
+  opacity: 0.8;
+}
+
+.time {
+  position: absolute;
+  right: 8px;
+  bottom: 3px;
+  font-family: var(--font-mono);
+  font-variation-settings: "wdth" 80;
+  font-size: 9px;
+  opacity: 0.65;
+}
+
+.buttons {
+  display: grid;
+  gap: 3px;
+}
+
+.button {
+  display: block;
+  padding: 8px 10px;
+  text-align: center;
+  background: rgba(42, 58, 47, 0.7);
+  color: var(--bone);
+  font-size: 13px;
+  border-radius: 2px;
+}
+
+.button:last-child {
+  border-radius: 2px 2px 12px 12px;
+}
+
+.system {
+  padding: 4px 10px;
+  background: rgba(10, 15, 12, 0.7);
+  font-family: var(--font-mono);
+  font-variation-settings: "wdth" 82;
+  font-size: 10px;
+  color: var(--bone-dim);
+  text-align: center;
+}
+
+.typing {
+  display: inline-flex;
+  gap: 4px;
+  padding: 11px 12px;
+}
+
+.typing i {
+  width: 5px;
+  height: 5px;
+  background: var(--bone);
+  animation: blink 1s steps(2) infinite;
+}
+.typing i:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.typing i:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0.25;
+  }
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
