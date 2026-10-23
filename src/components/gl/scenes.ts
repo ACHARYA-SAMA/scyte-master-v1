@@ -12,6 +12,10 @@ type Loader = () => Promise<{ default: ComponentType }>;
 
 const LOADERS: Partial<Record<SceneKey, Loader>> = {
   home: () => import("./scenes/home/HomeScene"),
+  collect: () => import("./scenes/collect/CollectScene"),
+  identify: () => import("./scenes/identify/IdentifyScene"),
+  understand: () => import("./scenes/understand/UnderstandScene"),
+  measure: () => import("./scenes/measure/MeasureScene"),
 };
 
 /** Built once at module scope, so React sees a stable component per scene. */

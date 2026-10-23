@@ -1,0 +1,293 @@
+.stage {
+  position: relative;
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr auto auto;
+  gap: var(--s4);
+  align-content: center;
+}
+
+.entry {
+  justify-self: start;
+  padding: 10px 14px;
+  border: 1px dashed var(--line);
+  color: var(--muted);
+  transition:
+    border-color var(--dur-feedback) linear,
+    background-color var(--dur-feedback) linear,
+    color var(--dur-feedback) linear;
+}
+
+.entry[data-over="1"] {
+  border-color: var(--lumen);
+  color: var(--cream);
+  background: var(--surface);
+}
+
+.yard {
+  width: 100%;
+  height: auto;
+  max-height: 52svh;
+  overflow: visible;
+}
+
+.main,
+.siding,
+.route {
+  fill: none;
+  stroke-linecap: square;
+}
+
+.main {
+  stroke: var(--khaki-light);
+  stroke-width: 3;
+}
+
+.siding {
+  stroke: var(--line);
+  stroke-width: 3;
+}
+
+.route {
+  stroke: var(--lumen);
+  stroke-width: 3;
+  opacity: 0;
+  transition: opacity var(--dur-ui) linear;
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--lumen) 60%, transparent));
+}
+
+.route[data-on="1"] {
+  opacity: 1;
+}
+
+.tick {
+  stroke: var(--line);
+  stroke-width: 1;
+}
+
+.buffer,
+.end {
+  fill: var(--khaki);
+}
+
+.gateTick {
+  stroke: var(--khaki);
+  stroke-width: 1;
+}
+
+.gateName,
+.stopText,
+.count {
+  font-family: var(--font);
+  font-size: 15px;
+  font-stretch: 72%;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  fill: var(--khaki-light);
+}
+
+.stopText,
+.count {
+  fill: var(--muted);
+}
+
+.lamp {
+  fill: var(--ground);
+  stroke: var(--khaki);
+  stroke-width: 1.5;
+  transition: fill var(--dur-feedback) linear;
+}
+
+g[data-state="pass"] .lamp {
+  fill: var(--khaki);
+}
+
+g[data-state="stop"] .lamp {
+  fill: var(--lumen);
+  stroke: var(--lumen);
+}
+
+g[data-state="stop"] .siding {
+  stroke: var(--khaki-light);
+}
+
+g[data-state="stop"] .stopText {
+  fill: var(--cream);
+}
+
+.marker rect {
+  fill: var(--lumen);
+  filter: drop-shadow(0 0 10px var(--lumen));
+}
+
+.tray {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.token {
+  display: grid;
+  gap: 2px;
+  padding: 10px 12px 9px;
+  text-align: left;
+  border: var(--hair) solid var(--line);
+  background: var(--ground-deep);
+  touch-action: none;
+  user-select: none;
+  transition:
+    border-color var(--dur-feedback) linear,
+    transform var(--dur-feedback) var(--ease-snap);
+}
+
+.token code {
+  font-family: inherit;
+  font-size: var(--t-small);
+  font-weight: 650;
+  color: var(--cream);
+}
+
+.token span {
+  color: var(--muted);
+}
+
+.token[data-kind="utility"] {
+  border-left: 2px solid var(--khaki);
+}
+
+.token:hover,
+.token:focus-visible {
+  border-color: var(--khaki);
+}
+
+.token:active {
+  transform: scale(0.97);
+}
+
+.outcome {
+  display: grid;
+  gap: 4px;
+  min-height: 3.4em;
+  padding-top: var(--s3);
+  border-top: var(--hair) solid var(--line);
+}
+
+.outcome b {
+  color: var(--cream);
+  font-weight: 650;
+  font-size: var(--t-lead);
+}
+
+.ghost {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 9100;
+  padding: 8px 12px;
+  margin: -18px 0 0 -18px;
+  background: var(--khaki);
+  color: var(--ground);
+  pointer-events: none;
+  font-size: var(--t-small);
+  font-weight: 700;
+}
+
+.ghost code {
+  font-family: inherit;
+}
+
+.rules {
+  display: grid;
+  gap: var(--s3);
+}
+
+.rule {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.rule input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+
+.ruleBox {
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid var(--khaki);
+  display: grid;
+  place-items: center;
+}
+
+.rule input:checked + .ruleBox {
+  background: var(--khaki);
+  box-shadow: inset 0 0 0 3px var(--ground);
+}
+
+.rule input:focus-visible + .ruleBox {
+  outline: 2px solid var(--cream);
+  outline-offset: 3px;
+}
+
+.stepper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--s4);
+}
+
+.stepperCtl {
+  display: inline-flex;
+  align-items: center;
+  border: var(--hair) solid var(--line);
+}
+
+.stepperCtl button {
+  width: 34px;
+  height: 34px;
+  color: var(--cream);
+}
+
+.stepperCtl button:hover {
+  background: var(--surface);
+}
+
+.stepperCtl output {
+  min-width: 2.2em;
+  text-align: center;
+  color: var(--cream);
+}
+
+.clock {
+  display: grid;
+  gap: 8px;
+}
+
+.clock label {
+  display: flex;
+  justify-content: space-between;
+}
+
+.clock output {
+  color: var(--cream);
+}
+
+.clock input {
+  width: 100%;
+}
+
+@media (max-width: 960px) {
+  .yard {
+    max-height: 30svh;
+  }
+  .rules {
+    grid-template-columns: 1fr 1fr;
+    font-size: var(--t-small);
+  }
+}

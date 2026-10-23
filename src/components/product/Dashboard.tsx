@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type PointerEvent } from "react";
 import { COD, CUMULATIVE, DAILY, FAILURES, FLOWS, FUNNEL, HEALTH } from "@/data/dashboard";
 import { count, rupees } from "@/lib/economics";
+import { DeviceFrame } from "@/components/devices/DeviceFrame";
 import styles from "./Dashboard.module.css";
 
 const W = 560;
@@ -15,7 +16,7 @@ const useInView = <T extends Element>() => {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const io = new IntersectionObserver(([e]) => e.isIntersecting && (set(true), io.disconnect()), { threshold: 0.25 });
+    const io = new IntersectionObserver(([e]) => e.isIntersecting && (set(true), io.disconnect()), { threshold: 0.05 });
     io.observe(el);
     return () => io.disconnect();
   }, []);
@@ -185,6 +186,7 @@ export function Dashboard() {
         </h2>
       </div>
 
+      <DeviceFrame kind="laptop" label="The dashboard, on sample data" className={styles.device}>
       <div ref={ref} className={styles.console} data-in={inView ? "1" : "0"}>
         <div className={`${styles.panel} ${styles.funnel}`}>
           <h3 className={styles.panelTitle}>Live funnel, last 30 days</h3>
@@ -313,6 +315,8 @@ export function Dashboard() {
           <p className={styles.fine}>Messaging limit: {HEALTH.limit.toLowerCase()}.</p>
         </div>
       </div>
+
+      </DeviceFrame>
 
       <details className={styles.dataTable}>
         <summary>Chart data as a table</summary>

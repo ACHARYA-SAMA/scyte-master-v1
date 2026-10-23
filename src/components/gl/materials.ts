@@ -66,9 +66,9 @@ const brushedTexture = () => {
   if (ctx) {
     ctx.fillStyle = "rgb(128,128,255)";
     ctx.fillRect(0, 0, 256, 256);
-    for (let i = 0; i < 2200; i++) {
+    for (let i = 0; i < 900; i++) {
       const y = Math.random() * 256;
-      const a = 0.05 + Math.random() * 0.12;
+      const a = 0.02 + Math.random() * 0.05;
       ctx.strokeStyle = `rgba(${Math.random() > 0.5 ? 255 : 0},128,255,${a})`;
       ctx.beginPath();
       ctx.moveTo(0, y);

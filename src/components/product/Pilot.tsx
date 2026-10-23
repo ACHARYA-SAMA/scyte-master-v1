@@ -27,7 +27,7 @@ const PLANS = [
 
 export function Pilot() {
   return (
-    <section className={`on-paper ${styles.section}`} aria-labelledby="pilot-title">
+    <section className={`band ${styles.section}`} aria-labelledby="pilot-title">
       <div className={styles.head}>
         <h2 id="pilot-title" className={styles.title}>
           How a pilot runs
@@ -80,7 +80,7 @@ export function Pilot() {
       </div>
 
       <div className={styles.cta}>
-        <TransitionLink href="/contact#audit" className={styles.button} data-magnetic="0.2">
+        <TransitionLink href="/contact?intent=audit" className={styles.button} data-magnetic data-cursor="open">
           Book the 20-minute store audit
         </TransitionLink>
       </div>

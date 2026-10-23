@@ -1,14 +1,13 @@
 "use client";
 
-import { useRef, useState, type KeyboardEvent } from "react";
+import { useId, useRef, useState, type KeyboardEvent } from "react";
 import { PLAYBOOKS, type Playbook } from "@/data/playbooks";
-import { scroller } from "@/components/providers/SmoothScroll";
-import { ScrollTrigger, gsap, useGSAP, prefersReducedMotion } from "@/lib/motion";
+import { InteractivePhone } from "@/components/devices/InteractivePhone";
+import { SHOPPER_FLOWS } from "@/lib/chat/flows";
+import type { Flow } from "@/lib/chat/types";
+import { gsap, prefersReducedMotion, useGSAP } from "@/lib/motion";
 import { sfx } from "@/lib/sound";
-import { Phone } from "./Phone";
 import styles from "./Playbooks.module.css";
-
-const N = PLAYBOOKS.length;
 
 const CATEGORY: Record<Playbook["template"], string> = {
   utility: "Utility",
@@ -16,223 +15,200 @@ const CATEGORY: Record<Playbook["template"], string> = {
   "utility-then-marketing": "Utility, then marketing",
 };
 
-const ROUTES = [
-  { reason: "upi_timeout", fix: "One-tap retry link" },
-  { reason: "bank_decline", fix: "Switch to UPI" },
-  { reason: "insufficient_funds", fix: "Offer cash on delivery" },
-  { reason: "user_cancelled", fix: "Wait, then a single retry link" },
+/** Playbooks that have a working flow on the site run in a phone; the rest show their template. */
+const FLOWS: Partial<Record<string, Flow>> = {
+  "payment-failed": SHOPPER_FLOWS.PAYMENT_FAILED,
+  "cod-confirmation": SHOPPER_FLOWS.COD_CONFIRM,
+  "cart-recovery": SHOPPER_FLOWS.CART_RECOVERY,
+  "checkout-recovery": SHOPPER_FLOWS.CART_RECOVERY,
+  "back-in-stock": SHOPPER_FLOWS.BACK_IN_STOCK,
+  "post-purchase": SHOPPER_FLOWS.TRACKING,
+  "review-request": SHOPPER_FLOWS.REVIEW,
+};
+
+const GROUPS: { weight: Playbook["weight"]; title: string }[] = [
+  { weight: "wedge", title: "Where the money is" },
+  { weight: "core", title: "Recovery" },
+  { weight: "lifecycle", title: "After the order" },
 ];
 
-function Wedge({ p }: { p: Playbook }) {
-  if (p.id === "payment-failed") {
-    return (
-      <div className={styles.wedge}>
-        <p className={styles.wedgeTitle}>The gateway says why. We answer the reason, not the symptom.</p>
-        <ul className={styles.routes}>
-          {ROUTES.map((r) => (
-            <li key={r.reason}>
-              <code>{r.reason}</code>
-              <span className={styles.arrow} aria-hidden />
-              <span>{r.fix}</span>
-            </li>
+const ROUTES: Record<string, { when: string; then: string }[]> = {
+  "payment-failed": [
+    { when: "upi_timeout", then: "One-tap retry link" },
+    { when: "bank_decline", then: "Switch to another UPI app or card" },
+    { when: "insufficient_funds", then: "Offer cash on delivery" },
+    { when: "user_cancelled", then: "Wait, then a single retry link" },
+  ],
+  "cod-confirmation": [
+    { when: "Confirm", then: "Release for dispatch" },
+    { when: "Cancel", then: "No shipment, no return trip" },
+    { when: "No reply in 2 to 4 h", then: "One reminder" },
+  ],
+};
+
+/** The template as a spec: variables marked, buttons listed. */
+function Template({ p }: { p: Playbook }) {
+  const parts = p.message.split(/(\{[a-z]+\})/g);
+  return (
+    <figure className={styles.template}>
+      <figcaption className="t-hud">Template, {CATEGORY[p.template].toLowerCase()}</figcaption>
+      <p className={styles.message}>
+        {parts.map((part, i) =>
+          /^\{[a-z]+\}$/.test(part) ? (
+            <mark key={i} className={styles.var}>
+              {part}
+            </mark>
+          ) : (
+            <span key={i}>{part}</span>
+          ),
+        )}
+      </p>
+      {p.buttons.length ? (
+        <ul className={styles.buttons}>
+          {p.buttons.map((b) => (
+            <li key={b}>{b}</li>
           ))}
         </ul>
-        <p className={styles.fine}>Example routing. Rules are set per store and per gateway.</p>
-      </div>
-    );
-  }
-  return (
-    <div className={styles.wedge}>
-      <p className={styles.wedgeTitle}>Confirm before dispatch, so a refused parcel never leaves the warehouse.</p>
-      <ul className={styles.routes}>
-        <li>
-          <code>Confirm</code>
-          <span className={styles.arrow} aria-hidden />
-          <span>Ship it</span>
-        </li>
-        <li>
-          <code>Cancel</code>
-          <span className={styles.arrow} aria-hidden />
-          <span>No shipment, no return-to-origin</span>
-        </li>
-        <li>
-          <code>No reply in 2 to 4 h</code>
-          <span className={styles.arrow} aria-hidden />
-          <span>One reminder</span>
-        </li>
-      </ul>
-    </div>
+      ) : null}
+    </figure>
   );
 }
 
+/**
+ * Ten playbooks as a navigable system: grouped by where the money is, the two wedges
+ * first and largest. Arrow keys move through them; the selected one opens its trigger,
+ * timing, goal, event chain and a working phone where the site has one.
+ */
 export function Playbooks() {
+  const tabsId = useId();
   const root = useRef<HTMLElement>(null);
-  const list = useRef<HTMLDivElement>(null);
-  const st = useRef<ScrollTrigger | null>(null);
   const [index, setIndex] = useState(0);
-  const p = PLAYBOOKS[index];
+  const ordered = GROUPS.flatMap((g) => PLAYBOOKS.filter((p) => p.weight === g.weight));
+  const p = ordered[index];
+  const flow = FLOWS[p.id];
+  const routes = ROUTES[p.id];
 
   useGSAP(
     () => {
-      const el = root.current;
-      if (!el) return;
-      let last = 0;
-      st.current = ScrollTrigger.create({
-        trigger: el.querySelector("[data-track]"),
-        start: "top top",
-        end: "bottom bottom",
-        onUpdate: (self) => {
-          const i = Math.min(N - 1, Math.floor(self.progress * N));
-          if (i !== last) {
-            last = i;
-            setIndex(i);
-            sfx.lock();
-          }
-        },
-      });
-    },
-    { scope: root },
-  );
-
-  // Move the list so the selected item sits inside the lens.
-  useGSAP(
-    () => {
-      const l = list.current;
-      if (!l) return;
-      const item = l.querySelector<HTMLElement>(`[data-i="${index}"]`);
-      if (!item) return;
-      const lens = l.parentElement!.getBoundingClientRect();
-      const y = -(item.offsetTop + item.offsetHeight / 2 - lens.height / 2);
-      const d = prefersReducedMotion() ? 0 : 0.6;
-      gsap.to(l, { y, duration: d, ease: "latch", overwrite: true });
-      // the lens clamps to the height of whatever it has locked onto
-      gsap.to(root.current!.querySelector("[data-lens]"), { height: item.offsetHeight + 10, duration: d, ease: "latch" });
-      if (!prefersReducedMotion()) {
-        gsap.fromTo(
-          root.current!.querySelectorAll("[data-detail] > *"),
-          { y: 16, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.45, ease: "glide", stagger: 0.04, overwrite: true },
-        );
-      }
+      if (prefersReducedMotion()) return;
+      gsap.fromTo(root.current!.querySelectorAll("[data-detail] > *"), { y: 14, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "glide", stagger: 0.05, overwrite: true });
     },
     { dependencies: [index], scope: root },
   );
 
   const select = (i: number) => {
-    const t = st.current;
-    if (!t) return setIndex(i);
-    const y = t.start + ((t.end - t.start) * (i + 0.5)) / N;
-    if (scroller.lenis) scroller.lenis.scrollTo(y, { duration: 0.9 });
-    else window.scrollTo({ top: y, behavior: "smooth" });
+    setIndex(i);
+    sfx.lock();
   };
 
   const onKey = (e: KeyboardEvent) => {
-    if (e.key === "ArrowDown" || e.key === "ArrowRight") {
-      e.preventDefault();
-      select(Math.min(N - 1, index + 1));
-    }
-    if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
-      e.preventDefault();
-      select(Math.max(0, index - 1));
-    }
+    const next = e.key === "ArrowDown" || e.key === "ArrowRight" ? 1 : e.key === "ArrowUp" || e.key === "ArrowLeft" ? -1 : 0;
+    if (!next) return;
+    e.preventDefault();
+    const i = (index + next + ordered.length) % ordered.length;
+    select(i);
+    root.current?.querySelector<HTMLElement>(`[data-i="${i}"]`)?.focus();
   };
 
-  return (
-    <section ref={root} className={styles.section} aria-labelledby="playbooks-title">
-      <div className={styles.track} data-track>
-        <div className={styles.sticky}>
-          <h2 id="playbooks-title" className={styles.heading}>
-            Ten playbooks. Two of them pay for the rest.
-          </h2>
+  const indexOf = new Map(ordered.map((x, i) => [x.id, i]));
 
-          <div className={styles.lensCol}>
-            <div className={styles.lens} data-lens aria-hidden>
-              <i />
-              <i />
-              <i />
-              <i />
-            </div>
-            <div className={styles.listWindow}>
-              <div
-                ref={list}
-                className={styles.list}
-                role="tablist"
-                aria-orientation="vertical"
-                aria-label="Playbooks"
-                onKeyDown={onKey}
-              >
-                {PLAYBOOKS.map((pb, i) => (
+  return (
+    <section ref={root} id="playbooks" className={styles.section} aria-labelledby="playbooks-title">
+      <header className={styles.head}>
+        <p className="t-hud c-khaki">Playbooks</p>
+        <h2 id="playbooks-title" className={styles.title}>
+          Ten playbooks. Two of them pay for the rest.
+        </h2>
+        <p className={styles.lede}>
+          Payment failures and cash on delivery are where Indian stores lose the most, and where generic tools are thinnest. They get
+          the most room here, and in a pilot.
+        </p>
+      </header>
+
+      <div className={styles.grid}>
+        <div className={styles.list} role="tablist" aria-orientation="vertical" aria-label="Playbooks" onKeyDown={onKey}>
+          {GROUPS.map((g) => (
+            <div key={g.weight} className={styles.group} data-weight={g.weight}>
+              <p className={`${styles.groupTitle} t-hud`}>{g.title}</p>
+              {PLAYBOOKS.filter((x) => x.weight === g.weight).map((x) => {
+                const i = indexOf.get(x.id) ?? 0;
+                const on = i === index;
+                return (
                   <button
-                    key={pb.id}
+                    key={x.id}
                     type="button"
                     role="tab"
-                    id={`pb-tab-${pb.id}`}
-                    aria-selected={i === index}
-                    aria-controls="pb-panel"
-                    tabIndex={i === index ? 0 : -1}
+                    id={`${tabsId}-${x.id}`}
+                    aria-selected={on}
+                    aria-controls={`${tabsId}-panel`}
+                    tabIndex={on ? 0 : -1}
                     data-i={i}
-                    data-weight={pb.weight}
-                    className={styles.item}
+                    className={styles.tab}
+                    data-weight={x.weight}
                     onClick={() => select(i)}
+                    data-cursor="open"
                   >
-                    <span className={styles.itemName}>{pb.name}</span>
-                    {pb.weight === "wedge" ? <span className={styles.badge}>The wedge</span> : null}
+                    <span className={styles.tabName}>{x.name}</span>
+                    <span className={`${styles.tabGoal} t-hud`}>{x.goal}</span>
+                    {on ? <span className={styles.lens} aria-hidden /> : null}
                   </button>
-                ))}
-              </div>
+                );
+              })}
             </div>
-          </div>
+          ))}
+        </div>
 
-          <div
-            className={styles.detail}
-            id="pb-panel"
-            role="tabpanel"
-            aria-labelledby={`pb-tab-${p.id}`}
-            data-detail
-            data-weight={p.weight}
-          >
-            <h3 className={styles.name}>{p.name}</h3>
-            <p className={styles.line}>{p.line}</p>
-            <dl className={styles.facts}>
-              <div>
-                <dt>Trigger</dt>
-                <dd>{p.trigger}</dd>
-              </div>
-              <div>
-                <dt>Timing</dt>
-                <dd>{p.timing}</dd>
-              </div>
-              <div>
-                <dt>Template</dt>
-                <dd>{CATEGORY[p.template]}</dd>
-              </div>
-              <div>
-                <dt>Goal metric</dt>
-                <dd>{p.goal}</dd>
-              </div>
-            </dl>
-            <ol className={styles.chain} aria-label="Event chain">
-              {p.events.map((e) => (
-                <li key={e}>
-                  <code>{e}</code>
-                </li>
-              ))}
-            </ol>
-            {p.weight === "wedge" ? <Wedge p={p} /> : null}
-          </div>
+        <div id={`${tabsId}-panel`} role="tabpanel" aria-labelledby={`${tabsId}-${p.id}`} className={styles.detail} data-detail>
+          <h3 className={styles.name}>{p.name}</h3>
+          <p className={styles.line}>{p.line}</p>
+          <dl className={styles.spec}>
+            <div>
+              <dt className="t-hud">Trigger</dt>
+              <dd>{p.trigger}</dd>
+            </div>
+            <div>
+              <dt className="t-hud">Timing</dt>
+              <dd>{p.timing}</dd>
+            </div>
+            <div>
+              <dt className="t-hud">Category</dt>
+              <dd>{CATEGORY[p.template]}</dd>
+            </div>
+            <div>
+              <dt className="t-hud">Measured by</dt>
+              <dd>{p.goal}</dd>
+            </div>
+          </dl>
+          <ol className={styles.chain} aria-label="Event chain">
+            {p.events.map((e) => (
+              <li key={e}>
+                <code>{e}</code>
+              </li>
+            ))}
+          </ol>
+          {routes ? (
+            <table className={styles.routes}>
+              <caption className="t-hud">Routing, by example</caption>
+              <tbody>
+                {routes.map((r) => (
+                  <tr key={r.when}>
+                    <th scope="row">
+                      <code>{r.when}</code>
+                    </th>
+                    <td>{r.then}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : null}
+        </div>
 
-          <div className={styles.phone}>
-            <Phone
-              brand="Your store"
-              time="15:05"
-              label={`Sample ${p.name} message`}
-              messages={[
-                { id: "d", from: "system", text: "Today" },
-                { id: p.id, from: "brand", tag: CATEGORY[p.template], text: p.message, time: "15:05", buttons: p.buttons },
-              ]}
-            />
-            <p className={styles.fine}>Sample copy. Variables in braces fill from the shopper&rsquo;s own data.</p>
-          </div>
+        <div className={styles.device}>
+          {flow ? (
+            <InteractivePhone key={p.id} flow={flow} active label={`Demo chat: ${p.name}`} />
+          ) : (
+            <Template p={p} />
+          )}
         </div>
       </div>
     </section>

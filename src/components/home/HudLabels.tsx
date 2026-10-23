@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { readAnchor } from "@/components/gl/anchors";
-import { gl, ui } from "@/lib/store";
+import { gl, ui, type SceneKey } from "@/lib/store";
 import styles from "./HudLabels.module.css";
 
 export type HudLabel = {
@@ -23,9 +23,12 @@ export function HudLabels({
   labels,
   chapter,
   avoid,
+  scene = "home",
 }: {
   labels: HudLabel[];
   chapter: number;
+  /** the scene whose anchors these are */
+  scene?: SceneKey;
   /** screen regions labels must stay out of, such as the copy column */
   avoid?: (x: number, y: number, w: number, h: number) => boolean;
 }) {
@@ -35,7 +38,7 @@ export function HudLabels({
     let raf = 0;
     const loop = () => {
       raf = requestAnimationFrame(loop);
-      const live = gl.get().scene === "home" && ui.get().webgl === "ready";
+      const live = gl.get().scene === scene && gl.get().visible && ui.get().webgl === "ready";
       labels.forEach((l, i) => {
         const el = refs.current[i];
         if (!el) return;
@@ -48,7 +51,7 @@ export function HudLabels({
     };
     loop();
     return () => cancelAnimationFrame(raf);
-  }, [labels, chapter, avoid]);
+  }, [labels, chapter, avoid, scene]);
 
   return (
     <div className={styles.layer} aria-hidden>

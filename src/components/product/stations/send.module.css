@@ -1,0 +1,72 @@
+.bank {
+  position: relative;
+  height: 100%;
+  perspective: 2200px;
+  transform-style: preserve-3d;
+}
+
+/* phones on an arc: the focused one front and centre, the rest turning away */
+.slot {
+  --o: 0;
+  --a: 0;
+  --pw: min(300px, 19vw, 40svh);
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+  transform: translate(-50%, -50%) translateX(calc(var(--o) * var(--pw) * 0.62)) translateZ(calc(var(--a) * -160px)) rotateY(calc(var(--o) * -18deg));
+  transition:
+    transform var(--dur-hud) var(--ease-snap),
+    opacity var(--dur-panel) linear,
+    filter var(--dur-panel) linear;
+  opacity: calc(1 - var(--a) * 0.16);
+  z-index: calc(10 - var(--a));
+}
+
+.slot:not([data-focus]) {
+  filter: brightness(0.72);
+  cursor: pointer;
+}
+
+.slot > div {
+  --pw: inherit;
+}
+
+.tag {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.slot[data-focus] .tag span:first-child {
+  color: var(--lumen);
+}
+
+@media (max-width: 960px) {
+  .bank {
+    perspective: none;
+    display: flex;
+    gap: var(--s4);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: var(--s2);
+    scrollbar-width: none;
+  }
+  .slot {
+    position: relative;
+    left: auto;
+    top: auto;
+    flex: 0 0 auto;
+    transform: none;
+    opacity: 1;
+    filter: none;
+    scroll-snap-align: center;
+  }
+  .slot {
+    --pw: min(260px, 66vw, 46svh);
+  }
+}

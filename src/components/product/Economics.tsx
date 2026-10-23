@@ -202,7 +202,7 @@ export function Economics() {
           If the lift isn&rsquo;t real, you shouldn&rsquo;t pay for it.
         </h2>
         <p className={styles.lede}>
-          The example brand from our report, made adjustable. Two things the report&rsquo;s simple version leaves out
+          The example brand from our business model, made adjustable. Two things the simple version leaves out
           are built in: you keep margin, not revenue, and the holdout comes out of the people you could have messaged.
           Replace every number with your own.
         </p>
@@ -219,7 +219,7 @@ export function Economics() {
             </fieldset>
           ))}
           <button type="button" className={styles.reset} onClick={() => setInputs(REPORT_CASE)}>
-            Reset to the report&rsquo;s example
+            Reset to the example brand
           </button>
         </form>
 
@@ -229,7 +229,7 @@ export function Economics() {
               On margin
             </button>
             <button type="button" role="radio" aria-checked={view === "revenue"} onClick={() => setView("revenue")}>
-              On revenue, as in the report
+              On revenue, the simple version
             </button>
           </div>
 
@@ -284,7 +284,7 @@ export function Economics() {
           </dl>
 
           <p className={styles.reportCase}>
-            The report&rsquo;s own example, on revenue and before any holdout: {rupees(report.netRevenue)} net, roughly 3×
+            The simple version, on revenue and before any holdout: {rupees(report.netRevenue)} net, roughly 3×
             the spend.
           </p>
 
