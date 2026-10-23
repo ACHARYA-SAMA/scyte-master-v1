@@ -251,3 +251,19 @@
     transform: scaleX(1);
   }
 }
+
+/* no price or timeline until the client confirms them: a designed state, not a gap */
+.scoped {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--cream);
+}
+
+.scoped::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  background: currentColor;
+  opacity: 0.6;
+}

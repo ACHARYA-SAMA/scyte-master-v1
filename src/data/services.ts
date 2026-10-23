@@ -7,6 +7,9 @@ export type Service = {
   name: string;
   line: string;
   promises: string[];
+  /** filled in only when the client confirms them; until then the page says "Scoped on a call" */
+  timeline?: string;
+  from?: string;
 };
 
 export const SERVICES: Service[] = [

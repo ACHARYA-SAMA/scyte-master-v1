@@ -176,7 +176,8 @@ export function InstrumentFrame() {
         <svg viewBox="0 0 76 40" className={styles.fan} aria-hidden>
           {SLOTS.map((s) => {
             const a = ((-38 + (76 / 5) * s.i) * Math.PI) / 180;
-            return <line key={s.href} x1={38} y1={36} x2={38 + Math.sin(a) * 30} y2={36 - Math.cos(a) * 30} />;
+            // rounded, so the server and the browser print the same number
+            return <line key={s.href} x1={38} y1={36} x2={+(38 + Math.sin(a) * 30).toFixed(2)} y2={+(36 - Math.cos(a) * 30).toFixed(2)} />;
           })}
           <circle cx={38} cy={36} r={2} />
         </svg>
@@ -187,7 +188,7 @@ export function InstrumentFrame() {
               key={s.href}
               type="button"
               className={styles.node}
-              style={{ "--x": `${((38 + Math.sin(a) * 30) / 76) * 100}%`, "--y": `${((36 - Math.cos(a) * 30) / 40) * 100}%` } as CSSProperties}
+              style={{ "--x": `${(((38 + Math.sin(a) * 30) / 76) * 100).toFixed(2)}%`, "--y": `${(((36 - Math.cos(a) * 30) / 40) * 100).toFixed(2)}%` } as CSSProperties}
               data-here={s.i === here ? "1" : undefined}
               data-seen={seen.includes(s.href) ? "1" : undefined}
               onClick={() => (s.i === here ? undefined : travelTo(s.i))}

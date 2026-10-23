@@ -1,0 +1,619 @@
+/* S3, the Laptop: pinned while its store scrolls */
+.section {
+  position: relative;
+  height: 340svh;
+  background:
+    radial-gradient(ellipse 50% 60% at 62% 52%, rgb(43 58 47 / 0.5), transparent 70%),
+    var(--ground-deep);
+  border-top: var(--hair) solid var(--line);
+}
+
+.sticky {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  display: grid;
+  grid-template-columns: minmax(0, 2.6fr) minmax(0, 9.4fr);
+  gap: var(--gutter);
+  padding: calc(var(--nav-h) + 16px) calc(var(--margin) + 64px) 104px var(--margin);
+  overflow: clip;
+}
+
+.copy {
+  display: grid;
+  align-content: center;
+  gap: var(--s4);
+  min-width: 0;
+}
+
+.kicker {
+  color: var(--khaki);
+}
+
+.title {
+  font-size: clamp(1.9rem, 1rem + 2.1vw, 3.4rem);
+  line-height: 0.92;
+  font-weight: 820;
+  font-stretch: 70%;
+  letter-spacing: -0.03em;
+  color: var(--cream);
+  text-wrap: balance;
+}
+
+.lede {
+  font-size: var(--t-small);
+  line-height: 1.5;
+  color: var(--khaki-light);
+}
+
+.note {
+  color: var(--muted);
+}
+
+.stage {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* ------------------------------------------------------------- windows, inside the screen */
+.win {
+  position: absolute;
+  z-index: 10;
+  width: 360px;
+  background: rgb(20 31 23 / 0.96);
+  border: 1px solid #3d5243;
+  border-radius: 12px;
+  box-shadow: 0 28px 60px -24px rgb(0 0 0 / 0.85);
+  color: var(--khaki-light);
+  font-size: 14px;
+  transition:
+    opacity 220ms linear,
+    transform 260ms var(--ease-glide);
+}
+
+.win[data-wide="1"] {
+  width: 380px;
+}
+
+.win[data-open="0"] {
+  opacity: 0;
+  transform: scale(0.94) translateY(16px);
+  pointer-events: none;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 34px;
+  padding: 0 12px;
+  border-bottom: 1px solid #2b3a2f;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+}
+
+.bar:active {
+  cursor: grabbing;
+}
+
+.lights {
+  display: flex;
+  gap: 7px;
+}
+
+.lights button,
+.lights i {
+  width: 12px;
+  height: 12px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: #4a5f4f;
+}
+
+.lights button {
+  background: var(--khaki);
+  cursor: pointer;
+}
+
+.winTitle {
+  color: var(--cream);
+  font-weight: 650;
+}
+
+.winBody {
+  display: grid;
+  gap: 14px;
+  padding: 14px;
+}
+
+.knobs {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.swatches {
+  display: flex;
+  gap: 8px;
+}
+
+.swatches button {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid #3d5243;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.swatches button[aria-checked="true"] {
+  outline: 2px solid var(--lumen);
+  outline-offset: 2px;
+}
+
+.winBtn {
+  justify-self: start;
+  padding: 8px 12px;
+  border: 1px solid #3d5243;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--cream);
+  font: inherit;
+  cursor: pointer;
+}
+
+.winBtn:hover {
+  border-color: var(--lumen);
+}
+
+.code {
+  margin: 0;
+  font-family: inherit;
+  font-size: 13.5px;
+  line-height: 1.6;
+  font-stretch: 86%;
+  white-space: pre;
+  color: var(--khaki-light);
+}
+
+.c {
+  color: var(--muted);
+}
+
+.k {
+  color: var(--cream);
+  font-weight: 700;
+}
+
+.p {
+  color: var(--khaki);
+}
+
+.v {
+  padding: 0 2px;
+  color: var(--lumen);
+  transition: background-color 600ms linear;
+}
+
+.v[data-flash="1"] {
+  background: color-mix(in srgb, var(--lumen) 30%, transparent);
+  transition: none;
+}
+
+.sim {
+  justify-self: start;
+  padding: 2px 8px;
+  border: 1px dashed var(--khaki);
+  color: var(--khaki);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.log {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 13px;
+}
+
+.log li {
+  animation: line 260ms var(--ease-glide) both;
+}
+
+.log li:last-child {
+  color: var(--lumen);
+}
+
+@keyframes line {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+}
+
+.spark {
+  width: 100%;
+  height: 70px;
+  overflow: visible;
+}
+
+.spark polyline {
+  fill: none;
+  stroke: var(--lumen);
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+
+.small {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* ------------------------------------------------------------- the store */
+.inner {
+  --sy: 0;
+}
+
+.store {
+  position: relative;
+  min-height: 100%;
+  background: var(--m-bg);
+  color: var(--m-ink);
+  font-size: 16px;
+  transition:
+    background-color 500ms linear,
+    color 500ms linear;
+}
+
+.sHead {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  height: 64px;
+  padding: 0 48px;
+  background: color-mix(in srgb, var(--m-bg) 92%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--m-ink) 14%, transparent);
+  backdrop-filter: blur(8px);
+}
+
+.sLogo {
+  font-size: 20px;
+  font-weight: 860;
+  font-stretch: 70%;
+  letter-spacing: -0.02em;
+}
+
+.sHead nav {
+  display: flex;
+  gap: 28px;
+  color: var(--m-soft);
+}
+
+.sCart {
+  margin-left: auto;
+  padding: 8px 14px;
+  border: 1px solid var(--m-ink);
+  font-weight: 650;
+}
+
+.sCart:not([data-n="0"]) {
+  background: var(--m-accent);
+  color: var(--m-on);
+}
+
+.sHero {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  align-items: center;
+  gap: 48px;
+  min-height: 640px;
+  padding: 64px 48px;
+  overflow: clip;
+}
+
+.sKicker {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--m-soft);
+}
+
+.sTitle {
+  display: grid;
+  margin: 12px 0 20px;
+  font-size: 112px;
+  line-height: 0.86;
+  font-weight: var(--m-weight);
+  font-stretch: var(--m-width);
+  letter-spacing: -0.035em;
+  transition:
+    font-weight 400ms var(--ease-glide),
+    font-stretch 400ms var(--ease-glide);
+}
+
+.sMask {
+  display: block;
+  overflow: clip;
+  padding-bottom: 0.05em;
+}
+
+.sMask > span {
+  display: inline-block;
+}
+
+.sLede {
+  max-width: 38ch;
+  font-size: 18px;
+  line-height: 1.5;
+  color: var(--m-soft);
+}
+
+.sCta {
+  display: inline-block;
+  margin-top: 28px;
+  padding: 16px 22px;
+  background: var(--m-accent);
+  color: var(--m-on);
+  font-weight: 700;
+}
+
+/* the art drifts against the scroll: parallax inside the screen */
+.sArt {
+  position: relative;
+  height: 520px;
+}
+
+.sArtBack,
+.sArtFront {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  border-radius: 6px;
+}
+
+.sArtBack {
+  inset: 0 0 60px 80px;
+  background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--m-ink) 10%, transparent) 0 2px, transparent 2px 14px), var(--m-card);
+  transform: translateY(calc(var(--sy) * 0.18px));
+}
+
+.sArtFront {
+  inset: 120px 120px 0 0;
+  background: linear-gradient(160deg, color-mix(in srgb, var(--m-accent) 82%, var(--m-bg)), color-mix(in srgb, var(--m-accent) 55%, var(--m-bg)));
+  transform: translateY(calc(var(--sy) * -0.12px));
+}
+
+.sBelt {
+  display: flex;
+  gap: 48px;
+  padding: 16px 0;
+  overflow: hidden;
+  white-space: nowrap;
+  background: var(--m-accent);
+  color: var(--m-on);
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.sBelt span {
+  animation: belt calc(18s / var(--m-speed)) linear infinite;
+}
+
+@keyframes belt {
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+.sGrid {
+  padding: 72px 48px 40px;
+}
+
+.sH {
+  margin: 0 0 24px;
+  font-size: 40px;
+  font-weight: 800;
+  font-stretch: 74%;
+  letter-spacing: -0.02em;
+}
+
+.sCards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.sCard {
+  opacity: 0;
+  transform: translateY(40px);
+  transition:
+    opacity calc(600ms / var(--m-speed)) linear,
+    transform calc(700ms / var(--m-speed)) var(--ease-glide);
+  transition-delay: calc(var(--i) * 60ms / var(--m-speed));
+}
+
+.sCard[data-in="1"] {
+  opacity: 1;
+  transform: none;
+}
+
+.sGarment {
+  width: 78%;
+  height: auto;
+  filter: drop-shadow(0 18px 18px rgb(0 0 0 / 0.18));
+}
+
+.sImg {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 4 / 5;
+  margin-bottom: 12px;
+  background: var(--m-card);
+  border-radius: 4px;
+}
+
+.sImg[data-tone="1"] {
+  background: color-mix(in srgb, var(--m-accent) 40%, var(--m-card));
+}
+
+.sImg[data-tone="2"] {
+  background: repeating-linear-gradient(90deg, color-mix(in srgb, var(--m-ink) 8%, transparent) 0 1px, transparent 1px 10px), var(--m-card);
+}
+
+.sCard p {
+  display: flex;
+  justify-content: space-between;
+  font-size: 17px;
+}
+
+.sProduct {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 48px;
+  padding: 72px 48px;
+  border-top: 1px solid color-mix(in srgb, var(--m-ink) 14%, transparent);
+}
+
+.sGallery {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 12px;
+  height: 560px;
+}
+
+.sGallery span {
+  display: grid;
+  place-items: center;
+  border-radius: 4px;
+  background: var(--m-card);
+}
+
+.sGallery span:first-child {
+  grid-row: 1 / -1;
+  background: linear-gradient(160deg, var(--m-accent), color-mix(in srgb, var(--m-accent) 60%, var(--m-bg)));
+}
+
+.sBuy {
+  display: grid;
+  align-content: start;
+  gap: 16px;
+}
+
+.sName {
+  margin: 0;
+  font-size: 48px;
+  line-height: 0.95;
+  font-weight: 820;
+  font-stretch: 72%;
+}
+
+.sPrice {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.sSizes {
+  display: flex;
+  gap: 10px;
+}
+
+.sSizes button {
+  width: 56px;
+  height: 48px;
+  border: 1px solid var(--m-ink);
+  background: transparent;
+  color: var(--m-ink);
+  font: inherit;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.sSizes button[data-on="1"] {
+  background: var(--m-ink);
+  color: var(--m-bg);
+}
+
+.sAdd {
+  padding: 18px;
+  border: 0;
+  background: var(--m-accent);
+  color: var(--m-on);
+  font: inherit;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.sAdd:active {
+  transform: scale(0.98);
+}
+
+.sNote {
+  color: var(--m-soft);
+  font-size: 14px;
+}
+
+.sFoot {
+  padding: 40px 48px 140px;
+  border-top: 1px solid color-mix(in srgb, var(--m-ink) 14%, transparent);
+  color: var(--m-soft);
+  font-size: 14px;
+}
+
+/* the grid switch: twelve columns over the page, the way a designer checks it */
+.sOverlay {
+  position: absolute;
+  inset: 0 48px;
+  z-index: 4;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 24px;
+  pointer-events: none;
+}
+
+.sOverlay span {
+  background: color-mix(in srgb, #f9dc7d 12%, transparent);
+  border-inline: 1px solid color-mix(in srgb, #f9dc7d 40%, transparent);
+}
+
+@media (max-width: 960px) {
+  .section {
+    height: auto;
+  }
+  .sticky {
+    position: relative;
+    height: auto;
+    grid-template-columns: minmax(0, 1fr);
+    padding: var(--s9) var(--margin) var(--s8);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sBelt span {
+    animation: none;
+  }
+  .sCard {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

@@ -8,7 +8,7 @@ import { SERVICES } from "@/data/services";
 import { useRunningLight } from "@/lib/useRunningLight";
 import { Bleed } from "@/components/brand/Bleed";
 import { Assembly } from "./Assembly";
-import { WebsiteBench } from "./WebsiteBench";
+import { StudioLaptop } from "./laptop/StudioLaptop";
 import { AppPrototype } from "./AppPrototype";
 import { SocialBench } from "./SocialBench";
 import { HowWeWork } from "./HowWeWork";
@@ -31,7 +31,7 @@ export function Studio() {
       () => [
         { id: "top", label: "What we do", target: "studio-top" },
         { id: "assembly", label: "The assembly", target: "assembly" },
-        { id: "website", label: "Websites", target: "bench-website" },
+        { id: "website", label: "Websites", target: "website" },
         { id: "apps", label: "Mobile apps", target: "bench-apps" },
         { id: "social", label: "Social media", target: "bench-social" },
         { id: "process", label: "How we work", target: "process" },
@@ -64,15 +64,17 @@ export function Studio() {
         <Assembly />
       </Suspense>
 
+      <StudioLaptop />
+
       <section className={styles.benches} aria-labelledby="benches-title">
         <header className={styles.benchesHead}>
           <h2 id="benches-title" className={styles.h2}>
-            Three workbenches. Use them.
+            Two more workbenches. Use them.
           </h2>
           <p className={styles.lede}>Every control below is live. The demo store is fictional; the work it stands for is ours.</p>
         </header>
 
-        {(["website", "apps", "social"] as const).map((id) => (
+        {(["apps", "social"] as const).map((id) => (
           <article key={id} id={`bench-${id}`} className={styles.benchBlock} aria-labelledby={`bench-${id}-title`}>
             <header className={styles.benchHead}>
               <span className={styles.bn}>{BENCH_COPY[id].n}</span>
@@ -82,7 +84,6 @@ export function Studio() {
               <p className={styles.benchLine}>{BENCH_COPY[id].line}</p>
             </header>
             {/* each bench hydrates and commits on its own */}
-            <Suspense fallback={null}>{id === "website" ? <WebsiteBench /> : null}</Suspense>
             {id === "apps" ? (
               <div className={bench.bench} id="apps">
                 <div className={bench.appNotes}>
@@ -129,15 +130,11 @@ export function Studio() {
               <dl className={styles.terms}>
                 <div>
                   <dt className="t-hud">Typical timeline</dt>
-                  <dd>
-                    <span className="fill">[CONFIRM]</span>
-                  </dd>
+                  <dd>{s.timeline ?? <span className={styles.scoped}>Scoped on a call</span>}</dd>
                 </div>
                 <div>
                   <dt className="t-hud">From</dt>
-                  <dd>
-                    <span className="fill">[CONFIRM: ₹]</span>
-                  </dd>
+                  <dd>{s.from ?? <span className={styles.scoped}>Quoted after the call</span>}</dd>
                 </div>
               </dl>
               <TransitionLink href={`/contact?service=${s.id}`} className={`${styles.start} cta`} data-magnetic data-cursor="open">
