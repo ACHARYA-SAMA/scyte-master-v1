@@ -7,6 +7,12 @@ import { gsap, ScrollTrigger, prefersReducedMotion, registerMotion } from "@/lib
 /** The single Lenis instance. Read it, never construct another. */
 export const scroller: { lenis: Lenis | null } = { lenis: null };
 
+/** Glide the page to a y, through Lenis when it runs; native scrolling otherwise. */
+export const scrollToY = (y: number, duration = 1.1) => {
+  if (scroller.lenis) scroller.lenis.scrollTo(y, { duration, force: true });
+  else window.scrollTo({ top: y, behavior: prefersReducedMotion() ? "auto" : "smooth" });
+};
+
 export const scrollToTop = () => {
   if (scroller.lenis) scroller.lenis.scrollTo(0, { immediate: true, force: true });
   else window.scrollTo(0, 0);

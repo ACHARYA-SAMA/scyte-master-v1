@@ -1,0 +1,123 @@
+.rail {
+  display: grid;
+  align-content: start;
+  gap: var(--s4);
+  min-width: 0;
+}
+
+.group {
+  display: grid;
+  gap: 2px;
+}
+
+.groupTitle {
+  padding-bottom: 6px;
+  color: var(--khaki);
+}
+
+.items {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  position: relative;
+  display: grid;
+  gap: 1px;
+  width: 100%;
+  padding: 7px 0 8px 14px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    color var(--dur-ui) linear,
+    padding var(--dur-panel) var(--ease-glide);
+}
+
+/* the hairline every item sits on; the current one's segment fills as you scroll */
+.item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--line);
+}
+
+.name {
+  font-size: var(--t-small);
+  font-weight: 560;
+  line-height: 1.25;
+}
+
+.detail {
+  color: var(--muted);
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition:
+    opacity var(--dur-ui) linear,
+    max-height var(--dur-panel) var(--ease-glide);
+}
+
+.bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  overflow: hidden;
+}
+
+.bar span {
+  position: absolute;
+  inset: 0;
+  background: var(--lumen);
+  transform: scaleY(0);
+  transform-origin: 50% 0;
+}
+
+.item:hover,
+.item:focus-visible {
+  color: var(--cream);
+}
+
+.item[data-past="1"] {
+  color: var(--khaki-light);
+}
+
+.item[data-past="1"] .bar span {
+  transform: none;
+  background: var(--khaki);
+}
+
+.item[data-on="1"] {
+  padding-left: 22px;
+  color: var(--cream);
+}
+
+.item[data-on="1"] .name {
+  font-weight: 700;
+}
+
+.item[data-on="1"] .detail {
+  opacity: 1;
+  max-height: 2em;
+}
+
+.item[data-on="1"] .bar span {
+  transform: scaleY(var(--local, 0));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .item,
+  .detail {
+    transition: none;
+  }
+}

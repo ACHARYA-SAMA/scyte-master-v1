@@ -290,3 +290,44 @@ export const REVIEW: Flow = {
 };
 
 export const SHOPPER_FLOWS = { PAYMENT_FAILED, COD_CONFIRM, CART_RECOVERY, BACK_IN_STOCK, TRACKING, REVIEW };
+
+/** Sample values for a template's {variables}: the same fictional shopper as every flow. */
+const SAMPLE_VARS: Record<string, string> = { name: "Aarav", amount: "1,499", product: "Heavyweight hoodie", size: "M", order: "DS1042" };
+
+/**
+ * A one-message flow from a playbook's template, for the playbooks the site has no
+ * full conversation for: the template as the shopper would get it, its buttons as
+ * replies, and STOP honoured like everywhere else.
+ */
+export const templateFlow = (p: { id: string; name: string; message: string; buttons: string[] }): Flow => {
+  const text = p.message.replace(/\{([a-z]+)\}/g, (_, k: string) => SAMPLE_VARS[k] ?? k);
+  return {
+    id: `template-${p.id}`,
+    business: STORE,
+    notification: `${STORE}: ${text}`,
+    start: "open",
+    router,
+    fallback: "passed",
+    nodes: {
+      ...common,
+      open: {
+        id: "open",
+        bot: [
+          {
+            kind: "text",
+            text,
+            actions: [...p.buttons.map((b, i) => ({ label: b, to: "tapped", tone: i === 0 ? ("primary" as const) : undefined })), { label: "Stop messages", to: "stop" }],
+          },
+        ],
+        events: [`message_sent {template: ${p.id.replace(/-/g, "_")}}`],
+      },
+      tapped: {
+        id: "tapped",
+        bot: [{ kind: "text", text: "Done. In a real store this opens the right page, with the cart or the product already there." }],
+        events: ["message_clicked", "session_started {source: whatsapp}"],
+        outcome: "sent",
+        end: true,
+      },
+    },
+  };
+};
