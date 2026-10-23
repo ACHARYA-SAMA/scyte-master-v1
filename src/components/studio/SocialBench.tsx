@@ -1,6 +1,7 @@
 "use client";
 
-import { useId, useState, type CSSProperties } from "react";
+import { useId, useRef, useState, type CSSProperties } from "react";
+import { useIdleDemo } from "@/lib/useIdleDemo";
 import { PhoneFrame } from "@/components/devices/PhoneFrame";
 import styles from "./bench.module.css";
 
@@ -44,9 +45,12 @@ function Art({ shape, tone }: { shape: string; tone: number }) {
 export function SocialBench() {
   const id = useId();
   const [today, setToday] = useState(10);
+  const bench = useRef<HTMLDivElement>(null);
+  // the month runs on its own until someone takes the slider
+  useIdleDemo(bench, () => setToday((d) => (d >= 30 ? 1 : d + 1)), 700);
   const published = POSTS.filter((p) => statusOf(p.day, today) === "published").reverse();
   return (
-    <div className={styles.bench} id="social">
+    <div ref={bench} className={styles.bench} id="social">
       <div className={styles.calendarWrap} data-motion-own>
         <div className={styles.scrub}>
           <label htmlFor={id} className={styles.fieldLabel}>

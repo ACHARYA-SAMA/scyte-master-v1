@@ -4,6 +4,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import { Station } from "../Station";
 import { identity, setConsent } from "@/components/gl/scenes/identify/identity";
 import { gsap, prefersReducedMotion } from "@/lib/motion";
+import { useIdleDemo } from "@/lib/useIdleDemo";
 import { useStore } from "@/lib/store";
 import { sfx } from "@/lib/sound";
 import { haptic } from "@/lib/prefs";
@@ -138,11 +139,12 @@ export function Decide() {
   const [drag, setDrag] = useState<{ token: Token; x: number; y: number } | null>(null);
   const [over, setOver] = useState(false);
   const entry = useRef<HTMLDivElement>(null);
+  const yard = useRef<HTMLDivElement>(null);
   const timers = useRef<number[]>([]);
 
   useEffect(() => () => timers.current.forEach((t) => window.clearTimeout(t)), []);
 
-  const run = (token: Token) => {
+  const run = (token: Token, auto = false) => {
     timers.current.forEach((t) => window.clearTimeout(t));
     timers.current = [];
     const stop = decide(token, { consent, hour, sentToday, inHoldout });
@@ -150,7 +152,7 @@ export function Decide() {
     setActive(r);
     setGateState({});
     sfx.tick();
-    haptic(6);
+    if (!auto) haptic(6);
     // light the gates in order as the token reaches them
     const reached = stop ? GATES.findIndex((g) => g.id === stop) : GATES.length - 1;
     GATES.forEach((g, i) => {
@@ -205,6 +207,9 @@ export function Decide() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [drag]);
 
+  // until someone drags a token, the yard routes one on its own every few seconds
+  useIdleDemo(yard, (n) => run(TOKENS[n % TOKENS.length], true), 3800, 1200);
+
   const last = runs[0];
   const outcome = (r: Run) => (r.stop ? GATES.find((g) => g.id === r.stop)!.stop : `Sent: ${r.token.template}`);
 
@@ -224,7 +229,7 @@ export function Decide() {
         </p>
       }
       stage={
-        <div className={styles.stage}>
+        <div ref={yard} className={styles.stage}>
           <div ref={entry} className={styles.entry} data-over={over ? "1" : undefined}>
             <span className="t-hud">Drop an event here</span>
           </div>

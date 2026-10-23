@@ -3,6 +3,7 @@
 import { useEffect, useId, useRef, useState, type CSSProperties } from "react";
 import { DeviceFrame } from "@/components/devices/DeviceFrame";
 import { gsap, prefersReducedMotion } from "@/lib/motion";
+import { useIdleDemo } from "@/lib/useIdleDemo";
 import styles from "./bench.module.css";
 
 const THEMES = [
@@ -51,6 +52,34 @@ export function WebsiteBench() {
   const [speed, setSpeed] = useState(100);
   const [run, setRun] = useState(0);
   const site = useRef<HTMLDivElement>(null);
+  const bench = useRef<HTMLDivElement>(null);
+
+  // the inspector works itself, one control at a time, until someone takes over
+  useIdleDemo(
+    bench,
+    (n) => {
+      const DEMO: (() => void)[] = [
+        () => setWeight(520),
+        () => setWidth(104),
+        () => setTheme("ground"),
+        () => setScale(114),
+        () => {
+          setWeight(900);
+          setWidth(62);
+        },
+        () => setTheme("khaki"),
+        () => setRun((r) => r + 1),
+        () => {
+          setTheme("cream");
+          setScale(100);
+          setWeight(860);
+          setWidth(66);
+        },
+      ];
+      DEMO[n % DEMO.length]();
+    },
+    2300,
+  );
 
   // replay the entrance whenever the motion settings change, or on request
   useEffect(() => {
@@ -67,7 +96,7 @@ export function WebsiteBench() {
   const vars: Record<string, string | number> = { ...THEMES.find((t) => t.id === theme)!.vars, "--m-weight": weight, "--m-width": `${width}%`, "--m-scale": scale / 100 };
 
   return (
-    <div className={styles.bench} id="website">
+    <div ref={bench} className={styles.bench} id="website">
       <div className={styles.inspector} role="group" aria-label="Website inspector">
         <p className={`${styles.panelHead} t-hud`}>Inspector</p>
         <fieldset className={styles.group}>

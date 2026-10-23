@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useIdleDemo } from "@/lib/useIdleDemo";
 import { sfx } from "@/lib/sound";
 import styles from "./HowWeWork.module.css";
 
@@ -58,6 +59,9 @@ export function HowWeWork() {
   const [t, setT] = useState(0.1);
   const track = useRef<HTMLDivElement>(null);
   const dragging = useRef(false);
+  const section = useRef<HTMLElement>(null);
+  // the project walks itself through the phases until someone drags the timeline
+  useIdleDemo(section, () => setT((v) => (v >= 0.97 ? 0.02 : Math.min(0.999, v + 0.035))), 600);
   const weeks = t * TOTAL;
   const index = Math.max(0, STARTS.findLastIndex((s) => weeks >= s));
   const phase = PHASES[index];
@@ -77,7 +81,7 @@ export function HowWeWork() {
   };
 
   return (
-    <section className={styles.section} id="process" aria-labelledby="process-title">
+    <section ref={section} className={styles.section} id="process" aria-labelledby="process-title">
       <header className={styles.head}>
         <p className="t-hud c-khaki">How we work</p>
         <h2 id="process-title" className={styles.title}>
