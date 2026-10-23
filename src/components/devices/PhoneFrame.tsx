@@ -57,7 +57,7 @@ export function PhoneFrame({ children, label, className, tilt = true }: { childr
   }, [tilt]);
 
   return (
-    <div ref={wrap} className={`${styles.wrap} ${className ?? ""}`} data-variant="device" role="region" aria-label={label} data-motion-own>
+    <div ref={wrap} className={`${styles.wrap} ${className ?? ""}`} data-variant="device" role="region" aria-label={label} data-motion-own data-avoid>
       <div ref={device} className={styles.device}>
         <span className={styles.edge} aria-hidden />
         <span className={styles.edge} aria-hidden />

@@ -1,196 +1,252 @@
 "use client";
-/* eslint-disable react-hooks/purity -- the drops' positions and fates are random on purpose. */
+/* eslint-disable react-hooks/immutability -- three.js objects are created once and mutated every frame inside useFrame; that is how R3F scenes animate without re-rendering. */
 
 import { useEffect, useMemo, useRef } from "react";
-import { useFrame, useThree } from "@react-three/fiber";
-import { RoundedBox } from "@react-three/drei";
-import { BoxGeometry, Color, InstancedMesh, Mesh, MeshBasicMaterial, MeshPhysicalMaterial, Object3D, PerspectiveCamera, SphereGeometry, Vector3 } from "three";
-import { gl } from "@/lib/store";
+import { useFrame, useThree, type ThreeEvent } from "@react-three/fiber";
+import { BufferGeometry, CircleGeometry, Color, DynamicDrawUsage, Float32BufferAttribute, InstancedMesh, LineBasicMaterial, LineSegments, MeshBasicMaterial, Object3D, PerspectiveCamera, Vector3 } from "three";
+import { gl, useStore } from "@/lib/store";
 import { prefersReducedMotion } from "@/lib/motion";
-import { Studio } from "../../Studio";
 import { Post } from "../../Post";
 import { Backdrop } from "../../Backdrop";
-import { C, makeGlass, makeMetal } from "../../materials";
+import { C } from "../../materials";
 import { drift } from "../../idle";
 import { projectAnchors } from "../../anchors";
-import { P0, P1, groupSizes, measure, sampleWeek } from "./measure";
+import { P0, SHOPPERS, WEEKS, draws, measure, measured, outcomes } from "./measure";
 
-const H = 46;
-const COLS = { messaged: -17, holdout: 17 };
-/** world units per percentage point of order rate */
-const SCALE = 5.2;
-const PER_COL = 200;
+/** dot spacing, world units: the same in both crowds, so density reads as size */
+const S = 1;
+const COLS_M = 45;
+const COLS_H = 15;
+/** the gap between the crowds is the valve: the holdout knob sits in it */
+const GAP = 16;
+/** rows of the tallest crowd the knob's range allows (1,900 messaged at 5 %) */
+const MAX_ROWS = 43;
+const TAN = Math.tan((30 / 2) * (Math.PI / 180));
 
-type Drop = { x: number; y: number; z: number; v: number; buys: boolean; lit: number };
+type Dot = { x: number; y: number; vx: number; vy: number; tx: number; ty: number; lit: number; flash: number };
 
-function Stream({ x, rate, width }: { x: number; rate: () => number; width: () => number }) {
-  const mesh = useRef<InstancedMesh>(null);
-  const geometry = useMemo(() => new SphereGeometry(0.34, 12, 10), []);
-  const material = useMemo(() => new MeshBasicMaterial({ toneMapped: false }), []);
-  const dummy = useMemo(() => new Object3D(), []);
-  const color = useMemo(() => new Color(), []);
-  const drops = useMemo<Drop[]>(
-    () => Array.from({ length: PER_COL }, () => ({ x: 0, y: Math.random() * H - H / 2, z: 0, v: 9 + Math.random() * 6, buys: false, lit: 0 })),
-    [],
-  );
-  useEffect(
-    () => () => {
-      geometry.dispose();
-      material.dispose();
+/** Grid positions for the two crowds: the messaged block on the left, the holdout to its right. */
+const layout = (n1: number, n0: number) => {
+  const rowsM = Math.ceil(n1 / COLS_M);
+  const rowsH = Math.ceil(Math.max(1, n0) / COLS_H);
+  const wM = COLS_M * S;
+  const wH = COLS_H * S;
+  const total = wM + GAP + wH;
+  const x0 = -total / 2;
+  // a fixed top, so the crowds hold still while dots move between them
+  const top = (MAX_ROWS * S) / 2;
+  const pos: [number, number][] = [];
+  for (let i = 0; i < SHOPPERS; i++) {
+    if (i < n1) {
+      const c = i % COLS_M;
+      const r = Math.floor(i / COLS_M);
+      pos.push([x0 + c * S + S / 2, top - r * S - S / 2]);
+    } else {
+      const k = i - n1;
+      const c = k % COLS_H;
+      const r = Math.floor(k / COLS_H);
+      pos.push([x0 + wM + GAP + c * S + S / 2, top - r * S - S / 2]);
+    }
+  }
+  return {
+    pos,
+    total,
+    top,
+    x0,
+    frames: {
+      m: { x: x0 - 0.8, y: top + 0.8, w: wM + 1.6, h: rowsM * S + 1.6 },
+      h: { x: x0 + wM + GAP - 0.8, y: top + 0.8, w: wH + 1.6, h: rowsH * S + 1.6 },
     },
-    [geometry, material],
-  );
-  useFrame((_, rawDt) => {
-    const m = mesh.current;
-    if (!m) return;
-    const dt = Math.min(rawDt, 1 / 20);
-    const w = width();
-    drops.forEach((d, i) => {
-      d.y -= d.v * dt;
-      if (d.y < -H / 2) {
-        d.y = H / 2 + Math.random() * 4;
-        d.x = (Math.random() - 0.5) * w;
-        d.z = (Math.random() - 0.5) * 5;
-        // whether this shopper orders, at the group's true rate
-        d.buys = Math.random() < rate();
-        d.lit = 0;
-      }
-      // the order happens at the middle line
-      if (d.buys && d.y < 0) d.lit = Math.min(1, d.lit + dt * 6);
-      dummy.position.set(x + d.x, d.y, d.z);
-      const s = d.buys && d.y < 0 ? 1.5 : 1;
-      dummy.scale.set(s, s * (1 + d.v * 0.04), s);
-      dummy.updateMatrix();
-      m.setMatrixAt(i, dummy.matrix);
-      color.copy(C.line).lerp(C.lumen, d.lit).multiplyScalar(d.lit > 0 ? 1 + d.lit * 2.2 : 1.3);
-      m.setColorAt(i, color);
-    });
-    m.instanceMatrix.needsUpdate = true;
-    if (m.instanceColor) m.instanceColor.needsUpdate = true;
-  });
-  return <instancedMesh ref={mesh} args={[geometry, material, PER_COL]} frustumCulled={false} />;
-}
+  };
+};
+
+const frameGeometry = (f: { x: number; y: number; w: number; h: number }) => {
+  const g = new BufferGeometry();
+  const { x, y, w, h } = f;
+  // corner brackets, not a full box: an instrument's framing marks
+  const k = 2.2;
+  const v = [
+    [x, y, x + k, y],
+    [x, y, x, y - k],
+    [x + w, y, x + w - k, y],
+    [x + w, y, x + w, y - k],
+    [x, y - h, x + k, y - h],
+    [x, y - h, x, y - h + k],
+    [x + w, y - h, x + w - k, y - h],
+    [x + w, y - h, x + w, y - h + k],
+  ].flatMap(([a, b, c, d]) => [a!, b!, 0, c!, d!, 0]);
+  g.setAttribute("position", new Float32BufferAttribute(v, 3));
+  return g;
+};
 
 export default function MeasureScene() {
   const camera = useThree((s) => s.camera) as PerspectiveCamera;
   const size = useThree((s) => s.size);
-  const glass = useMemo(() => makeGlass({ thickness: 2, roughness: 0.1 }), []);
-  const metal = useMemo(() => makeMetal("#253026", 0.32), []);
-  const bar = useMemo(() => new MeshBasicMaterial({ color: C.lumen.clone().multiplyScalar(1.9), toneMapped: false }), []);
-  const barDim = useMemo(() => new MeshBasicMaterial({ color: C.khaki.clone().multiplyScalar(0.9), toneMapped: false }), []);
-  const band = useMemo(
-    () => new MeshPhysicalMaterial({ color: new Color("#e6d5b8"), transmission: 0.6, roughness: 0.25, transparent: true, opacity: 0.32, depthWrite: false }),
+  const holdout = useStore(measure, (s) => s.holdoutPct);
+  const seed = useStore(measure, (s) => s.seed);
+  const week = useStore(measure, (s) => s.week);
+
+  const mesh = useRef<InstancedMesh>(null);
+  const geometry = useMemo(() => new CircleGeometry(0.34, 14), []);
+  const material = useMemo(() => new MeshBasicMaterial({ color: new Color(1, 1, 1), toneMapped: false }), []);
+  const lineMat = useMemo(() => new LineBasicMaterial({ color: C.khaki.clone(), transparent: true, opacity: 0.8 }), []);
+  const frameM = useRef<LineSegments>(null);
+  const frameH = useRef<LineSegments>(null);
+
+  const d = useMemo(() => draws(seed), [seed]);
+  const o = useMemo(() => outcomes(d, holdout), [d, holdout]);
+  const lay = useMemo(() => layout(o.n1, o.n0), [o]);
+
+  const dots = useMemo<Dot[]>(() => Array.from({ length: SHOPPERS }, () => ({ x: 0, y: 0, vx: 0, vy: 0, tx: 0, ty: 0, lit: 0, flash: 0 })), []);
+  const first = useRef(true);
+  const tmp = useMemo(() => ({ o: new Object3D(), c: new Color(), want: new Vector3(), look: new Vector3() }), []);
+  const anchors = useMemo(
+    () => ({ messaged: new Vector3(), holdout: new Vector3(), knob: new Vector3(), bandL: new Vector3(), bandR: new Vector3() }) as Record<string, Vector3>,
     [],
   );
-  const unit = useMemo(() => new BoxGeometry(1, 1, 1), []);
-  const refs = useRef<{ m: Mesh | null; h: Mesh | null; d: Mesh | null; b: Mesh | null; hg: Mesh | null }>({ m: null, h: null, d: null, b: null, hg: null });
-  const shown = useRef({ p1: P1, p0: P0, lo: 0, hi: 0 });
-  const lastWeek = useRef(0);
-  const cam = useRef({ pos: new Vector3(0, 6, 92), look: new Vector3(), ready: false });
-  const anchors = useMemo(() => ({ messaged: new Vector3(), holdout: new Vector3(), diff: new Vector3() }), []);
+  const cam = useRef({ pos: new Vector3(), look: new Vector3(), ready: false });
 
-  useEffect(
-    () => () => {
-      glass.dispose();
-      metal.dispose();
-      bar.dispose();
-      barDim.dispose();
-      band.dispose();
-      unit.dispose();
-    },
-    [glass, metal, bar, barDim, band, unit],
-  );
+  // new targets when the groups change; the dots glide to them
+  useEffect(() => {
+    lay.pos.forEach(([x, y], i) => {
+      const dot = dots[i]!;
+      dot.tx = x;
+      dot.ty = y;
+      if (first.current || prefersReducedMotion()) {
+        dot.x = x;
+        dot.y = y;
+      }
+    });
+    first.current = false;
+    frameM.current?.geometry.dispose();
+    frameH.current?.geometry.dispose();
+    if (frameM.current) frameM.current.geometry = frameGeometry(lay.frames.m);
+    if (frameH.current) frameH.current.geometry = frameGeometry(lay.frames.h);
+  }, [lay, dots]);
 
-  useFrame((_, dt) => {
-    const now = performance.now();
-    if (now - lastWeek.current > 2600) {
-      lastWeek.current = now;
-      sampleWeek();
-    }
-    const s = measure.get();
-    const { result } = groupSizes(s.holdoutPct);
-    const k = Math.min(1, dt * 3);
-    const sh = shown.current;
-    sh.p1 += (s.p1 - sh.p1) * k;
-    sh.p0 += (s.p0 - sh.p0) * k;
-    const lo = result.lift.measurable ? result.lift.lo : 0;
-    const hi = result.lift.measurable ? result.lift.hi : 0;
-    sh.lo += (lo - sh.lo) * k;
-    sh.hi += (hi - sh.hi) * k;
+  // the rates this world measured, for the DOM
+  useEffect(() => {
+    const m = measured(o, week);
+    measure.set({ p1: m.p1, p0: m.p0 });
+  }, [o, week]);
 
-    const base = -H / 2 + 0.5;
-    const setBar = (m: Mesh | null, x: number, from: number, to: number, w: number) => {
-      if (!m) return;
-      const h = Math.max(0.05, to - from);
-      m.scale.set(w, h, w);
-      m.position.set(x, base + from + h / 2, 0);
+  // every world drawn adds its gap to the pile; a new holdout starts a new pile
+  const pileFor = useRef(-1);
+  useEffect(() => {
+    const m = measured(o, WEEKS);
+    const gap = m.p1 - m.p0;
+    const fresh = pileFor.current !== holdout;
+    pileFor.current = holdout;
+    measure.set((s) => ({ worlds: fresh ? [gap] : [...s.worlds, gap].slice(-160) }));
+  }, [o, holdout]);
+
+  useEffect(() => {
+    mesh.current?.instanceMatrix.setUsage(DynamicDrawUsage);
+    return () => {
+      geometry.dispose();
+      material.dispose();
+      lineMat.dispose();
     };
-    const r1 = sh.p1 * 100 * SCALE;
-    const r0 = sh.p0 * 100 * SCALE;
-    setBar(refs.current.m, COLS.messaged, 0, r1, 7.4);
-    setBar(refs.current.h, COLS.holdout, 0, r0, 7.4);
-    // the difference: only the incremental part, standing on the holdout's level
-    setBar(refs.current.d, 0, r0, r1, 2.2);
-    setBar(refs.current.b, 0, r0 + Math.max(0, sh.lo) * 100 * SCALE, r0 + sh.hi * 100 * SCALE, 4.4);
-    // the holdout column narrows with its share of shoppers
-    const share = s.holdoutPct / 100;
-    if (refs.current.hg) refs.current.hg.scale.set(0.45 + share * 2.2, 1, 1);
+  }, [geometry, material, lineMat]);
 
-    anchors.messaged.set(COLS.messaged, base + r1 + 2, 0);
-    anchors.holdout.set(COLS.holdout, base + r0 + 2, 0);
-    anchors.diff.set(0, base + r1 + 3, 0);
+  const onMove = (e: ThreeEvent<PointerEvent>) => {
+    const id = e.instanceId;
+    if (id === undefined) return;
+    const prev = measure.get().hover;
+    if (prev?.id === id) return;
+    measure.set({ hover: { id, group: id < o.n1 ? "messaged" : "holdout", week: o.week[id] ?? 0 } });
+  };
 
+  useFrame((state, delta) => {
+    const dt = Math.min(0.05, delta);
+    const t = state.clock.elapsedTime;
+    const im = mesh.current;
+    if (!im) return;
+    const reduced = prefersReducedMotion();
+    const w = measure.get().week;
+    // the share of messaged orders above the holdout's rate: drawn brighter, as the difference layer
+    const baseline = Math.round((o.n1 * P0 * w) / WEEKS);
+    let messagedLit = 0;
+    for (let i = 0; i < SHOPPERS; i++) {
+      const dot = dots[i]!;
+      // a spring to the dot's place in its crowd; a migrating dot arcs over
+      const k = reduced ? 1 : 1 - Math.exp(-dt * (5 + (i % 7)));
+      dot.x += (dot.tx - dot.x) * k;
+      dot.y += (dot.ty - dot.y) * k;
+      const ordered = o.week[i]! > 0 && o.week[i]! <= w;
+      const target = ordered ? 1 : 0;
+      if (target > dot.lit + 0.5) dot.flash = 1;
+      dot.lit += (target - dot.lit) * Math.min(1, dt * 6);
+      dot.flash = Math.max(0, dot.flash - dt * 1.6);
+      let bright = 0.16;
+      let scale = 0.62;
+      if (ordered) {
+        const isM = i < o.n1;
+        if (isM) messagedLit++;
+        const incremental = isM && messagedLit > baseline;
+        // kept under 1.2 so the core stays yellow: the size carries the difference, not a blown-out white
+        bright = incremental ? 1.15 : 0.62;
+        scale = incremental ? 1.45 : 0.95;
+      }
+      const tw = reduced ? 0 : Math.sin(t * 1.3 + i * 0.7) * 0.04;
+      tmp.o.position.set(dot.x, dot.y, ordered ? 0.5 : 0);
+      const s = (scale + dot.flash * 0.9 + tw) * (0.6 + dot.lit * 0.4);
+      tmp.o.scale.set(s, s, s);
+      tmp.o.updateMatrix();
+      im.setMatrixAt(i, tmp.o.matrix);
+      if (ordered) tmp.c.copy(C.lumen).multiplyScalar(bright + dot.flash * 0.6);
+      else tmp.c.copy(i < o.n1 ? C.khakiLight : C.khaki).multiplyScalar(bright);
+      im.setColorAt(i, tmp.c);
+    }
+    im.instanceMatrix.needsUpdate = true;
+    if (im.instanceColor) im.instanceColor.needsUpdate = true;
+
+    const f = lay.frames;
+    anchors.messaged!.set(f.m.x + 2, f.m.y + 1.2, 0);
+    anchors.holdout!.set(f.h.x + 1, f.h.y + 1.2, 0);
+    anchors.knob!.set(lay.x0 + COLS_M * S + GAP / 2, lay.top - 20, 0);
+    anchors.bandL!.set(lay.x0 - 0.8, lay.top - MAX_ROWS * S - 2, 0);
+    anchors.bandR!.set(lay.x0 + lay.total + 0.8, lay.top - MAX_ROWS * S - 2, 0);
+
+    // fit both crowds into the stage beside the copy: a share of the view's width,
+    // centred to the right of the column; on phones, full width under the copy
     const g = gl.get();
-    const wide = size.width / size.height > 1.2;
-    const want = new Vector3((wide ? -24 : 0) + g.px * 6, 4 + g.py * 3, wide ? 112 : 96);
-    const look = new Vector3(wide ? -24 : 0, -2, 0);
-    want.add(drift(3.4));
     const aspect = size.width / size.height;
-    if (aspect < 1.2) want.sub(look).multiplyScalar(Math.min(2.1, 1.35 / aspect)).add(look);
+    const portrait = aspect < 1;
+    const shareW = portrait ? 0.92 : 0.48;
+    const shareH = portrait ? 0.34 : 0.42;
+    const ndcX = portrait ? 0 : 0.32;
+    const ndcY = portrait ? -0.3 : 0.17;
+    const needH = Math.max((lay.total + 2) / shareW / aspect, (MAX_ROWS + 2) / shareH);
+    const dist = needH / 2 / TAN;
+    const halfH = dist * TAN;
+    const lookX = -ndcX * halfH * aspect;
+    const lookY = -ndcY * halfH;
+    tmp.want.set(lookX + g.px * 3, lookY + g.py * 2, dist - g.progress * 6).add(drift(1.2));
+    tmp.look.set(lookX, lookY, 0);
     const c = cam.current;
-    if (!c.ready || prefersReducedMotion()) {
-      c.pos.copy(want);
-      c.look.copy(look);
+    if (!c.ready) {
+      c.pos.copy(tmp.want);
+      c.look.copy(tmp.look);
       c.ready = true;
     } else {
-      const kk = 1 - Math.exp(-dt * 4);
-      c.pos.lerp(want, kk);
-      c.look.lerp(look, kk);
+      const kk = 1 - Math.exp(-dt * 2.6);
+      c.pos.lerp(tmp.want, kk);
+      c.look.lerp(tmp.look, kk);
     }
     camera.position.copy(c.pos);
     camera.lookAt(c.look);
     projectAnchors(camera, anchors, size.width, size.height);
   });
 
-  const rateMessaged = () => P1;
-  const rateHoldout = () => P0;
-  const widthM = () => 7;
-  const widthH = () => 1.2 + (measure.get().holdoutPct / 100) * 13;
-
   return (
     <>
       <color attach="background" args={["#09120b"]} />
-      <fog attach="fog" args={["#09120b", 80, 280]} />
-      <Studio intensity={1.05} />
-      <Backdrop z={-30} cell={2} />
-      {/* two glass columns: the same store, two groups */}
-      <mesh position={[COLS.messaged, 0, 0]} material={glass}>
-        <boxGeometry args={[9, H, 7]} />
-      </mesh>
-      <mesh ref={(m) => void (refs.current.hg = m)} position={[COLS.holdout, 0, 0]} material={glass}>
-        <boxGeometry args={[9, H, 7]} />
-      </mesh>
-      {/* the order line */}
-      <RoundedBox args={[56, 0.25, 9]} radius={0.1} smoothness={2} position={[0, 0, 0]} material={metal} />
-      <RoundedBox args={[56, 1, 10]} radius={0.3} smoothness={3} position={[0, -H / 2 - 0.4, 0]} material={metal} />
-      <Stream x={COLS.messaged} rate={rateMessaged} width={widthM} />
-      <Stream x={COLS.holdout} rate={rateHoldout} width={widthH} />
-      {/* measured rates, and the difference layer between them */}
-      <mesh ref={(m) => void (refs.current.m = m)} geometry={unit} material={barDim} position={[COLS.messaged, -H / 2, -6]} />
-      <mesh ref={(m) => void (refs.current.h = m)} geometry={unit} material={barDim} position={[COLS.holdout, -H / 2, -6]} />
-      <mesh ref={(m) => void (refs.current.b = m)} geometry={unit} material={band} renderOrder={4} />
-      <mesh ref={(m) => void (refs.current.d = m)} geometry={unit} material={bar} />
-      <Post bloom={0.9} threshold={0.85} />
+      <Backdrop z={-14} size={420} cell={5} lines={0.45} />
+      <instancedMesh ref={mesh} args={[geometry, material, SHOPPERS]} onPointerMove={onMove} onPointerOut={() => measure.set({ hover: null })} />
+      <lineSegments ref={frameM} material={lineMat} />
+      <lineSegments ref={frameH} material={lineMat} />
+      <Post bloom={0.55} threshold={0.6} />
     </>
   );
 }

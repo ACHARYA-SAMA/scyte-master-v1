@@ -1,0 +1,18 @@
+/* in the flow until the scene is drawn, then pinned to its point in the world */
+.dock {
+  position: relative;
+  pointer-events: auto;
+}
+
+.dock[data-live="1"],
+.dock[data-live="off"] {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 3;
+  will-change: transform;
+}
+
+.dock[data-live="off"] {
+  visibility: hidden;
+}

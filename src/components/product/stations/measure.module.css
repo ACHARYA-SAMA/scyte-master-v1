@@ -1,0 +1,278 @@
+/* P8, the split world: readouts in the copy column; the knob and the band in the world */
+.valve {
+  display: grid;
+  justify-items: center;
+  padding: 10px 8px 8px;
+  background: radial-gradient(closest-side, rgb(9 18 11 / 0.92), rgb(9 18 11 / 0.6) 70%, transparent);
+}
+
+.dock {
+  min-width: 320px;
+}
+
+.dockInner {
+  display: grid;
+  gap: var(--s3);
+  padding-top: var(--s2);
+}
+
+.weeks {
+  flex: 1;
+  min-width: 0;
+}
+
+.rates {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s4);
+}
+
+.rates > div {
+  display: grid;
+  gap: 2px;
+  padding-left: var(--s3);
+  border-left: var(--hair) solid var(--line);
+}
+
+.rates > div:last-child {
+  border-left-color: var(--lumen);
+}
+
+.rates dt {
+  color: var(--muted);
+}
+
+.rates dd:nth-of-type(1) {
+  font-size: clamp(1.3rem, 1rem + 0.9vw, 1.9rem);
+  line-height: 1;
+  font-weight: 760;
+  font-stretch: 78%;
+  font-variant-numeric: tabular-nums;
+  color: var(--cream);
+}
+
+.rates > div:last-child dd:nth-of-type(1) {
+  color: var(--lumen);
+}
+
+/* ------------------------------------------------------------- the band */
+.band {
+  display: grid;
+  gap: var(--s3);
+}
+
+.scale {
+  position: relative;
+  height: 46px;
+  margin: 0 6px;
+  border-bottom: var(--hair) solid var(--khaki);
+}
+
+.tick {
+  position: absolute;
+  bottom: -5px;
+  width: 1px;
+  height: 10px;
+  background: var(--khaki);
+}
+
+.tick[data-zero="1"] {
+  height: 46px;
+  background: var(--muted);
+}
+
+.tick span {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  translate: -50% 0;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* the 95 % range: a band, not a bar; it slides and stretches */
+.range {
+  position: absolute;
+  top: 10px;
+  height: 22px;
+  background: color-mix(in srgb, var(--lumen) 22%, transparent);
+  border-left: 2px solid var(--lumen);
+  border-right: 2px solid var(--lumen);
+  transition:
+    left var(--dur-panel) var(--ease-glide),
+    width var(--dur-panel) var(--ease-glide),
+    background-color var(--dur-ui) linear;
+}
+
+.range[data-zero="1"] {
+  background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--khaki) 26%, transparent) 0 5px, transparent 5px 10px);
+  border-color: var(--khaki);
+}
+
+.truth {
+  position: absolute;
+  top: 4px;
+  width: 0;
+  height: 34px;
+  border-left: 1px dashed var(--cream);
+}
+
+.mark {
+  position: absolute;
+  top: 15px;
+  width: 12px;
+  height: 12px;
+  margin-left: -6px;
+  background: var(--lumen);
+  box-shadow: 0 0 0 3px var(--ground), 0 0 16px 2px color-mix(in srgb, var(--lumen) 50%, transparent);
+  rotate: 45deg;
+  transition: left var(--dur-panel) var(--ease-glide);
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2) var(--s5);
+  margin-top: 18px;
+  color: var(--muted);
+}
+
+.legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legend i {
+  display: inline-block;
+}
+
+.keyRange {
+  width: 16px;
+  height: 8px;
+  background: color-mix(in srgb, var(--lumen) 30%, transparent);
+  border-inline: 2px solid var(--lumen);
+}
+
+.keyMark {
+  width: 8px;
+  height: 8px;
+  background: var(--lumen);
+  rotate: 45deg;
+}
+
+.keyDiff {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--lumen);
+  box-shadow: 0 0 8px 1px color-mix(in srgb, var(--lumen) 70%, transparent);
+}
+
+.keyTruth {
+  width: 0;
+  height: 12px;
+  border-left: 1px dashed var(--cream);
+}
+
+/* ------------------------------------------------------------- the row */
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--s4);
+  min-height: 40px;
+}
+
+.resample {
+  flex: none;
+  padding: 10px 14px;
+  border: 1px solid var(--khaki);
+  background: transparent;
+  color: var(--cream);
+  font: inherit;
+  font-size: var(--t-small);
+  font-weight: 650;
+  cursor: pointer;
+  transition:
+    background-color var(--dur-ui) linear,
+    color var(--dur-ui) linear;
+}
+
+.resample:hover,
+.resample:focus-visible {
+  background: var(--khaki);
+  color: var(--ground);
+}
+
+.resample:active {
+  scale: 0.97;
+}
+
+.hover {
+  min-width: 0;
+  min-height: 1.4em;
+  color: var(--cream);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hint {
+  color: var(--muted);
+  max-width: 52ch;
+  text-wrap: pretty;
+}
+
+/* ------------------------------------------------------------- the pile of worlds */
+.worlds {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+}
+
+.worlds svg {
+  width: 100%;
+  max-width: 460px;
+  height: auto;
+  overflow: visible;
+}
+
+.worlds figcaption {
+  color: var(--muted);
+}
+
+.worldsBand {
+  fill: color-mix(in srgb, var(--lumen) 9%, transparent);
+  transition:
+    x var(--dur-panel) var(--ease-glide),
+    width var(--dur-panel) var(--ease-glide);
+}
+
+.worldsZero {
+  stroke: var(--muted);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.worldsBase {
+  stroke: var(--khaki);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.worldsDot {
+  fill: var(--khaki);
+}
+
+.worldsDot[data-last="1"] {
+  fill: var(--lumen);
+}
+
+@media (max-width: 960px) {
+  .row {
+    flex-wrap: wrap;
+  }
+  .rates {
+    gap: var(--s3);
+  }
+}

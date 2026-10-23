@@ -48,7 +48,7 @@
 
 /* it slides away below the edge, never fades: its label is at full contrast whenever it shows */
 .audit[data-hidden="1"] {
-  transform: translateY(calc(100% + 48px));
+  transform: translateY(calc(100% + 96px));
   visibility: hidden;
   pointer-events: none;
   transition:
@@ -66,6 +66,17 @@
   padding-left: 10px;
   border-left: 1px solid color-mix(in srgb, var(--ground) 35%, transparent);
   color: color-mix(in srgb, var(--ground) 86%, var(--khaki));
+}
+
+/* compact below the widths where a full pill starts to crowd the stage */
+@media (max-width: 1365px) {
+  .audit {
+    gap: 10px;
+    padding: 11px 13px 10px 12px;
+  }
+  .tag {
+    display: none;
+  }
 }
 
 /* phones have no chapter strip to clear */

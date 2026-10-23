@@ -434,6 +434,7 @@ export function InteractivePhone({
       className={`${styles.wrap} ${className ?? ""}`}
       data-variant={variant}
       data-motion-own
+      data-avoid
       style={style}
       role="region"
       aria-label={label ?? `Demo chat: ${flow.id.replace(/-/g, " ")}`}
