@@ -84,6 +84,8 @@ Design rationale: `docs/design-thesis.md`. Tools used: `docs/tooling.md`. Perfor
 - `PRODUCT_NAME` (currently `[BRAND NAME]`).
 - Team: names, codenames, bios, photos, skills, links and locations. The four seats are the roles the report plans.
 - Client case studies (`WORK` is empty).
+- Studio phase lengths (`src/components/studio/HowWeWork.tsx`) and each service's typical timeline and starting price (`src/components/studio/Studio.tsx`), shown as `[CONFIRM]`.
+- The pilot's monthly price on `/product` (`src/components/product/Pilot.tsx`), shown as `[ FILL: ₹ a month ]`.
 - The LinkedIn URL in `src/config/site.ts`, inherited from the old site, contains "undefined".
 
 ## Measured
