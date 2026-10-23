@@ -1,0 +1,101 @@
+.ba {
+  --x: 0.5;
+  position: relative;
+  display: grid;
+  overflow: hidden;
+  isolation: isolate;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  outline: var(--hair) solid var(--line);
+}
+
+/* both states share one grid cell, so each fills the frame whatever its content */
+.after,
+.before {
+  grid-area: 1 / 1;
+  position: relative;
+  min-height: 0;
+}
+
+.before {
+  clip-path: inset(0 calc((1 - var(--x)) * 100%) 0 0);
+}
+
+.after > *,
+.before > * {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.tag {
+  position: absolute;
+  top: 12px;
+  z-index: 2;
+  padding: 4px 0;
+  color: var(--cream);
+  border-bottom: 1px solid currentColor;
+  text-shadow: 0 1px 6px rgb(0 0 0 / 0.7);
+  pointer-events: none;
+}
+
+.tagBefore {
+  left: 14px;
+  opacity: clamp(0, calc(var(--x) * 6 - 0.4), 1);
+}
+
+.tagAfter {
+  right: 14px;
+  opacity: clamp(0, calc((1 - var(--x)) * 6 - 0.4), 1);
+}
+
+.divider {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(var(--x) * 100%);
+  z-index: 3;
+  width: 44px;
+  margin-left: -22px;
+  outline: none;
+}
+
+.divider::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--lumen);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--lumen) 70%, transparent);
+}
+
+.grip {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: flex;
+  gap: 3px;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 52px;
+  translate: -50% -50%;
+  background: linear-gradient(180deg, #3a4a3d, #1f2a21);
+  border: 1px solid var(--lumen);
+  border-radius: 6px;
+  box-shadow: 0 8px 20px -8px rgb(0 0 0 / 0.8);
+}
+
+.grip i {
+  width: 1px;
+  height: 18px;
+  background: var(--khaki-light);
+}
+
+.divider:focus-visible .grip {
+  outline: 2px solid var(--cream);
+  outline-offset: 4px;
+}

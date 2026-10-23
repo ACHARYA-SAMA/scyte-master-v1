@@ -1,0 +1,101 @@
+.toggle {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.label {
+  color: var(--khaki);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.side {
+  color: var(--muted);
+  transition: color var(--dur-ui) linear;
+  min-width: 3ch;
+}
+
+.side[data-active] {
+  color: var(--cream);
+}
+
+.body {
+  position: relative;
+  width: 46px;
+  height: 64px;
+  perspective: 240px;
+  outline: none;
+}
+
+.body:focus-visible .bezel {
+  outline: 2px solid var(--cream);
+  outline-offset: 5px;
+}
+
+/* the round nut the bat sits in */
+.bezel {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 34px;
+  height: 34px;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 50%, #0c140e 0 30%, transparent 31%),
+    conic-gradient(from 0deg, #3d4d40, #1b251d, #3d4d40, #1b251d, #3d4d40, #1b251d, #3d4d40);
+  box-shadow:
+    0 6px 12px -4px rgb(0 0 0 / 0.7),
+    inset 0 0 0 1px rgb(0 0 0 / 0.5);
+}
+
+/* the bat: a tapered metal handle that throws up (on) or down (off) */
+.bat {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 10px;
+  height: 30px;
+  margin-left: -5px;
+  margin-top: -30px;
+  border-radius: 5px 5px 3px 3px;
+  background: linear-gradient(90deg, #2a352c, #9aa38e 45%, #d6cfb6 55%, #59645a);
+  transform-origin: 50% 100%;
+  transform: rotateX(-160deg);
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 0.35);
+  transition: transform 340ms cubic-bezier(0.34, 1.7, 0.5, 1);
+}
+
+.toggle[data-on] .bat {
+  transform: rotateX(-20deg);
+}
+
+.lamp {
+  position: absolute;
+  left: 50%;
+  bottom: -2px;
+  width: 6px;
+  height: 6px;
+  margin-left: -3px;
+  border-radius: 50%;
+  background: #34433a;
+  transition:
+    background-color var(--dur-ui) linear,
+    box-shadow var(--dur-ui) linear;
+}
+
+.toggle[data-on] .lamp {
+  background: var(--lumen);
+  box-shadow: 0 0 8px var(--lumen);
+}
+
+.toggle[data-disabled="1"] {
+  opacity: 0.45;
+}

@@ -93,7 +93,131 @@ export const sfx = {
   },
   /** Confirmation. */
   ok: () => blip(660, 0.09, "triangle", 990, 0.8),
+  /** A ratchet detent on a knob: a dry click with a little body under it. */
+  detent: () => {
+    noise(0.018, 0.32, 4200);
+    blip(520 + Math.random() * 40, 0.02, "square", 300, 0.25);
+  },
+  /** A relay or a lever landing: a low clunk and a metal tick. */
+  relay: () => {
+    blip(92, 0.11, "square", 60, 0.8);
+    noise(0.05, 0.35, 1400);
+    window.setTimeout(() => blip(2200, 0.015, "square", undefined, 0.3), 24);
+  },
+  /** One split-flap leaf falling. Called per flap, so it stays very short. */
+  flap: () => noise(0.014 + Math.random() * 0.01, 0.22, 2600 + Math.random() * 1400),
+  /** A receipt printer head: a burst of tiny dot strikes for one printed line. */
+  printLine: () => {
+    for (let i = 0; i < 6; i++) window.setTimeout(() => noise(0.008, 0.18, 5200), i * 14);
+    blip(180, 0.07, "sawtooth", 170, 0.08);
+  },
+  /** Paper tearing along the serrated edge. */
+  tear: () => noise(0.22, 0.3, 2000),
+  /** A rubber stamp landing on paper. */
+  stamp: () => {
+    blip(70, 0.14, "sine", 46, 1);
+    noise(0.07, 0.4, 600);
+  },
+  /** Glass touching glass. */
+  clink: () => {
+    blip(2637, 0.22, "sine", 2600, 0.35);
+    blip(3951, 0.16, "sine", undefined, 0.18);
+  },
+  /** A short scan blip, for a beam passing a target. */
+  blip: () => blip(1760, 0.035, "sine", 2093, 0.45),
+  /** A cable plug seating in a jack. */
+  plug: () => {
+    blip(300, 0.05, "square", 180, 0.5);
+    noise(0.03, 0.3, 3000);
+  },
+  /** A soft key on a keyboard. */
+  key: () => noise(0.012, 0.16, 3600),
 };
+
+/**
+ * A room tone per page: a very quiet filtered noise bed with one low partial, so
+ * pages sound like different rooms. It starts only when sound is on, fades between
+ * pages, and stops when sound is turned off or the tab is hidden.
+ */
+export type Room = "leak" | "machine" | "assembly" | "archive" | "scan" | "conversation" | "lost";
+
+const ROOMS: Record<Room, { cutoff: number; hum: number; level: number }> = {
+  leak: { cutoff: 520, hum: 55, level: 0.05 },
+  machine: { cutoff: 900, hum: 73.4, level: 0.055 },
+  assembly: { cutoff: 1400, hum: 98, level: 0.035 },
+  archive: { cutoff: 700, hum: 61.7, level: 0.05 },
+  scan: { cutoff: 2600, hum: 110, level: 0.025 },
+  conversation: { cutoff: 480, hum: 49, level: 0.04 },
+  lost: { cutoff: 360, hum: 41.2, level: 0.05 },
+};
+
+let roomNodes: { gain: GainNode; filter: BiquadFilterNode; hum: OscillatorNode; src: AudioBufferSourceNode } | null = null;
+let currentRoom: Room | null = null;
+
+const ensureRoom = () => {
+  const a = audio();
+  if (!a || !master) return null;
+  if (roomNodes) return roomNodes;
+  const len = a.sampleRate * 4;
+  const buffer = a.createBuffer(1, len, a.sampleRate);
+  const data = buffer.getChannelData(0);
+  // brown noise: integrated white noise, soft and low
+  let last = 0;
+  for (let i = 0; i < len; i++) {
+    last = (last + 0.02 * (Math.random() * 2 - 1)) / 1.02;
+    data[i] = last * 3.5;
+  }
+  const src = a.createBufferSource();
+  src.buffer = buffer;
+  src.loop = true;
+  const filter = a.createBiquadFilter();
+  filter.type = "lowpass";
+  const hum = a.createOscillator();
+  hum.type = "sine";
+  const humGain = a.createGain();
+  humGain.gain.value = 0.18;
+  const gain = a.createGain();
+  gain.gain.value = 0.0001;
+  src.connect(filter).connect(gain);
+  hum.connect(humGain).connect(gain);
+  gain.connect(master);
+  src.start();
+  hum.start();
+  roomNodes = { gain, filter, hum, src };
+  return roomNodes;
+};
+
+const applyRoom = () => {
+  const room = currentRoom;
+  if (!ui.get().soundOn || !room || document.hidden) {
+    if (roomNodes && ctx) roomNodes.gain.gain.setTargetAtTime(0.0001, ctx.currentTime, 0.4);
+    return;
+  }
+  const nodes = ensureRoom();
+  if (!nodes || !ctx) return;
+  const r = ROOMS[room];
+  const t = ctx.currentTime;
+  nodes.filter.frequency.setTargetAtTime(r.cutoff, t, 0.8);
+  nodes.hum.frequency.setTargetAtTime(r.hum, t, 0.8);
+  nodes.gain.gain.setTargetAtTime(r.level, t, 0.9);
+};
+
+/** Move to a room's tone, or to silence with null. */
+export const setRoom = (room: Room | null) => {
+  currentRoom = room;
+  applyRoom();
+};
+
+if (typeof window !== "undefined") {
+  let wasOn = ui.get().soundOn;
+  ui.subscribe(() => {
+    const on = ui.get().soundOn;
+    if (on === wasOn) return;
+    wasOn = on;
+    applyRoom();
+  });
+  document.addEventListener("visibilitychange", applyRoom);
+}
 
 export const loadSoundPreference = () => {
   try {

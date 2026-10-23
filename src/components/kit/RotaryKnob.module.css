@@ -1,0 +1,169 @@
+/* A machined knob: a knurled dark-metal skirt, a domed cap, one engraved pointer line,
+   and a tick ring that lights up to the value. Lumen only on the pointer and the arc. */
+.knob {
+  --d: 108px;
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  text-align: center;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.knob[data-size="s"] {
+  --d: 76px;
+}
+.knob[data-size="l"] {
+  --d: 168px;
+}
+
+.label {
+  color: var(--khaki);
+  max-width: 16ch;
+}
+
+.body {
+  position: relative;
+  width: var(--d);
+  height: var(--d);
+  border-radius: 50%;
+  touch-action: none;
+  outline: none;
+}
+
+.body:focus-visible {
+  outline: 2px solid var(--cream);
+  outline-offset: 6px;
+  box-shadow: none;
+}
+
+.ticks {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.ticks line {
+  stroke: var(--line);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+  transition: stroke var(--dur-feedback) linear;
+}
+
+.ticks line[data-major] {
+  stroke: var(--muted);
+}
+
+.ticks line[data-on] {
+  stroke: var(--khaki);
+}
+
+.arc {
+  fill: none;
+  stroke: var(--lumen);
+  stroke-width: 1.25;
+  vector-effect: non-scaling-stroke;
+  opacity: 0.55;
+  filter: drop-shadow(0 0 3px color-mix(in srgb, var(--lumen) 60%, transparent));
+}
+
+.dial {
+  position: absolute;
+  inset: 17%;
+  border-radius: 50%;
+  rotate: var(--a);
+  will-change: rotate;
+}
+
+/* the skirt: fine knurling around the edge, lit from the top left */
+.knurl {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background:
+    repeating-conic-gradient(from 0deg, #3a4a3d 0deg 3deg, #18221a 3deg 6deg),
+    var(--raised);
+  box-shadow:
+    0 10px 18px -6px rgb(0 0 0 / 0.65),
+    0 2px 0 rgb(0 0 0 / 0.4),
+    inset 0 0 0 1px rgb(0 0 0 / 0.5);
+  /* counter-rotate the lighting so the highlight stays put while the knurl turns */
+}
+
+.knurl::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  rotate: calc(var(--a) * -1);
+  background: radial-gradient(120% 90% at 30% 18%, rgb(230 213 184 / 0.22), transparent 55%), radial-gradient(90% 80% at 70% 90%, rgb(0 0 0 / 0.45), transparent 60%);
+}
+
+.cap {
+  position: absolute;
+  inset: 12%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, #2e3d31, #202b22 70%);
+  box-shadow:
+    inset 0 1px 0 rgb(230 213 184 / 0.12),
+    inset 0 -2px 4px rgb(0 0 0 / 0.5),
+    0 0 0 1px rgb(0 0 0 / 0.35);
+}
+
+.cap::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  rotate: calc(var(--a) * -1);
+  /* a soft machined sheen that stays lit from the top */
+  background: conic-gradient(from 210deg, transparent 0deg, rgb(230 213 184 / 0.1) 40deg, transparent 90deg, transparent 220deg, rgb(230 213 184 / 0.06) 260deg, transparent 300deg);
+}
+
+.pointer {
+  position: absolute;
+  left: 50%;
+  top: 9%;
+  width: 2px;
+  height: 26%;
+  margin-left: -1px;
+  background: var(--lumen);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--lumen) 70%, transparent);
+  border-radius: 1px;
+}
+
+.readout {
+  font-size: clamp(1.05rem, 0.95rem + 0.4vw, 1.35rem);
+  line-height: 1;
+  color: var(--cream);
+  min-width: 7ch;
+}
+
+.knob[data-size="s"] .readout {
+  font-size: 0.95rem;
+}
+
+.knob[data-size="l"] .readout {
+  font-size: clamp(1.4rem, 1.1rem + 0.8vw, 2rem);
+}
+
+.hint {
+  color: var(--muted);
+  max-width: 18ch;
+  line-height: 1.3;
+}
+
+.knob[data-active="1"] .arc,
+.body:focus-visible .arc {
+  opacity: 0.9;
+}
+
+.knob[data-disabled="1"] {
+  opacity: 0.45;
+}
+
+.knob[data-disabled="1"] .body {
+  cursor: not-allowed;
+}

@@ -1,0 +1,24 @@
+.breather {
+  display: block;
+  /* letters change width every frame: keep that reflow inside this box */
+  contain: layout style;
+}
+
+.line {
+  display: block;
+  white-space: nowrap;
+}
+
+.word {
+  display: inline;
+}
+
+.word span {
+  display: inline-block;
+}
+
+@media (max-width: 640px) {
+  .line {
+    white-space: normal;
+  }
+}

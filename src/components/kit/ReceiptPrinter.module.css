@@ -1,0 +1,164 @@
+/* A thermal receipt printer seen from the front: paper rises out of the slot on its
+   top. Cream paper, Ground ink; never white. */
+.printer {
+  --pw: min(100%, 340px);
+  --h: min(64vh, 560px);
+  display: grid;
+  justify-items: center;
+  grid-template-rows: var(--h) auto;
+  width: 100%;
+}
+
+.chute {
+  position: relative;
+  width: var(--pw);
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  /* the paper's far end curls away into the dark */
+  mask-image: linear-gradient(180deg, transparent 0, #000 22%);
+}
+
+.paper {
+  position: relative;
+  margin-inline: 14px;
+  padding: 22px 18px 14px;
+  background:
+    repeating-linear-gradient(0deg, rgb(27 38 29 / 0.025) 0 1px, transparent 1px 3px),
+    linear-gradient(180deg, #e9dcc3, var(--cream) 60%, #dccbaa);
+  color: var(--ground);
+  font-size: 13px;
+  line-height: 1.45;
+  font-stretch: 78%;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  box-shadow: 0 -10px 30px -10px rgb(0 0 0 / 0.5);
+  touch-action: none;
+  transform-origin: 50% 100%;
+  /* the torn, serrated leading edge */
+  mask:
+    conic-gradient(from -45deg at bottom, #000 90deg, transparent 0) top / 10px 51% repeat-x,
+    linear-gradient(#000 0 0) bottom / 100% calc(100% - 5px) no-repeat;
+}
+
+.paper[data-empty="1"] {
+  padding-block: 0;
+  box-shadow: none;
+}
+
+.lines {
+  display: grid;
+}
+
+.line {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 1.45em;
+}
+
+.line[data-kind="title"] {
+  justify-content: center;
+  font-weight: 760;
+  font-stretch: 70%;
+  font-size: 15px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding-block: 4px;
+}
+
+.line[data-kind="note"] {
+  justify-content: center;
+  text-align: center;
+  font-size: 12px;
+  color: #3c4539;
+}
+
+.line[data-kind="total"] {
+  font-weight: 800;
+  font-size: 15px;
+  padding-top: 4px;
+}
+
+.line [data-strong="1"] {
+  font-weight: 720;
+}
+
+.right {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.rule {
+  flex: 1;
+  align-self: center;
+  height: 0;
+  border-top: 1px dashed rgb(27 38 29 / 0.55);
+}
+
+.housing {
+  position: relative;
+  width: calc(var(--pw) + 60px);
+  max-width: 100%;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 8px 14px;
+  padding: 26px 22px 18px;
+  background: linear-gradient(180deg, #2c3a2f, #1b251d 70%);
+  border: var(--hair) solid var(--line);
+  border-radius: 10px 10px 4px 4px;
+  box-shadow:
+    inset 0 1px 0 rgb(230 213 184 / 0.1),
+    0 24px 40px -18px rgb(0 0 0 / 0.8);
+}
+
+/* the slot the paper comes out of */
+.slot {
+  position: absolute;
+  left: 30px;
+  right: 30px;
+  top: 0;
+  height: 9px;
+  translate: 0 -40%;
+  border-radius: 4px;
+  background: var(--abyss);
+  box-shadow:
+    inset 0 2px 4px rgb(0 0 0 / 0.9),
+    0 1px 0 rgb(230 213 184 / 0.08);
+}
+
+.plate {
+  color: var(--khaki);
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+}
+
+.led {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #3a4a3d;
+}
+
+.printer[data-phase="printing"] .led,
+.printer[data-phase="done"] .led {
+  background: var(--lumen);
+  box-shadow: 0 0 8px var(--lumen);
+}
+
+.tear {
+  grid-column: 1 / -1;
+  justify-self: start;
+  color: var(--cream);
+  text-decoration: underline;
+  text-underline-offset: 0.3em;
+}

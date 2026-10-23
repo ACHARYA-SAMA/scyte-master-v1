@@ -1,0 +1,151 @@
+.lab {
+  display: grid;
+  gap: var(--s9);
+  padding: calc(var(--nav-h) + 6vh) var(--margin) var(--s11);
+}
+
+.head {
+  display: grid;
+  gap: var(--s4);
+  max-width: 70ch;
+}
+
+.title {
+  font-size: var(--t-h1);
+  line-height: 0.9;
+  font-weight: 800;
+  font-stretch: 70%;
+  letter-spacing: -0.035em;
+  color: var(--cream);
+}
+
+.lede {
+  color: var(--khaki-light);
+}
+
+.bay {
+  display: grid;
+  gap: var(--s6);
+  padding-top: var(--s6);
+  border-top: var(--hair) solid var(--line);
+}
+
+.bayHead {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  gap: var(--s5);
+  align-items: baseline;
+}
+
+.bayName {
+  font-size: var(--t-h3);
+  font-weight: 720;
+  font-stretch: 80%;
+  color: var(--cream);
+}
+
+.use {
+  color: var(--muted);
+}
+
+.states {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s6);
+  align-items: stretch;
+}
+
+.state {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  gap: var(--s3);
+  min-width: 200px;
+}
+
+.stage {
+  display: grid;
+  place-items: center;
+  padding: var(--s6);
+  min-height: 220px;
+  background: var(--ground-deep);
+  outline: var(--hair) solid var(--line);
+}
+
+.plain {
+  display: block;
+}
+
+.big {
+  font-size: clamp(2.6rem, 2rem + 3vw, 5rem);
+  font-weight: 800;
+  font-stretch: 72%;
+  color: var(--cream);
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s3);
+}
+
+.col {
+  display: grid;
+  gap: var(--s5);
+  justify-items: center;
+  width: 420px;
+}
+
+.btn {
+  padding: 10px 14px;
+  border: var(--hair) solid var(--line);
+  color: var(--cream);
+  font-size: var(--t-small);
+}
+
+.btn:hover {
+  border-color: var(--khaki);
+}
+
+.breather {
+  font-size: clamp(4rem, 2rem + 8vw, 10rem);
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+  color: var(--cream);
+}
+
+.liquid {
+  font-size: clamp(3rem, 1.5rem + 6vw, 8rem);
+  line-height: 0.92;
+  font-weight: 880;
+  font-stretch: 66%;
+  letter-spacing: -0.03em;
+  max-width: 12ch;
+}
+
+.ba {
+  width: min(640px, 80vw);
+  aspect-ratio: 16 / 9;
+}
+
+.swatchA,
+.swatchB {
+  display: grid;
+  place-items: center;
+  font-size: 3rem;
+  font-weight: 800;
+  font-stretch: 70%;
+}
+
+.swatchA {
+  background: repeating-linear-gradient(45deg, var(--surface) 0 10px, var(--ground) 10px 20px);
+  color: var(--muted);
+}
+
+.swatchB {
+  background: linear-gradient(135deg, var(--raised), var(--ground-deep));
+  color: var(--lumen);
+}
+
+.wide {
+  width: min(900px, 80vw);
+}

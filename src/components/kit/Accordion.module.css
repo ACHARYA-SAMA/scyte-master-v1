@@ -1,0 +1,75 @@
+.accordion {
+  display: grid;
+  border-bottom: var(--hair) solid var(--line);
+}
+
+.item {
+  border-top: var(--hair) solid var(--line);
+}
+
+.summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s5);
+  padding: 22px 0;
+  list-style: none;
+  color: var(--cream);
+  transition:
+    color var(--dur-ui) linear,
+    padding var(--dur-panel) var(--ease-glide);
+}
+
+.summary::-webkit-details-marker {
+  display: none;
+}
+
+.summary:hover {
+  color: var(--lumen);
+  padding-left: 10px;
+}
+
+.title {
+  font-size: clamp(1.15rem, 1rem + 0.6vw, 1.6rem);
+  line-height: 1.2;
+  font-weight: 640;
+  font-stretch: 86%;
+  letter-spacing: -0.01em;
+}
+
+/* a plus made of two hairlines; the vertical one folds flat when open */
+.icon {
+  position: relative;
+  flex: none;
+  width: 18px;
+  height: 18px;
+}
+
+.icon i {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: currentColor;
+  transition: rotate var(--dur-panel) var(--ease-snap);
+}
+
+.icon i:last-child {
+  rotate: 90deg;
+}
+
+.item[open] .icon i:last-child {
+  rotate: 0deg;
+}
+
+.panel {
+  overflow: hidden;
+}
+
+.body {
+  padding: 0 0 26px;
+  max-width: 62ch;
+  color: var(--khaki-light);
+  line-height: 1.6;
+}

@@ -1,0 +1,338 @@
+/* The instrument frame. Hairlines in Line, corner brackets in Khaki, one Lumen drop.
+   It sits over the page but under the nav, the menu and the cursor. */
+.frame {
+  --inset: 12px;
+  --strip: 34px;
+  --sy: 0;
+  --p: 0;
+  --mx: -100;
+  --my: -100;
+  --drop: 0;
+  position: fixed;
+  inset: 0;
+  z-index: 5800;
+  pointer-events: none;
+  color: var(--muted);
+  transition: opacity var(--dur-ui) linear;
+}
+
+.frame[data-menu="1"] {
+  opacity: 0;
+}
+
+.edge {
+  position: absolute;
+  background: color-mix(in srgb, var(--line) 85%, transparent);
+}
+.edge[data-side="t"],
+.edge[data-side="b"] {
+  left: var(--inset);
+  right: var(--inset);
+  height: 1px;
+}
+.edge[data-side="t"] {
+  top: var(--inset);
+  /* the nav sits over the top edge; the line only shows at its two ends */
+  mask-image: linear-gradient(90deg, #000 0 6%, transparent 9% 91%, #000 94%);
+}
+.edge[data-side="b"] {
+  bottom: var(--inset);
+}
+.edge[data-side="l"],
+.edge[data-side="r"] {
+  top: var(--inset);
+  bottom: var(--inset);
+  width: 1px;
+}
+.edge[data-side="l"] {
+  left: var(--inset);
+}
+.edge[data-side="r"] {
+  right: var(--inset);
+}
+
+.corner {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border: 0 solid var(--khaki);
+}
+.corner[data-c="tl"] {
+  left: calc(var(--inset) - 1px);
+  top: calc(var(--inset) - 1px);
+  border-left-width: 1px;
+  border-top-width: 1px;
+}
+.corner[data-c="tr"] {
+  right: calc(var(--inset) - 1px);
+  top: calc(var(--inset) - 1px);
+  border-right-width: 1px;
+  border-top-width: 1px;
+}
+.corner[data-c="br"] {
+  right: calc(var(--inset) - 1px);
+  bottom: calc(var(--inset) - 1px);
+  border-right-width: 1px;
+  border-bottom-width: 1px;
+}
+.corner[data-c="bl"] {
+  left: calc(var(--inset) - 1px);
+  bottom: calc(var(--inset) - 1px);
+  border-left-width: 1px;
+  border-bottom-width: 1px;
+}
+
+/* rulers: tick marks that travel with the scroll, inside the frame line */
+.ruler {
+  position: absolute;
+}
+.left,
+.right {
+  top: calc(var(--nav-h) + 24px);
+  bottom: calc(var(--inset) + var(--strip) + 18px);
+  width: 14px;
+}
+.left {
+  left: calc(var(--inset) + 1px);
+}
+.right {
+  right: calc(var(--inset) + 1px);
+}
+
+.ticks {
+  position: absolute;
+  inset: 0;
+  /* a major tick every 120 px, minor ones every 24, travelling with the page */
+  background-image:
+    linear-gradient(180deg, var(--muted) 0 1px, transparent 1px),
+    linear-gradient(180deg, var(--line) 0 1px, transparent 1px);
+  background-size:
+    9px 120px,
+    5px 24px;
+  background-repeat: repeat-y;
+  background-position:
+    0 calc(var(--sy) * -1px),
+    0 calc(var(--sy) * -1px);
+  opacity: 0.85;
+}
+.right .ticks {
+  scale: -1 1;
+}
+
+.markY {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 14px;
+  height: 1px;
+  background: var(--khaki-light);
+  translate: 0 calc(var(--my) * 1px - var(--nav-h) - 24px);
+  opacity: 0.9;
+}
+
+.markP {
+  position: absolute;
+  right: 0;
+  top: calc(var(--p) * 100%);
+  width: 14px;
+  height: 1px;
+  background: var(--lumen);
+  box-shadow: 0 0 8px var(--lumen);
+}
+.markP span {
+  position: absolute;
+  right: 20px;
+  top: -0.7em;
+  color: var(--khaki-light);
+}
+.frame[data-scrub="1"] .right {
+  display: none;
+}
+
+.bottom {
+  left: calc(var(--inset) + 1px);
+  right: calc(var(--inset) + 1px);
+  bottom: calc(var(--inset) + 1px);
+  height: 8px;
+}
+.markX {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 1px;
+  height: 8px;
+  background: var(--khaki-light);
+  translate: calc(var(--mx) * 1px - var(--inset) - 1px) 0;
+}
+
+.vlabel {
+  position: absolute;
+  left: 22px;
+  top: 0;
+  writing-mode: vertical-rl;
+  rotate: 180deg;
+  translate: 0 0;
+  white-space: nowrap;
+  color: var(--khaki);
+  text-shadow: 0 0 6px var(--ground);
+  /* rotated 180, so it reads bottom to top and starts at the top of the ruler */
+  transform-origin: center;
+  display: flex;
+  align-items: center;
+}
+
+.gap {
+  display: inline-block;
+  width: 1.4em;
+}
+
+.readout {
+  position: absolute;
+  bottom: calc(var(--inset) + 12px);
+  white-space: pre;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+  text-shadow: 0 0 6px var(--ground);
+  contain: layout paint;
+}
+.bl {
+  left: calc(var(--inset) + 22px);
+}
+.br {
+  right: calc(var(--inset) + 22px);
+}
+.readout span {
+  color: var(--khaki-light);
+}
+.readout .gap {
+  width: 1.2em;
+}
+
+/* the chapter strip */
+.strip {
+  position: absolute;
+  left: 260px;
+  right: 280px;
+  bottom: calc(var(--inset) + 8px);
+  height: var(--strip);
+  pointer-events: none;
+}
+.stripLine {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 9px;
+  height: 1px;
+  background: var(--line);
+}
+.drop {
+  position: absolute;
+  top: 9px;
+  left: calc(var(--drop) * 100%);
+  width: 7px;
+  height: 7px;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: var(--lumen);
+  box-shadow: 0 0 10px var(--lumen);
+  transition: left 160ms linear;
+}
+.chapters {
+  position: absolute;
+  inset: 0;
+}
+.chapters li {
+  position: absolute;
+  top: 0;
+  left: calc(var(--i) / max(1, calc(var(--n) - 1)) * 100%);
+  translate: -50% 0;
+}
+.chapters li:first-child {
+  translate: 0 0;
+}
+.chapters li:last-child {
+  translate: -100% 0;
+}
+.chapter {
+  pointer-events: auto;
+  display: grid;
+  justify-items: center;
+  gap: 5px;
+  padding: 2px 4px;
+  color: var(--muted);
+  white-space: nowrap;
+  transition: color var(--dur-ui) linear;
+}
+.chapters li:first-child .chapter {
+  justify-items: start;
+}
+.chapters li:last-child .chapter {
+  justify-items: end;
+}
+.tick {
+  width: 1px;
+  height: 7px;
+  margin-top: 3px;
+  background: var(--line);
+}
+.chapters li[data-past] .tick {
+  background: var(--khaki);
+}
+.chapters li[data-active] .chapter {
+  color: var(--cream);
+}
+.chapter:hover {
+  color: var(--khaki-light);
+}
+.chapterLabel {
+  font-size: 0.68rem;
+  text-shadow: 0 0 6px var(--ground);
+}
+.frame[data-dense="1"] .chapters li:not([data-active]) .chapterLabel {
+  opacity: 0;
+  transition: opacity var(--dur-ui) linear;
+}
+.frame[data-dense="1"] .chapter:hover .chapterLabel,
+.frame[data-dense="1"] .chapter:focus-visible .chapterLabel {
+  opacity: 1;
+}
+
+/* phones: a slim top and bottom strip only */
+@media (max-width: 900px), (pointer: coarse) {
+  .edge[data-side="l"],
+  .edge[data-side="r"],
+  .corner,
+  .ruler,
+  .readout {
+    display: none;
+  }
+  .frame {
+    --inset: 0px;
+  }
+  .edge[data-side="t"] {
+    mask-image: none;
+    top: 0;
+    height: 2px;
+    background: var(--line);
+  }
+  .edge[data-side="t"]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--khaki);
+    transform-origin: left;
+    scale: var(--p) 1;
+  }
+  .edge[data-side="b"] {
+    display: none;
+  }
+  .strip {
+    display: none;
+  }
+}
+
+@media print {
+  .frame {
+    display: none;
+  }
+}

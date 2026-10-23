@@ -1,0 +1,186 @@
+.timeline {
+  --t: 0;
+  --stretch: 1;
+  position: relative;
+  display: grid;
+  gap: 14px;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.track {
+  position: relative;
+  height: 44px;
+  touch-action: pan-y;
+}
+
+.timeline[data-orientation="vertical"] .track {
+  height: auto;
+  width: 44px;
+  min-height: 420px;
+  touch-action: pan-x;
+}
+
+.rail,
+.drawn {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: var(--line);
+}
+
+.drawn {
+  height: 2px;
+  margin-top: -0.5px;
+  background: linear-gradient(90deg, var(--khaki), var(--lumen));
+  transform-origin: left;
+  scale: var(--t) 1;
+  box-shadow: 0 0 10px color-mix(in srgb, var(--lumen) 40%, transparent);
+}
+
+.timeline[data-orientation="vertical"] .rail,
+.timeline[data-orientation="vertical"] .drawn {
+  left: 50%;
+  right: auto;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  height: auto;
+}
+
+.timeline[data-orientation="vertical"] .drawn {
+  width: 2px;
+  margin-left: -0.5px;
+  background: linear-gradient(180deg, var(--khaki), var(--lumen));
+  transform-origin: top;
+  scale: 1 var(--t);
+}
+
+.drop {
+  position: absolute;
+  left: calc(var(--t) * 100%);
+  top: 50%;
+  width: 30px;
+  height: 30px;
+  translate: -50% -50%;
+  outline: none;
+  z-index: 2;
+}
+
+.timeline[data-orientation="vertical"] .drop {
+  left: 50%;
+  top: calc(var(--t) * 100%);
+}
+
+.drop svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  scale: var(--stretch) calc(2 - var(--stretch));
+  transition: scale 120ms linear;
+}
+
+.timeline[data-orientation="vertical"] .drop svg {
+  scale: calc(2 - var(--stretch)) var(--stretch);
+}
+
+.halo {
+  fill: color-mix(in srgb, var(--lumen) 18%, transparent);
+}
+
+.core {
+  fill: var(--lumen);
+  filter: drop-shadow(0 0 5px var(--lumen));
+}
+
+.drop:focus-visible .halo {
+  stroke: var(--cream);
+  stroke-width: 1.5;
+}
+
+.stops {
+  position: relative;
+  height: 64px;
+}
+
+.timeline[data-orientation="vertical"] {
+  grid-template-columns: 44px 1fr;
+}
+
+.timeline[data-orientation="vertical"] .stops {
+  height: auto;
+}
+
+.stops li {
+  position: absolute;
+  left: calc(var(--at) * 100%);
+  top: 0;
+  translate: -50% 0;
+}
+
+.stops li:first-child {
+  translate: 0 0;
+}
+
+.stops li:last-child {
+  translate: -100% 0;
+}
+
+.timeline[data-orientation="vertical"] .stops li {
+  left: 0;
+  top: calc(var(--at) * 100%);
+  translate: 0 -50%;
+}
+
+.stop {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  text-align: center;
+  color: var(--muted);
+  transition: color var(--dur-ui) linear;
+}
+
+.stops li:first-child .stop {
+  justify-items: start;
+  text-align: left;
+}
+
+.stops li:last-child .stop {
+  justify-items: end;
+  text-align: right;
+}
+
+.timeline[data-orientation="vertical"] .stop {
+  justify-items: start;
+  text-align: left;
+}
+
+.pin {
+  width: 1px;
+  height: 10px;
+  background: var(--line);
+}
+
+.stops li[data-past] .stop {
+  color: var(--khaki-light);
+}
+
+.stops li[data-past] .pin {
+  background: var(--khaki);
+}
+
+.stops li[data-current] .stop {
+  color: var(--cream);
+}
+
+.stopLabel {
+  white-space: nowrap;
+}
+
+.stopSub {
+  max-width: 16ch;
+  line-height: 1.3;
+}

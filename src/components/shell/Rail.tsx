@@ -33,7 +33,6 @@ export function Rail() {
   const bug = useRef<HTMLDivElement>(null);
   const pct = useRef<HTMLSpanElement>(null);
   const track = useRef<HTMLDivElement>(null);
-  const bar = useRef<HTMLDivElement>(null);
   const dragging = useRef(false);
 
   // where each chapter starts, as a fraction of the scrollable height
@@ -48,6 +47,7 @@ export function Rail() {
         return Math.min(1, Math.max(0, top / max));
       });
       setMarks(list);
+      rail.set({ marks: list });
     };
     measure();
     ScrollTrigger.addEventListener("refresh", measure);
@@ -72,7 +72,6 @@ export function Rail() {
       raf = 0;
       const p = max > 0 ? Math.min(1, Math.max(0, y / max)) : 0;
       if (bug.current) bug.current.style.setProperty("--p", String(p));
-      if (bar.current) bar.current.style.transform = `scaleX(${p})`;
       if (pct.current) pct.current.textContent = String(Math.round(p * 100)).padStart(3, "0");
       let a = 0;
       marks.forEach((m, i) => {
@@ -136,11 +135,13 @@ export function Rail() {
     };
   }, [scrub]);
 
-  if (!chapters.length) return null;
+  // the instrument frame shows the chapters on every page; this tape stays only where
+  // it does a job of its own, as the playhead that scrubs the page
+  if (!chapters.length || !scrub) return null;
 
   return (
     <>
-      <nav className={styles.rail} aria-label="Chapters on this page" data-hidden={menuOpen ? "1" : undefined} data-scrub={scrub ? "1" : undefined}>
+      <nav className={styles.rail} aria-label="Timeline" data-hidden={menuOpen ? "1" : undefined} data-scrub={scrub ? "1" : undefined}>
         <div
           ref={track}
           className={styles.track}
@@ -194,9 +195,6 @@ export function Rail() {
           ))}
         </ol>
       </nav>
-      <div className={styles.mobile} aria-hidden>
-        <div ref={bar} className={styles.mobileBar} />
-      </div>
     </>
   );
 }

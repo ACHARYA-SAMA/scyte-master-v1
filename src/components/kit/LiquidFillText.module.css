@@ -1,0 +1,40 @@
+.liquid {
+  position: relative;
+  display: block;
+}
+
+/* the empty glass: an outline you can read, at full contrast against the ground */
+.glass {
+  display: block;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--khaki);
+  paint-order: stroke fill;
+}
+
+.fill,
+.crest {
+  position: absolute;
+  inset: 0;
+  display: block;
+  pointer-events: none;
+}
+
+.fill {
+  color: var(--lumen);
+  -webkit-text-stroke: 1px var(--lumen);
+  text-shadow: 0 0 28px color-mix(in srgb, var(--lumen) 35%, transparent);
+  clip-path: polygon(0 102%, 100% 102%, 100% 102%, 0 102%);
+}
+
+/* the bright band where the surface meets the air */
+.crest {
+  color: var(--cream);
+  -webkit-text-stroke: 1px var(--cream);
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fill {
+    clip-path: none;
+  }
+}

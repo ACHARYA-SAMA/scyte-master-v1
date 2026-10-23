@@ -21,7 +21,7 @@ export const useChapters = (chapters: PageChapter[], options: { scrub?: boolean 
     rail.set({ chapters: chapters.map(({ id, label, mark }) => ({ id, label, mark })), active: 0, scrub });
     return () => {
       registered = [];
-      rail.set({ chapters: [], active: 0, scrub: false, progress: 0 });
+      rail.set({ chapters: [], active: 0, scrub: false, progress: 0, marks: [] });
     };
     // chapters are static per page; the key captures identity
     // eslint-disable-next-line react-hooks/exhaustive-deps

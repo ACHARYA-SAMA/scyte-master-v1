@@ -1,0 +1,49 @@
+.odo {
+  display: inline-block;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.face {
+  display: inline-flex;
+  align-items: flex-end;
+}
+
+/* one wheel: a window one digit tall over a strip of 0-9 and a second 0 for the wrap */
+.wheel {
+  position: relative;
+  display: inline-block;
+  height: 1em;
+  overflow: hidden;
+  /* soft top and bottom edges: digits roll in from behind the bezel */
+  mask-image: linear-gradient(180deg, transparent 0, #000 16%, #000 84%, transparent 100%);
+}
+
+.strip {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  transform: translateY(calc(var(--d) * -1em));
+  will-change: transform;
+}
+
+.strip span {
+  display: block;
+  height: 1em;
+  line-height: 1;
+}
+
+/* sizes the wheel to one digit's width */
+.ghost {
+  visibility: hidden;
+  display: block;
+  line-height: 1;
+}
+
+.sep,
+.fix {
+  display: inline-block;
+  line-height: 1;
+}

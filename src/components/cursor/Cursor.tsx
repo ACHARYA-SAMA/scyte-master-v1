@@ -19,9 +19,12 @@ const LABELS: Partial<Record<CursorState, string>> = {
   open: "Open",
   hold: "Hold",
   view: "View",
+  turn: "Turn",
+  pull: "Pull",
+  lock: "Lock on",
 };
 
-const VERBS = new Set<CursorState>(["drag", "tap", "scrub", "open", "hold", "view", "hidden", "link"]);
+const VERBS = new Set<CursorState>(["drag", "tap", "scrub", "open", "hold", "view", "turn", "pull", "lock", "hidden", "link"]);
 
 const resolve = (el: Element | null): { state: CursorState; label: string; magnet: HTMLElement | null } => {
   if (!el) return { state: "default", label: "", magnet: null };
@@ -42,7 +45,6 @@ export function Cursor() {
   const dot = useRef<HTMLDivElement>(null);
   const label = useRef<HTMLSpanElement>(null);
   const bar = useRef<HTMLSpanElement>(null);
-  const light = useRef<HTMLDivElement>(null);
   const state = useStore(ui, (s) => s.cursor);
   const text = useStore(ui, (s) => s.cursorLabel);
 
@@ -54,8 +56,6 @@ export function Cursor() {
 
     const p = { x: -100, y: -100 };
     const f = { x: -100, y: -100, vx: 0, vy: 0, w: 30, vw: 0, h: 30, vh: 0 };
-    // a lamp that trails the pointer, slower than the frame
-    const l = { x: -1000, y: -1000, vx: 0, vy: 0 };
     let magnet: HTMLElement | null = null;
     let magnetRect: DOMRect | null = null;
     let shown = false;
@@ -155,15 +155,6 @@ export function Cursor() {
         frame.current.style.height = `${f.h}px`;
       }
       if (dot.current) dot.current.style.transform = `translate3d(${p.x - 2.5}px, ${p.y - 2.5}px, 0)`;
-      // plain assignments: the minifier folds an object written only by destructuring
-      // into constants and emits an invalid assignment
-      const lx = springStep(l.x, l.vx, p.x, SPRING.float, dt);
-      const ly = springStep(l.y, l.vy, p.y, SPRING.float, dt);
-      l.x = lx[0];
-      l.vx = lx[1];
-      l.y = ly[0];
-      l.vy = ly[1];
-      if (light.current) light.current.style.transform = `translate3d(${l.x.toFixed(1)}px, ${l.y.toFixed(1)}px, 0)`;
       if (bar.current) bar.current.style.transform = `scaleX(${ui.get().hold})`;
     };
 
@@ -189,7 +180,6 @@ export function Cursor() {
 
   return (
     <div ref={root} className={styles.root} data-state={state} aria-hidden>
-      <div ref={light} className={styles.light} />
       <div ref={frame} className={styles.frame}>
         <i />
         <i />

@@ -1,0 +1,89 @@
+.hold {
+  --p: 0;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 26px 10px 10px;
+  border: var(--hair) solid var(--line);
+  background: linear-gradient(180deg, #243026, #1c271e);
+  color: var(--cream);
+  font-weight: 640;
+  font-size: var(--t-small);
+  letter-spacing: 0.01em;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+  overflow: hidden;
+  isolation: isolate;
+  box-shadow: inset 0 1px 0 rgb(230 213 184 / 0.06);
+  transition:
+    border-color var(--dur-ui) linear,
+    scale var(--dur-feedback) var(--ease-snap);
+}
+
+/* the charge: light rising behind the label as the ring fills */
+.hold::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--lumen) 22%, transparent), transparent);
+  transform-origin: left;
+  scale: var(--p) 1;
+}
+
+.hold:hover {
+  border-color: var(--khaki);
+}
+
+.hold:active {
+  scale: 0.98;
+}
+
+.hold[data-size="l"] {
+  padding: 14px 34px 14px 14px;
+  font-size: var(--t-body);
+}
+
+.ring {
+  width: 40px;
+  height: 40px;
+  flex: none;
+  rotate: -90deg;
+}
+
+.hold[data-size="l"] .ring {
+  width: 52px;
+  height: 52px;
+}
+
+.track {
+  fill: none;
+  stroke: var(--line);
+  stroke-width: 2;
+}
+
+.fillRing {
+  fill: none;
+  stroke: var(--lumen);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 3px color-mix(in srgb, var(--lumen) 70%, transparent));
+}
+
+.text {
+  white-space: nowrap;
+}
+
+.hold[data-done="1"] {
+  border-color: var(--lumen);
+}
+
+.hold[data-done="1"] .fillRing {
+  stroke-dashoffset: 0 !important;
+}
+
+.hold:disabled {
+  opacity: 0.45;
+}

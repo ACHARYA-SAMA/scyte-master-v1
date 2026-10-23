@@ -1,0 +1,142 @@
+.passport {
+  width: min(920px, calc(100vw - 32px));
+  max-height: calc(100svh - 48px);
+  padding: 0;
+  border: var(--hair) solid var(--line);
+  background: var(--ground-deep);
+  color: var(--khaki-light);
+  overflow: auto;
+}
+
+.passport::backdrop {
+  background: rgb(9 18 11 / 0.82);
+  backdrop-filter: blur(3px);
+}
+
+.inner {
+  display: grid;
+  gap: var(--s7);
+  padding: clamp(24px, 4vw, 48px);
+}
+
+.head {
+  display: grid;
+  gap: var(--s3);
+}
+
+.title {
+  font-size: var(--t-h2);
+  line-height: 0.95;
+  font-weight: 780;
+  font-stretch: 74%;
+  letter-spacing: -0.03em;
+  color: var(--cream);
+}
+
+.lede {
+  max-width: 48ch;
+  color: var(--muted);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--s6) var(--s5);
+}
+
+.stamp {
+  display: grid;
+  justify-items: center;
+  gap: var(--s3);
+  text-align: center;
+}
+
+/* a round rubber stamp: a double ring with the page above and the date below */
+.ring {
+  position: relative;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 2px;
+  width: clamp(104px, 13vw, 132px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 2px solid var(--line);
+  box-shadow:
+    inset 0 0 0 4px var(--ground-deep),
+    inset 0 0 0 5px var(--line);
+  color: var(--line);
+  font-stretch: 70%;
+  text-transform: uppercase;
+}
+
+.page {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+}
+
+.name {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  line-height: 1.05;
+  max-width: 9ch;
+}
+
+.when {
+  font-size: 10px;
+  letter-spacing: 0.16em;
+}
+
+/* inked: Lumen, a little uneven, the way ink sits on paper */
+.stamp[data-found] .ring {
+  color: var(--lumen);
+  border-color: var(--lumen);
+  box-shadow:
+    inset 0 0 0 4px var(--ground-deep),
+    inset 0 0 0 5px var(--lumen),
+    0 0 24px -6px color-mix(in srgb, var(--lumen) 50%, transparent);
+  mask: radial-gradient(circle at 30% 70%, #000 60%, rgb(0 0 0 / 0.75) 61%, #000 75%);
+}
+
+.caption {
+  max-width: 22ch;
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+.stamp[data-found] .caption {
+  color: var(--khaki-light);
+}
+
+.foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s5);
+  padding-top: var(--s5);
+  border-top: var(--hair) solid var(--line);
+}
+
+.action {
+  color: var(--cream);
+  text-decoration: underline;
+  text-underline-offset: 0.3em;
+}
+
+.close {
+  margin-left: auto;
+  padding: 10px 16px;
+  border: var(--hair) solid var(--line);
+  color: var(--cream);
+}
+
+.close:hover {
+  border-color: var(--khaki);
+}
+
+@media (max-width: 720px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

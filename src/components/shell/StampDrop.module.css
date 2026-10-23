@@ -1,0 +1,42 @@
+.wrap {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+.stamp {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 4px;
+  width: clamp(180px, 22vw, 260px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 3px solid var(--lumen);
+  box-shadow:
+    inset 0 0 0 7px transparent,
+    inset 0 0 0 9px var(--lumen),
+    0 0 60px -10px color-mix(in srgb, var(--lumen) 60%, transparent);
+  color: var(--lumen);
+  text-transform: uppercase;
+  font-stretch: 68%;
+  text-align: center;
+  background: rgb(9 18 11 / 0.55);
+  mask: radial-gradient(circle at 28% 72%, #000 58%, rgb(0 0 0 / 0.7) 60%, #000 74%);
+}
+
+.page {
+  font-size: 11px;
+  letter-spacing: 0.24em;
+}
+
+.name {
+  font-size: clamp(24px, 2.6vw, 34px);
+  font-weight: 850;
+  letter-spacing: 0.03em;
+  line-height: 1;
+  max-width: 8ch;
+}

@@ -34,7 +34,7 @@ export const useStore = <T extends object, S>(store: Store<T>, select: (s: T) =>
   );
 
 /** The verbs the cursor can show. Elements opt in with data-cursor. */
-export type CursorState = "default" | "link" | "view" | "drag" | "tap" | "scrub" | "open" | "hold" | "hidden";
+export type CursorState = "default" | "link" | "view" | "drag" | "tap" | "scrub" | "open" | "hold" | "turn" | "pull" | "lock" | "hidden";
 export type TransitionPhase = "idle" | "covering" | "covered" | "revealing";
 export type MotionChoice = "auto" | "full" | "reduced";
 export type PerfChoice = "auto" | "low";
@@ -52,6 +52,7 @@ export const ui = createStore({
   soundOn: false,
   menuOpen: false,
   paletteOpen: false,
+  passportOpen: false,
   transition: "idle" as TransitionPhase,
   preloaderDone: false,
   webgl: "pending" as "pending" | "deferred" | "ready" | "unsupported",
@@ -76,6 +77,8 @@ export const rail = createStore({
   progress: 0,
   /** Whether the rail's playhead scrubs the page (the product page's 20 minutes). */
   scrub: false,
+  /** where each chapter starts, as a fraction of the scrollable height */
+  marks: [] as number[],
 });
 
 /**

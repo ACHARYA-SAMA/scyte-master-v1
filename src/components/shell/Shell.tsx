@@ -15,11 +15,15 @@ import { Preloader } from "@/components/preloader/Preloader";
 import { loadSoundPreference } from "@/lib/sound";
 import { loadPrefs } from "@/lib/prefs";
 import { loadSession, ui } from "@/lib/store";
+import { loadStamps } from "@/lib/stamps";
 import { Footer } from "./Footer";
 import { Rail } from "./Rail";
 import { AuditButton } from "./AuditButton";
 import { CommandPalette } from "./CommandPalette";
 import { Toasts } from "./Toasts";
+import { InstrumentFrame } from "./InstrumentFrame";
+import { Passport } from "./Passport";
+import { StampDrop } from "./StampDrop";
 
 // The WebGL stage is its own chunk, fetched after first paint so the page is plain HTML first.
 const Stage = dynamic(() => import("@/components/gl/Stage").then((m) => m.Stage), {
@@ -87,6 +91,7 @@ export function Shell({ children }: { children: ReactNode }) {
   useEffect(() => {
     loadPrefs();
     loadSoundPreference();
+    loadStamps();
     return loadSession();
   }, []);
 
@@ -102,10 +107,13 @@ export function Shell({ children }: { children: ReactNode }) {
         {children}
       </main>
       <Footer />
+      <InstrumentFrame />
       <Rail />
       <AuditButton />
       <Toasts />
       <CommandPalette />
+      <Passport />
+      <StampDrop />
       <div className="grain" aria-hidden />
       <Cursor />
       <Handoff />

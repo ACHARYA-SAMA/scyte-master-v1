@@ -11,19 +11,6 @@
   opacity: 1;
 }
 
-/* a soft lamp that trails the pointer and warms whatever it passes over */
-.light {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 70vmax;
-  height: 70vmax;
-  margin: -35vmax 0 0 -35vmax;
-  border-radius: 50%;
-  background: radial-gradient(closest-side, color-mix(in srgb, var(--khaki) 7%, transparent), transparent);
-  will-change: transform;
-}
-
 .root[data-state="hidden"] {
   opacity: 0;
 }
@@ -118,7 +105,10 @@
 .root[data-state="scrub"] .label,
 .root[data-state="open"] .label,
 .root[data-state="hold"] .label,
-.root[data-state="view"] .label {
+.root[data-state="view"] .label,
+.root[data-state="turn"] .label,
+.root[data-state="pull"] .label,
+.root[data-state="lock"] .label {
   opacity: 1;
 }
 
@@ -127,8 +117,18 @@
 .root[data-state="scrub"] .dot,
 .root[data-state="open"] .dot,
 .root[data-state="hold"] .dot,
-.root[data-state="view"] .dot {
+.root[data-state="view"] .dot,
+.root[data-state="turn"] .dot,
+.root[data-state="pull"] .dot {
   opacity: 0;
+}
+
+/* a lock-on reticle: the corners close in and turn Lumen */
+.root[data-state="lock"] .frame i {
+  border-color: var(--lumen);
+}
+.root[data-state="lock"] .dot {
+  background: var(--lumen);
 }
 
 /* press-and-hold progress, along the bottom edge */
