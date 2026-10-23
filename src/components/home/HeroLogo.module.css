@@ -28,6 +28,39 @@
   mask-image: radial-gradient(circle var(--lr) at var(--lx) var(--ly), transparent 98%, #000 100%);
 }
 
+/* light running through the letters, masked to the logo's own shape. It covers the
+   moments before the glass scene draws, and touch devices until the first touch loads it */
+.flow {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  -webkit-mask: url(/brand/scyte-logo.svg) 0 0 / 100% 100% no-repeat;
+  mask: url(/brand/scyte-logo.svg) 0 0 / 100% 100% no-repeat;
+  transition: opacity 600ms linear;
+}
+
+.flow > span {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 30%;
+  background: linear-gradient(90deg, transparent, var(--lumen) 38%, #fff4cc 50%, var(--lumen) 62%, transparent);
+  transform: translateX(-110%);
+  animation: run-light 2.8s var(--ease-drift) infinite;
+}
+
+@keyframes run-light {
+  to {
+    transform: translateX(310%);
+  }
+}
+
+:global([data-glass="1"]) .flow {
+  opacity: 0;
+}
+
 /* inside the lens: magnified, refracted, lit */
 .lens {
   clip-path: circle(var(--lr) at var(--lx) var(--ly));

@@ -68,6 +68,10 @@ export function HeroLogo() {
         </filter>
       </svg>
       <Logo className={styles.base} title="Scyte" />
+      {/* light running through the letters until the glass scene takes over */}
+      <span className={styles.flow} aria-hidden>
+        <span />
+      </span>
       <div className={styles.lens} aria-hidden>
         <div className={styles.lensInner} style={{ filter: `url(#${fid})` }}>
           <Logo className={styles.lit} title={null} />

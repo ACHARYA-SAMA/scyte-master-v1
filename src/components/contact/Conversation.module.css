@@ -314,9 +314,16 @@
   color: var(--muted);
 }
 
+@media (max-width: 520px) {
+  /* the address is set large; on a phone it gets the full width, the clock goes under it */
+  .facts {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 @media (max-width: 960px) {
   .top {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     min-height: auto;
     gap: var(--s6);
   }
@@ -324,7 +331,7 @@
     --pw: min(320px, 78vw);
   }
   .audit {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
   .steps {
     grid-template-columns: 1fr;

@@ -4,6 +4,11 @@
   perspective: 2400px;
 }
 
+/* the laptop's deck hangs 5% past the lid each side; keep that inside the column */
+.wrap[data-kind="laptop"] {
+  padding-inline: 4.6%;
+}
+
 .body {
   --rx: 0deg;
   --ry: 0deg;
