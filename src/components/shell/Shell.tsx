@@ -8,6 +8,8 @@ import { Cursor } from "@/components/cursor/Cursor";
 import { LiquidWipe } from "@/components/transition/LiquidWipe";
 import { Handoff } from "@/components/transition/Handoff";
 import { Reveal } from "@/components/motion/Reveal";
+import { Tilt } from "@/components/motion/Tilt";
+import { Parallax } from "@/components/motion/Parallax";
 import { RouteWatcher } from "@/components/transition/navigation";
 import { Preloader } from "@/components/preloader/Preloader";
 import { loadSoundPreference } from "@/lib/sound";
@@ -104,12 +106,15 @@ export function Shell({ children }: { children: ReactNode }) {
       <AuditButton />
       <Toasts />
       <CommandPalette />
+      <div className="grain" aria-hidden />
       <Cursor />
       <Handoff />
       <LiquidWipe />
       <Preloader />
       <RouteWatcher />
       <Reveal />
+      <Tilt />
+      <Parallax />
     </SmoothScroll>
   );
 }

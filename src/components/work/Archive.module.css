@@ -308,9 +308,6 @@
   transition: background-color var(--dur-feedback) linear;
 }
 
-.button:hover {
-  background: var(--cream);
-}
 
 .sheet {
   display: grid;

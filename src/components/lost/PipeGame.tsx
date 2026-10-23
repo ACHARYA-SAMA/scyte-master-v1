@@ -190,10 +190,10 @@ export function PipeGame({ onSolved }: { onSolved?: () => void }) {
         <p className="t-fig">
           <span className="t-hud c-muted">Best</span> {best ? String(best).padStart(2, "0") : "--"}
         </p>
-        <button type="button" className={styles.again} onClick={showOne} disabled={solved} data-cursor="tap">
+        <button type="button" className={`${styles.again} cta`} onClick={showOne} disabled={solved} data-cursor="tap">
           Fix one for me
         </button>
-        <button type="button" className={styles.again} onClick={fresh} data-cursor="tap">
+        <button type="button" className={`${styles.again} cta`} onClick={fresh} data-cursor="tap">
           New pipe
         </button>
         <p className="sr-only" role="status" aria-live="polite">
@@ -202,7 +202,7 @@ export function PipeGame({ onSolved }: { onSolved?: () => void }) {
       </div>
 
       {solved ? (
-        <TransitionLink ref={home} href="/" className={styles.home} data-magnetic data-cursor="open">
+        <TransitionLink ref={home} href="/" className={`${styles.home} cta`} data-glow data-magnetic data-cursor="open">
           Fixed. Go home
         </TransitionLink>
       ) : null}

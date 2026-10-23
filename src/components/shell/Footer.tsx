@@ -47,7 +47,7 @@ export function Footer() {
         <div className={styles.offer}>
           <p className={`${styles.closing} t-h1`}>Tell us where your store leaks.</p>
           <div className={styles.offerActions}>
-            <TransitionLink href="/contact?intent=audit" className={styles.cta} data-magnetic data-cursor="open">
+            <TransitionLink href="/contact?intent=audit" className={`${styles.cta} cta`} data-glow data-magnetic data-cursor="open">
               Book a 20-minute store audit
             </TransitionLink>
             <CopyEmail big />

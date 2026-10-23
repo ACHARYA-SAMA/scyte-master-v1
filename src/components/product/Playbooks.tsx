@@ -50,7 +50,7 @@ const ROUTES: Record<string, { when: string; then: string }[]> = {
 function Template({ p }: { p: Playbook }) {
   const parts = p.message.split(/(\{[a-z]+\})/g);
   return (
-    <figure className={styles.template}>
+    <figure className={styles.template} data-tilt>
       <figcaption className="t-hud">Template, {CATEGORY[p.template].toLowerCase()}</figcaption>
       <p className={styles.message}>
         {parts.map((part, i) =>

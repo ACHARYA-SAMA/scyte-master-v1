@@ -120,6 +120,8 @@
 .shot {
   grid-column: 1 / span 8;
   margin: 0;
+  overflow: hidden;
+  outline: var(--hair) solid var(--line);
 }
 
 .scene[data-side="right"] .shot {
@@ -133,7 +135,8 @@
   height: auto;
   aspect-ratio: 16 / 10;
   object-fit: cover;
-  outline: var(--hair) solid var(--line);
+  /* room for the parallax slide inside the frame */
+  scale: 1.12;
 }
 
 .text {
@@ -194,9 +197,8 @@
     color var(--dur-feedback) linear;
 }
 
-.live:hover {
-  background: var(--khaki);
-  color: var(--ground);
+.live {
+  --sweep: var(--khaki);
 }
 
 /* ------------------------------------------------------------- client case */
@@ -279,9 +281,9 @@
     color var(--dur-feedback) linear;
 }
 
-.nextLink:hover {
-  background: var(--ground);
-  color: var(--khaki);
+.nextLink {
+  --sweep: var(--ground);
+  --sweep-ink: var(--khaki);
 }
 
 .back {

@@ -40,9 +40,6 @@
   transition: background-color var(--dur-feedback) linear;
 }
 
-.cta:hover {
-  background: var(--cream);
-}
 
 .cols {
   display: grid;
@@ -67,7 +64,15 @@
   align-items: baseline;
   gap: 10px;
   color: var(--cream);
-  transition: color var(--dur-feedback) linear;
+  /* the underline draws in from the left on hover */
+  background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+  transition:
+    color var(--dur-feedback) linear,
+    background-size 480ms var(--ease-snap);
+}
+
+.link:hover {
+  background-size: 100% 1px;
 }
 
 .link:hover {

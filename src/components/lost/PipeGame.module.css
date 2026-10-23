@@ -144,9 +144,8 @@
     color var(--dur-feedback) linear;
 }
 
-.again:hover:not(:disabled) {
-  background: var(--khaki);
-  color: var(--ground);
+.again {
+  --sweep: var(--khaki);
 }
 
 .again:disabled {

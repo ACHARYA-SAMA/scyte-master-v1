@@ -80,7 +80,7 @@ export function Pilot() {
       </div>
 
       <div className={styles.cta}>
-        <TransitionLink href="/contact?intent=audit" className={styles.button} data-magnetic data-cursor="open">
+        <TransitionLink href="/contact?intent=audit" className={`${styles.button} cta`} data-magnetic data-cursor="open">
           Book the 20-minute store audit
         </TransitionLink>
       </div>

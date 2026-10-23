@@ -314,10 +314,13 @@
   line-height: 0.95;
   color: var(--cream);
   white-space: nowrap;
+  /* light is money: the amounts glow faintly */
+  text-shadow: 0 0 32px color-mix(in srgb, var(--lumen) 20%, transparent);
 }
 
 .figures div:last-child dd {
   color: var(--lumen);
+  text-shadow: 0 0 36px color-mix(in srgb, var(--lumen) 45%, transparent);
 }
 
 /* ------------------------------------------------------------------ builders */
@@ -361,17 +364,15 @@
   color: var(--ground);
 }
 
-.cta:hover {
-  background: var(--cream);
-}
 
 .ctaQuiet {
   border: var(--hair) solid var(--khaki);
   color: var(--cream);
 }
 
-.ctaQuiet:hover {
-  background: var(--surface);
+.ctaQuiet {
+  --sweep: var(--surface);
+  --sweep-ink: var(--cream);
 }
 
 /* ------------------------------------------------------------------ smaller screens */

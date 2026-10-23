@@ -12,7 +12,7 @@ function Next() {
       <p className={styles.nextTitle}>Case 01 is open.</p>
       <div className={styles.nextLinks}>
         {OPEN_SLOTS.map((o) => (
-          <TransitionLink key={o.id} href={o.href} className={styles.nextLink} data-cursor="tap">
+          <TransitionLink key={o.id} href={o.href} className={`${styles.nextLink} cta`} data-cursor="tap">
             {o.service}
           </TransitionLink>
         ))}
@@ -56,7 +56,7 @@ export function ThisSiteCase() {
           <ol>
             {THIS_SITE_SCENES.map((s, i) => (
               <li key={s.id}>
-                <a href={`#scene-${s.id}`} data-cursor="view" data-cursor-label="Jump">
+                <a href={`#scene-${s.id}`} data-cursor="view" data-cursor-label="Jump" data-tilt>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={s.img} alt="" width={1280} height={800} loading="lazy" decoding="async" />
                   <span>
@@ -71,10 +71,10 @@ export function ThisSiteCase() {
 
       {THIS_SITE_SCENES.map((s, i) => (
         <section key={s.id} id={`scene-${s.id}`} className={styles.scene} data-side={i % 2 ? "right" : "left"} aria-labelledby={`scene-${s.id}-title`}>
-          <figure className={styles.shot}>
+          <figure className={styles.shot} data-tilt>
             {/* the archive hands this exact file over, already decoded */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={s.img} data-handoff={s.img} alt={`Screenshot of ${s.title.toLowerCase()}, on the ${s.page} page of this site`} width={1280} height={800} loading={i < 2 ? "eager" : "lazy"} decoding="async" />
+            <img data-parallax="0.12" src={s.img} data-handoff={s.img} alt={`Screenshot of ${s.title.toLowerCase()}, on the ${s.page} page of this site`} width={1280} height={800} loading={i < 2 ? "eager" : "lazy"} decoding="async" />
           </figure>
           <div className={styles.text}>
             <p className={`${styles.count} t-fig`}>
@@ -87,7 +87,7 @@ export function ThisSiteCase() {
             </h2>
             <p className={styles.what}>{s.what}</p>
             <p className={styles.how}>{s.how}</p>
-            <TransitionLink href={s.href} className={styles.live} data-cursor="open">
+            <TransitionLink href={s.href} className={`${styles.live} cta`} data-cursor="open">
               See it live
             </TransitionLink>
           </div>
@@ -133,7 +133,7 @@ export function ClientCase({ w }: { w: WorkItem }) {
           </dl>
         ) : null}
         {w.url ? (
-          <a href={w.url} target="_blank" rel="noopener noreferrer" className={styles.live}>
+          <a href={w.url} target="_blank" rel="noopener noreferrer" className={`${styles.live} cta`}>
             Visit the live site
           </a>
         ) : null}

@@ -162,8 +162,9 @@
   transition: background-color var(--dur-feedback) linear;
 }
 
-.button:hover {
-  background: var(--surface);
+.button {
+  --sweep: var(--raised);
+  --sweep-ink: var(--khaki);
 }
 
 @media (max-width: 1000px) {

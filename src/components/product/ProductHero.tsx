@@ -72,7 +72,7 @@ export function ProductHero() {
       <ol ref={list} className={styles.stations}>
         {STATIONS.map((s) => (
           <li key={s.id} data-station>
-            <button type="button" className={styles.station} onClick={() => jump(s.id)} data-cursor="open">
+            <button type="button" className={styles.station} onClick={() => jump(s.id)} data-cursor="open" data-tilt>
               <span className={styles.n}>{s.n}</span>
               <span className={styles.sName}>{s.name}</span>
               <span className={`${styles.sLine} t-small`}>{s.line}</span>

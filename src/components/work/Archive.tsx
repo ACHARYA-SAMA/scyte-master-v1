@@ -386,14 +386,14 @@ export function Archive() {
               <dd>{THIS_SITE.stack.join(", ")}</dd>
             </div>
           </dl>
-          <TransitionLink href={`/work/${THIS_SITE.slug}`} className={styles.button} data-magnetic data-cursor="open">
+          <TransitionLink href={`/work/${THIS_SITE.slug}`} className={`${styles.button} cta`} data-glow data-magnetic data-cursor="open">
             Read case 00
           </TransitionLink>
         </div>
         <ol className={styles.sheet} aria-label="The eight scenes">
           {THIS_SITE_SCENES.map((s, i) => (
             <li key={s.id}>
-              <TransitionLink href={`/work/${THIS_SITE.slug}#scene-${s.id}`} className={styles.sheetLink} data-cursor="view" data-cursor-label="Open">
+              <TransitionLink href={`/work/${THIS_SITE.slug}#scene-${s.id}`} className={styles.sheetLink} data-cursor="view" data-cursor-label="Open" data-tilt>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={s.img} alt="" width={1280} height={800} loading="lazy" decoding="async" />
                 <span className={styles.sheetCap}>

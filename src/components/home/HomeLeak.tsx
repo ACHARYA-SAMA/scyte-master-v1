@@ -344,10 +344,10 @@ export function HomeLeak() {
           <h2 className="t-h2">We build the machine, and the storefront in front of it.</h2>
           <p className="t-lead">Look again. The pipes were our name the whole time.</p>
           <div className={styles.ctas}>
-            <TransitionLink href="/product" className={styles.cta} data-magnetic data-cursor="open">
+            <TransitionLink href="/product" className={`${styles.cta} cta`} data-glow data-magnetic data-cursor="open">
               See how the machine works
             </TransitionLink>
-            <TransitionLink href="/studio" className={styles.ctaQuiet} data-magnetic data-cursor="open">
+            <TransitionLink href="/studio" className={`${styles.ctaQuiet} cta`} data-magnetic data-cursor="open">
               Meet the studio
             </TransitionLink>
           </div>

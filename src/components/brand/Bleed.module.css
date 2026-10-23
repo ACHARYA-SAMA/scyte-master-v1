@@ -1,0 +1,28 @@
+.bleed {
+  position: absolute;
+  left: -2vw;
+  bottom: 14vh;
+  z-index: 0;
+  margin: 0;
+  font-size: clamp(8rem, 2rem + 28vw, 32rem);
+  line-height: 0.76;
+  font-weight: 900;
+  font-stretch: 62%;
+  letter-spacing: -0.04em;
+  white-space: nowrap;
+  color: var(--surface);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* it never quite stops: a slow drift under the scroll-driven slide */
+.bleed span {
+  display: inline-block;
+  animation: bleed-drift 26s var(--ease-drift) infinite alternate;
+}
+
+@keyframes bleed-drift {
+  to {
+    translate: -8vw 0;
+  }
+}

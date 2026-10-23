@@ -258,7 +258,7 @@ export function TeamHud({ member, index, total, attract }: { member: Member | nu
           <Wave live={!!member} />
         </section>
         {member?.links.portfolio ? (
-          <a className={styles.portfolio} href={member.links.portfolio} target="_blank" rel="noopener noreferrer" data-magnetic data-cursor="open">
+          <a className={`${styles.portfolio} cta`} href={member.links.portfolio} target="_blank" rel="noopener noreferrer" data-magnetic data-cursor="open">
             <span>Visit portfolio</span>
             <span className={styles.out} aria-hidden />
           </a>

@@ -158,27 +158,76 @@
   display: grid;
 }
 
+/* each seat a row you can feel: a big index, the role set large, a light that sweeps
+   in under the pointer. Open seats read as open, not as missing data */
 .rows li {
+  position: relative;
+  isolation: isolate;
   display: grid;
-  grid-template-columns: 3em minmax(0, 2fr) minmax(0, 4fr) minmax(0, 1.4fr) minmax(0, 1.4fr);
+  grid-template-columns: 4.5em minmax(0, 5fr) minmax(0, 2fr) minmax(0, 1.4fr) minmax(0, 1.6fr);
   gap: var(--gutter);
-  align-items: baseline;
-  padding: var(--s4) 0;
+  align-items: center;
+  padding: var(--s5) 0;
   border-top: var(--hair) solid var(--line);
+  transition: padding 520ms var(--ease-glide);
 }
 
-.ri {
+.rows li:last-child {
+  border-bottom: var(--hair) solid var(--line);
+}
+
+.rows li::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--khaki) 11%, transparent), transparent 75%);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform 620ms var(--ease-snap);
+}
+
+.rows li:hover::before {
+  transform: scaleX(1);
+}
+
+.rows li:hover {
+  padding-inline: var(--s4);
+}
+
+.rows .ri {
+  font-size: clamp(2.2rem, 1.4rem + 1.8vw, 3.4rem);
+  line-height: 0.8;
+  font-weight: 900;
+  font-stretch: 62%;
+  letter-spacing: 0;
   color: var(--khaki);
+  text-shadow: 0 0 36px color-mix(in srgb, var(--lumen) 18%, transparent);
+}
+
+.rr {
+  order: 1;
+  font-size: var(--t-lead);
+  line-height: 1.25;
+  font-weight: 560;
+  letter-spacing: -0.01em;
+  color: var(--cream);
+  text-wrap: balance;
 }
 
 .rn {
+  order: 2;
   font-weight: 650;
   color: var(--cream);
 }
 
-.rr {
-  font-size: var(--t-small);
-  color: var(--khaki-light);
+.rl {
+  order: 3;
+}
+
+.rp {
+  order: 4;
+  justify-self: end;
 }
 
 .rl,
@@ -193,6 +242,17 @@
 }
 
 @media (max-width: 900px) {
+  .rows li {
+    grid-template-columns: 3.2em minmax(0, 1fr);
+    row-gap: var(--s2);
+  }
+  .rr,
+  .rn,
+  .rl,
+  .rp {
+    grid-column: 2;
+    justify-self: start;
+  }
   .top {
     justify-items: stretch;
     text-align: left;

@@ -84,20 +84,29 @@
   gap: var(--gutter);
 }
 
+/* each step a lit card: a khaki edge on top, light from above, depth below */
 .steps li {
   display: grid;
   align-content: start;
   gap: var(--s3);
-  padding-top: var(--s4);
+  padding: var(--s5) var(--s5) var(--s6);
+  border: var(--hair) solid var(--line);
   border-top: 2px solid var(--khaki);
+  background:
+    radial-gradient(120% 70% at 0% 0%, color-mix(in srgb, var(--khaki) 9%, transparent), transparent 60%),
+    linear-gradient(180deg, var(--surface), var(--ground-deep));
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--khaki-light) 12%, transparent),
+    0 28px 60px -32px rgb(9 18 11 / 0.9);
 }
 
 .stepN {
-  font-size: var(--t-h2);
+  font-size: clamp(3.25rem, 2rem + 3.2vw, 5.5rem);
   line-height: 0.8;
   font-weight: 900;
   font-stretch: 62%;
   color: var(--khaki);
+  text-shadow: 0 0 40px color-mix(in srgb, var(--lumen) 22%, transparent);
 }
 
 .stepWhen {
@@ -168,15 +177,22 @@
 .field select,
 .field textarea {
   width: 100%;
-  padding: 13px 14px;
+  min-height: 54px;
+  padding: 15px 16px;
   border: var(--hair) solid var(--line);
-  background: var(--ground-deep);
+  background: linear-gradient(180deg, var(--ground-deep), color-mix(in srgb, var(--ground-deep) 70%, var(--abyss)));
+  box-shadow: inset 0 2px 6px rgb(9 18 11 / 0.45);
   color: var(--cream);
   font-size: var(--t-body);
   border-radius: 0;
   transition:
     border-color var(--dur-feedback) linear,
-    box-shadow var(--dur-panel) linear;
+    box-shadow var(--dur-panel) var(--ease-glide);
+}
+
+.field input::placeholder,
+.field textarea::placeholder {
+  color: var(--muted);
 }
 
 .field textarea {
@@ -194,7 +210,14 @@
 .field textarea:focus-visible {
   outline: 2px solid var(--cream);
   outline-offset: 2px;
-  box-shadow: none;
+  border-color: var(--khaki);
+  box-shadow:
+    inset 0 2px 6px rgb(9 18 11 / 0.45),
+    0 0 0 6px color-mix(in srgb, var(--lumen) 12%, transparent);
+}
+
+.field:focus-within .label {
+  color: var(--cream);
 }
 
 .field input[aria-invalid="true"] {
@@ -246,7 +269,7 @@
 
 .choice span {
   display: inline-block;
-  padding: 10px 14px;
+  padding: 12px 16px;
   border: var(--hair) solid var(--line);
   font-size: var(--t-small);
   color: var(--khaki-light);
@@ -293,10 +316,6 @@
   font-weight: 720;
   font-size: var(--t-body);
   transition: background-color var(--dur-feedback) linear;
-}
-
-.submit:hover:not(:disabled) {
-  background: var(--cream);
 }
 
 .submit:disabled {

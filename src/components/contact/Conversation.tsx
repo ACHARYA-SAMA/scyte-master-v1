@@ -149,7 +149,7 @@ export function Conversation() {
           </h2>
           <ol className={styles.steps}>
             {AUDIT.map((a, i) => (
-              <li key={a.when}>
+              <li key={a.when} data-tilt>
                 <span className={styles.stepN}>{String(i + 1).padStart(2, "0")}</span>
                 <span className={`${styles.stepWhen} t-hud`}>{a.when}</span>
                 <p>{a.what}</p>
@@ -264,7 +264,7 @@ export function Conversation() {
             </div>
 
             <div className={styles.submitRow}>
-              <button type="submit" className={styles.submit} disabled={pending || sent} data-magnetic data-cursor="tap">
+              <button type="submit" className={`${styles.submit} cta`} disabled={pending || sent} data-glow data-magnetic data-cursor="tap">
                 {pending ? "Sending…" : sent ? "Sent" : "Send"}
               </button>
               <p className={styles.status} role="status" aria-live="polite">

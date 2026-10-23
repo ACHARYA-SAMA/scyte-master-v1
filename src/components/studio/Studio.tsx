@@ -6,6 +6,7 @@ import { TransitionLink } from "@/components/transition/navigation";
 import { PhoneFrame } from "@/components/devices/PhoneFrame";
 import { SERVICES } from "@/data/services";
 import { useRunningLight } from "@/lib/useRunningLight";
+import { Bleed } from "@/components/brand/Bleed";
 import { Assembly } from "./Assembly";
 import { WebsiteBench } from "./WebsiteBench";
 import { AppPrototype } from "./AppPrototype";
@@ -43,12 +44,13 @@ export function Studio() {
   return (
     <>
       <header className={styles.hero} id="studio-top">
+        <Bleed>ASSEMBLY</Bleed>
         <p className="t-hud c-khaki">The studio</p>
         <h1 className={styles.title}>Scyte designs and builds websites, mobile apps and social media for brands. We work from Hyderabad.</h1>
         <ol ref={services} className={styles.services}>
           {SERVICES.map((s, i) => (
             <li key={s.id}>
-              <a href={`#bench-${s.id}`} className={styles.service} data-cursor="open">
+              <a href={`#bench-${s.id}`} className={styles.service} data-cursor="open" data-tilt>
                 <span className={`${styles.sn} t-hud`}>{String(i + 1).padStart(2, "0")}</span>
                 <span className={styles.sName}>{s.name}</span>
                 <span className={styles.sLine}>{s.line}</span>
@@ -138,7 +140,7 @@ export function Studio() {
                   </dd>
                 </div>
               </dl>
-              <TransitionLink href={`/contact?service=${s.id}`} className={styles.start} data-magnetic data-cursor="open">
+              <TransitionLink href={`/contact?service=${s.id}`} className={`${styles.start} cta`} data-magnetic data-cursor="open">
                 Start a {s.id === "apps" ? "mobile app" : s.id === "social" ? "social media" : "website"} project
               </TransitionLink>
             </div>

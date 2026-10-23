@@ -263,9 +263,6 @@
   transition: background-color var(--dur-feedback) linear;
 }
 
-.portfolio:hover:not(:disabled) {
-  background: var(--cream);
-}
 
 .portfolio:disabled {
   background: transparent;
