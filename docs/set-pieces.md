@@ -252,3 +252,50 @@ The brief's numbers. The scripts that check them land in Round E.
 | LCP | < 2.5 s |
 | CLS | ≈ 0 |
 | Disposal | Strict Mode safe; every scene, listener and ticker is released on unmount |
+
+---
+
+# Round 4 additions (version 2)
+
+Round 4 keeps the round-3 plan and adds what the client's second review asks for. Entries use the same fields. "Proof" points at `docs/proof/`.
+
+## J1, The Junction (every page, the flagship)
+
+| Field | Plan |
+|---|---|
+| Subject | A crossroads at the end of every page: a glass-floored chamber seen low, with six pipes fanning out to six portals, one per page, in fixed slots (far left Home, left Product, near left Studio, near right Work, right Team, far right Contact). The current page's slot is a "You are here" pad that doubles as Back to top. The next page in story order is flagged Continue and pulses |
+| Technique | WebGL scene (its own route-independent scene key), custom GLSL for the liquid charge and the portal glass, instanced BulbString along each pipe |
+| Interactions | Pointer steers (camera yaws up to 12° toward the nearest pipe); wheel, Space, PageDown or ArrowDown charges the highlighted pipe; ArrowLeft and ArrowRight move the highlight; 1 to 6 select; Enter commits; Escape cancels; a horizontal trackpad swipe moves with detents; touch swipes and follows the finger one to one, committing past 70 %; click or tap commits on a short travel |
+| Charge and commit | About 1,100 px of cumulative scroll with resistance fills the pipe with Lumen liquid. Bulbs ignite along it, the portal grows and the relay ratchet rises in pitch; scrolling back drains it. At 100 % the camera dives down the pipe in at most 700 ms (blur and chromatic aberration only in the dive) and cuts to the destination's splash |
+| Safeguards | 450 ms input lock on entry; residual trackpad momentum ignored; a hint after 1.5 s idle |
+| Zero lag | `router.prefetch`, a scene-chunk import and shader compile while a path is highlighted for 150 ms or charged past 10 %. The story-next page is prefetched on idle. Pooled objects for the travel; a long-task observer in QA |
+| Accessible base | Real `<a href>` links in a visually integrated list with `aria-current` and an `aria-live` readout of the highlighted path |
+| Idle | Bulbs breathe, the Continue pipe pulses, the portals loop their page's signature object |
+| Mobile | A rotary selector: the fan becomes a dial you swipe; swipe up charges |
+| Reduced motion | Six large staggered cards, a fade and a short splash |
+| Proof | `docs/proof/junction/` |
+
+## J2, The splash (per destination)
+
+The loader the client loves becomes the arrival ceremony. It shares one grammar: the Page, Type and Light stages tick as the route chunk, the fonts and the scene are actually ready, and the 000 counter climbs. Each destination has its own beat:
+
+- Home: the logo assembles.
+- Product: six station lights come on.
+- Studio: layers stack.
+- Work: a film-leader countdown.
+- Team: a scan sweep.
+- Contact: a typing indicator resolves to a message.
+
+It takes at most 1,400 ms cold and 500 ms warm, and never blocks input once the page is interactive.
+
+## Changes to round-3 entries
+
+| ID | Round 4 |
+|---|---|
+| H5 (new) | **The finale.** Frontal solved camera, BulbString marquee with ignition switch, floor reflection, rest-sharp post. Built. Proof: `docs/proof/render/finale-1366.png`, `finale-1440.png` |
+| H6 (new) | **Pressure knob** on the first pipe's valve (payment-failure rate 0 to 60 %, leaks change live) and a **release lever** in Relit that flushes the clamped drops with a surge and rolls the ledger |
+| P8 | **The split world**: the holdout knob is now the valve between the two crowds, docked in the world. Built. Proof: `docs/proof/render/measure-1440.png` |
+| P9 | **Playbooks** become a pinned scroll-through with a ScrollRail, resolving facts, a self-drawing event chain and a live phone. Built. Proof: `docs/proof/render/playbooks-1366.png` |
+| P10 | **The instrument cluster** runs on LaptopShell as a scrollable app: glass funnel, split-flap flows, Sankey, holdout charts, radar, COD gauge, and a fixed Sample data ribbon. Built. Proof: `docs/proof/render/dashboard-1366.png` |
+| S3 | **The Laptop** is rebuilt on LaptopShell: a 16:10 screen scrolling a real storefront, a menu bar, a dock, and four draggable app windows (Design, Code, Deploy, Analytics). The inspector knobs drive the page inside |
+| Kit | New: AnchorDock (DOM controls docked to points in a 3D scene), LaptopShell, ScrollRail, BulbString |

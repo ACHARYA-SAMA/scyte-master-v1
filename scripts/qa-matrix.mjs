@@ -22,7 +22,7 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { chromium } from "playwright";
+import { chromium, firefox, webkit } from "playwright";
 
 const args = process.argv.slice(2);
 const flag = (name, fallback) => {
@@ -107,6 +107,10 @@ const launch = async (browser, glMode) => {
   };
   // the Edge channel uses the Edge already installed on this machine; nothing is downloaded
   if (browser === "msedge") return chromium.launch({ ...opts, channel: "msedge" });
+  // Firefox and WebKit need the builds this Playwright version expects: `npx playwright
+  // install firefox webkit` (a download, so it is never done by this script)
+  if (browser === "firefox") return firefox.launch({ headless: true });
+  if (browser === "webkit") return webkit.launch({ headless: true });
   try {
     return await chromium.launch(opts);
   } catch {
@@ -197,7 +201,7 @@ for (const browserName of browsers) {
       const vw = Math.round(w / zoom);
       const vh = Math.round(h / zoom);
       for (const route of routes) {
-        const ctx = await browser.newContext({ viewport: { width: vw, height: vh }, deviceScaleFactor: zoom, isMobile: w <= 430, hasTouch: w <= 820 });
+        const ctx = await browser.newContext({ viewport: { width: vw, height: vh }, deviceScaleFactor: zoom, isMobile: browserName !== "firefox" && w <= 430, hasTouch: w <= 820 });
         await ctx.addInitScript(() => {
           try {
             sessionStorage.setItem("scyte.preloaded", "1");
@@ -210,7 +214,7 @@ for (const browserName of browsers) {
         page.on("pageerror", (e) => errors.push(String(e).slice(0, 200)));
         // the 404 route's own document answers 404 on purpose
         page.on("console", (m) => m.type() === "error" && !(route === "/does-not-exist" && /status of 404/.test(m.text())) && errors.push(m.text().slice(0, 600)));
-        if (pass.cpu > 1) {
+        if (pass.cpu > 1 && browserName !== "firefox" && browserName !== "webkit") {
           const cdp = await ctx.newCDPSession(page);
           await cdp.send("Emulation.setCPUThrottlingRate", { rate: pass.cpu });
         }

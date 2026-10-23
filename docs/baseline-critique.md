@@ -253,3 +253,23 @@ The reference studios were captured live: scroll captures and library sniffing, 
 | Basement | A place as the hero, not a picture of a product | P1, K5 |
 
 For the control room and the HUDs, the reference is real instrument practice: NASA's HUD format studies and SAE ARP5288's guidance on symbology and clutter. Every glowing number on an instrument needs a reason, and clutter is a failure, not decoration. That is why the Instrument Frame is hairline and the readouts are real, not invented.
+
+---
+
+# Round 4 addendum: the client's second review
+
+The client reviewed the deployed round-3 build. The home story is liked. The splash loader is loved and should come back as the arrival screen. The bulb lights in the home finale are liked as an idea but render blurry. The rest reads as below the home page's standard. Their reports, ranked by damage and mapped to the fix:
+
+| Rank | Weakness | Evidence | Fixed by |
+|---|---|---|---|
+| 1 | No way on from a page except the menu: every page ends in a footer, so visitors stop | Client note: "it is kinda hard to navigate to other pages" | **J1, the Junction**: a scroll-driven crossroads at the end of every page, six labelled paths, with a splash on arrival |
+| 2 | The dashboard laptop's screen is about 2.5 screens tall, with an orphan block beside the revenue chart | Client screenshot 1; `docs/render-fixes.md` bug 1 | **P10**: LaptopShell (16:10, inner scroll) and the dashboard app on one grid |
+| 3 | The home finale is oblique, blurry and overlapped by its headline | Client screenshot 3; bug 3 | **H5**: frontal solved camera, BulbString marquee, rest-sharp post chain |
+| 4 | Playbooks are click-tabs, and stray text and fixed UI collide with the phone | Client screenshot 2; bug 2 | **P9**: the playbooks as a scroll-through with a ScrollRail; the fixed-UI rules |
+| 5 | Knobs and levers exist, but only in the lab and in panels beside scenes | Client note: "add them at places where they can be interacted in a fun way" | The placement map: the measure knob as the valve between crowds (done); home pressure knob, release lever and ignition switch (ignition done); Studio deploy lever; Team scan lever; Contact language rotary |
+| 6 | "[BRAND NAME]" in product tab titles | Bug 4 | `PRODUCT_NAME_FINAL` gate |
+| 7 | Studio's website-bench laptop has the same over-tall screen | Same component as rank 2 | Studio S3 on LaptopShell |
+| 8 | Hydration refused on Studio and Contact (only seen by the harness) | `docs/render-fixes.md`, harness findings | Reveal waits for hydration |
+| 9 | Home layout shift of 0.26 (only seen by the harness) | Same | The finale scrim as its own fading layer |
+
+The rest of the round-3 ranking above still stands for Studio, Team, Contact, Work and the 404.
