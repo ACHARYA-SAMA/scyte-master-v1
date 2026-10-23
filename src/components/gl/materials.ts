@@ -113,6 +113,7 @@ export const makeLiquid = () =>
       uLength: { value: 1 },
       uColor: { value: C.lumen.clone().multiplyScalar(2.2) },
       uDim: { value: C.line.clone() },
+      uGain: { value: 1 },
     },
     vertexShader: /* glsl */ `
       varying vec2 vUv;
@@ -133,6 +134,7 @@ export const makeLiquid = () =>
       uniform float uLength;
       uniform vec3 uColor;
       uniform vec3 uDim;
+      uniform float uGain;
       varying vec2 vUv;
       varying vec3 vN;
       varying vec3 vView;
@@ -145,7 +147,7 @@ export const makeLiquid = () =>
         float front = smoothstep(uFlow * uLength + 0.8, uFlow * uLength - 0.8, s);
         float rim = pow(1.0 - abs(dot(vN, vView)), 2.0);
         vec3 lit = uColor * (0.55 + 0.6 * pulse) + uColor * rim * 0.4;
-        vec3 col = mix(uDim * 0.35, lit, front);
+        vec3 col = mix(uDim * 0.35, lit * uGain, front);
         gl_FragColor = vec4(col, 1.0);
       }
     `,

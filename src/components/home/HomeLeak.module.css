@@ -325,17 +325,76 @@
 
 /* ------------------------------------------------------------------ builders */
 /* the reveal needs the top of the frame: the copy drops to the bottom-left */
+/* the finale: the copy in a band along the bottom, the logo in the frame above it */
 .closing {
   top: auto;
-  bottom: clamp(84px, 12vh, 120px);
-  width: min(46rem, 52vw);
+  right: calc(var(--margin) + 64px);
+  bottom: clamp(72px, 10vh, 108px);
+  width: auto;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  align-items: end;
+  gap: var(--s4) var(--s7);
+  padding-top: var(--s5);
+  border-top: var(--hair) solid var(--line);
+}
+
+.closingCopy {
+  display: grid;
+  gap: var(--s3);
+}
+
+.closingTitle {
+  font-size: clamp(2rem, 0.9rem + 2.7vw, 4rem);
+  line-height: 0.92;
+  font-weight: 820;
+  font-stretch: 72%;
+  letter-spacing: -0.03em;
+}
+
+.closingLead {
+  font-size: var(--t-body);
+  color: var(--khaki-light);
+}
+
+.closingActions {
+  display: grid;
+  justify-items: end;
   gap: var(--s4);
+}
+
+.closingActions .ctas {
+  justify-content: flex-end;
+}
+
+/* the safe frame the camera fits the logo into, marked with viewfinder corners */
+.finaleFrame {
+  position: absolute;
+  left: var(--margin);
+  right: calc(var(--margin) + 64px);
+  top: calc(var(--nav-h) + 3vh);
+  bottom: var(--closing-h, 42vh);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--dur-hud) linear;
+  background:
+    linear-gradient(var(--khaki), var(--khaki)) left top / 18px 1px no-repeat,
+    linear-gradient(var(--khaki), var(--khaki)) left top / 1px 18px no-repeat,
+    linear-gradient(var(--khaki), var(--khaki)) right top / 18px 1px no-repeat,
+    linear-gradient(var(--khaki), var(--khaki)) right top / 1px 18px no-repeat,
+    linear-gradient(var(--khaki), var(--khaki)) left bottom / 18px 1px no-repeat,
+    linear-gradient(var(--khaki), var(--khaki)) left bottom / 1px 18px no-repeat,
+    linear-gradient(var(--khaki), var(--khaki)) right bottom / 18px 1px no-repeat,
+    linear-gradient(var(--khaki), var(--khaki)) right bottom / 1px 18px no-repeat;
+}
+
+.finaleFrame[data-on="1"] {
+  opacity: 0.55;
 }
 
 .sticky[data-chapter="5"]::before {
   inset: auto 0 0 0;
   width: 100%;
-  height: 58%;
+  height: 40%;
   background: linear-gradient(0deg, color-mix(in srgb, var(--abyss) 92%, transparent) 0%, color-mix(in srgb, var(--abyss) 60%, transparent) 55%, transparent 100%);
 }
 
@@ -454,5 +513,19 @@
   }
   .figures dd {
     font-size: var(--t-h3);
+  }
+  /* the finale stacks: copy, then the switch and the two ways on */
+  .closing {
+    right: var(--margin);
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .closingActions {
+    justify-items: start;
+  }
+  .closingActions .ctas {
+    justify-content: flex-start;
+  }
+  .finaleFrame {
+    right: var(--margin);
   }
 }

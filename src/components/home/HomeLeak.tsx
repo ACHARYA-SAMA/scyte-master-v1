@@ -10,11 +10,13 @@ import { Clock } from "@/components/nav/Nav";
 import { PAYMENT_FAILED } from "@/lib/chat/flows";
 import { recordRecovery, session, toast, ui, useStore } from "@/lib/store";
 import { gsap, prefersReducedMotion } from "@/lib/motion";
+import { sfx } from "@/lib/sound";
 import { useMedia } from "@/lib/useMedia";
 import { productName } from "@/config/site";
 import { HeroLogo } from "./HeroLogo";
 import { HudLabels, type HudLabel } from "./HudLabels";
 import { LeakControls } from "./LeakControls";
+import { ToggleSwitch } from "@/components/kit/ToggleSwitch";
 import styles from "./HomeLeak.module.css";
 
 const CH = HOME_CHAPTERS;
@@ -153,6 +155,23 @@ export function HomeLeak() {
   const hero = useRef<HTMLDivElement>(null);
   const masks = useRef<(HTMLDivElement | null)[]>([]);
   const seen = useRef(new Set<number>());
+  const lastChapter = useRef(0);
+  const closing = useRef<HTMLElement>(null);
+  const ignition = useStore(leak, (s) => s.ignition);
+
+  // the finale's logo frame ends where the closing copy begins; the camera solves to it
+  useEffect(() => {
+    const el = closing.current;
+    const box = root.current;
+    if (!el || !box) return;
+    const ro = new ResizeObserver(() => {
+      const bottom = parseFloat(getComputedStyle(el).bottom) || 0;
+      box.style.setProperty("--closing-h", `${Math.round(el.offsetHeight + bottom + 24)}px`);
+      window.dispatchEvent(new Event("scyte:finale"));
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   useChapters(
     useMemo(
@@ -176,6 +195,12 @@ export function HomeLeak() {
     const pc = chapterOf(Math.max(0, p - 0.024));
     setPanel((prev) => (prev === pc ? prev : pc));
     if (c === 3) setPhoneOn(true);
+    // arriving at the builders lights the sign; the switch stays as a replay
+    if (c === 5 && lastChapter.current !== 5) {
+      leak.set((s) => ({ ignition: true, ignite: s.ignite + 1 }));
+      sfx.relay();
+    }
+    lastChapter.current = c;
     if (!seen.current.has(c)) {
       seen.current.add(c);
       if (c === 4 && leak.get().sealed.some((s) => !s)) {
@@ -338,18 +363,30 @@ export function HomeLeak() {
           <p className={`${styles.aside} t-small`}>Illustrative, from our business model. Not a client result.</p>
         </article>
 
-        {/* 5 the builders */}
-        <article className={`${styles.panel} ${styles.left} ${styles.closing}`} data-on={panel === 5 ? "1" : "0"} aria-hidden={panel !== 5}>
-          <p className={`${styles.kicker} t-hud`}><span>05</span>The builders</p>
-          <h2 className="t-h2">We build the machine, and the storefront in front of it.</h2>
-          <p className="t-lead">Look again. The pipes were our name the whole time.</p>
-          <div className={styles.ctas}>
-            <TransitionLink href="/product" className={`${styles.cta} cta`} data-glow data-magnetic data-cursor="open">
-              See how the machine works
-            </TransitionLink>
-            <TransitionLink href="/studio" className={`${styles.ctaQuiet} cta`} data-magnetic data-cursor="open">
-              Meet the studio
-            </TransitionLink>
+        {/* 5 the builders: the logo gets the frame above, the copy the band below */}
+        <div className={styles.finaleFrame} data-finale-logo aria-hidden data-on={panel === 5 ? "1" : "0"} />
+        <article ref={closing} className={`${styles.panel} ${styles.closing}`} data-on={panel === 5 ? "1" : "0"} aria-hidden={panel !== 5}>
+          <div className={styles.closingCopy}>
+            <p className={`${styles.kicker} t-hud`}><span>05</span>The builders</p>
+            <h2 className={styles.closingTitle}>We build the machine, and the storefront in front of it.</h2>
+            <p className={styles.closingLead}>Look again. The pipes were our name the whole time.</p>
+          </div>
+          <div className={styles.closingActions} data-avoid>
+            <ToggleSwitch
+              label="Ignition"
+              checked={ignition}
+              onChange={(on) => leak.set((s) => ({ ignition: on, ignite: on ? s.ignite + 1 : s.ignite }))}
+              offLabel="Dark"
+              onLabel="Lit"
+            />
+            <div className={styles.ctas}>
+              <TransitionLink href="/product" className={`${styles.cta} cta`} data-glow data-magnetic data-cursor="open">
+                See how the machine works
+              </TransitionLink>
+              <TransitionLink href="/studio" className={`${styles.ctaQuiet} cta`} data-magnetic data-cursor="open">
+                Meet the studio
+              </TransitionLink>
+            </div>
           </div>
         </article>
       </div>

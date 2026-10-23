@@ -12,6 +12,7 @@ import { Drops } from "./Drops";
 import { Cracks } from "./Cracks";
 import { Storefront } from "./Storefront";
 import { Rig } from "./Rig";
+import { Marquee } from "./Marquee";
 
 /**
  * The Leak. The wordmark in green glass, plumbed together behind, with shoppers as
@@ -33,6 +34,7 @@ export default function HomeScene() {
       <Storefront />
       <Cracks />
       <Drops count={count} />
+      <Marquee />
       <Rig focus={focus} />
       <Post bloom={1.05} threshold={0.82} focus={{ target: focus, range: 42, bokeh: 1.8 }} />
     </>

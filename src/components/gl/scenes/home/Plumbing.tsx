@@ -112,10 +112,13 @@ export function Plumbing() {
     const sealed = leak.get().sealed.filter(Boolean).length / 4;
     const t = performance.now() / 1000;
     const slow = p > HOME_CHAPTERS.leaks[0] && p < HOME_CHAPTERS.leaks[1] ? 0.3 : 1;
+    // in the finale the marquee carries the light; the cores settle to a glow behind it
+    const gain = 1 - 0.8 * Math.min(1, Math.max(0, (p - HOME_CHAPTERS.studio[0]) / 0.04));
     for (const c of cores) {
       const u = c.material.uniforms;
       u.uTime.value = t;
       u.uSpeed.value = slow;
+      u.uGain.value = gain;
       const [s0, s1] = fillRanges[c.id];
       let f = Math.min(1, Math.max(0, (fill.current - s0) / Math.max(0.001, s1 - s0)));
       if (c.id === "Yfail" || c.id === "rescue") f = Math.min(f, sealed);

@@ -27,6 +27,9 @@ export const leak = createStore({
   hold: 0,
   /** the glass scene has drawn under the hero, so the DOM logo can step aside */
   glass: false,
+  /** the finale's marquee: the ignition switch, and a counter bumped to light it again */
+  ignition: true,
+  ignite: 0,
 });
 
 export const sealCrack = (i: number) =>

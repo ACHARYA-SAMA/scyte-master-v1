@@ -5,9 +5,10 @@ import { useEffect, useMemo, useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import { PerspectiveCamera, Vector3 } from "three";
 import { gl } from "@/lib/store";
-import { LOGO_WIDTH } from "@/lib/logo/geometry";
+import { LOGO_ASPECT, LOGO_WIDTH } from "@/lib/logo/geometry";
 import { prefersReducedMotion } from "@/lib/motion";
 import { projectAnchors } from "../../anchors";
+import { postState, resetPostState } from "../../post-state";
 import { PATHS, crackPoint, pointAt } from "./paths";
 import { leak } from "./leak";
 
@@ -37,10 +38,14 @@ const KEYS: Key[] = [
   // relit: back up to the clamped arm
   { at: 0.77, pos: [6, 4, 44], look: [-10, 8, 0] },
   { at: 0.84, pos: [6, 4, 44], look: [-10, 8, 0] },
-  // the builders: pull back until the whole network reads as the name, high in frame
-  { at: 0.92, pos: [0, 30, 176], look: [0, -18, -2] },
-  { at: 1, pos: [0, 150, 150], look: [0, -26, -4] },
+  // the builders: square on to the name, a few degrees above it, inside the frame the
+  // DOM reserves for it (solved at runtime); then a slow breath back
+  { at: 0.9, pos: [0, 26, 190], look: [0, 0, 0] },
+  { at: 1, pos: [0, 27, 196], look: [0, 0, 0] },
 ];
+const FINALE = KEYS.length - 2;
+/** The finale's elevation: enough to see the floor, not enough to skew the letters. */
+const ELEVATION = (8 * Math.PI) / 180;
 
 const smoother = (t: number) => t * t * t * (t * (t * 6 - 15) + 10);
 
@@ -79,7 +84,14 @@ export function Rig({ focus }: { focus: Vector3 }) {
   const want = useRef({ pos: new Vector3(0, 0, 165), look: new Vector3() });
   const cur = useRef({ pos: new Vector3(0, 0, 165), look: new Vector3(), ready: false });
   const frames = useRef(0);
-  useEffect(() => () => leak.set({ glass: false }), []);
+  const last = useRef(new Vector3(0, 0, 165));
+  useEffect(
+    () => () => {
+      leak.set({ glass: false });
+      resetPostState();
+    },
+    [],
+  );
 
   // solve key 0 so the glass logo matches the DOM logo's size and position
   useEffect(() => {
@@ -94,10 +106,30 @@ export function Rig({ focus }: { focus: Vector3 }) {
       const cx = r.left + r.width / 2 - size.width / 2;
       keys[0].pos = [cx / k, cy / k, dist];
       keys[0].look = [cx / k, cy / k, 0];
+
+      // the finale: the logo fills the frame the closing panel leaves free, square on
+      const frame = document.querySelector<HTMLElement>("[data-finale-logo]");
+      const box = frame?.parentElement;
+      if (!frame || !box) return;
+      const fr = frame.getBoundingClientRect();
+      const br = box.getBoundingClientRect();
+      if (fr.width < 10 || fr.height < 10) return;
+      const kf = (Math.min(fr.width, fr.height * LOGO_ASPECT) * 0.94) / LOGO_WIDTH;
+      const df = br.height / kf / 2 / Math.tan((camera.fov * Math.PI) / 360);
+      const fx = -(fr.left + fr.width / 2 - (br.left + br.width / 2)) / kf;
+      const fy = (fr.top + fr.height / 2 - (br.top + br.height / 2)) / kf;
+      keys[FINALE].look = [fx, fy, 0];
+      keys[FINALE].pos = [fx, fy + Math.sin(ELEVATION) * df, Math.cos(ELEVATION) * df];
+      keys[FINALE + 1].look = [fx, fy, 0];
+      keys[FINALE + 1].pos = [fx, fy + Math.sin(ELEVATION) * df * 1.035, Math.cos(ELEVATION) * df * 1.035];
     };
     fit();
     window.addEventListener("resize", fit);
-    return () => window.removeEventListener("resize", fit);
+    window.addEventListener("scyte:finale", fit);
+    return () => {
+      window.removeEventListener("resize", fit);
+      window.removeEventListener("scyte:finale", fit);
+    };
   }, [camera, keys, size.height, size.width]);
 
   useFrame((_, dt) => {
@@ -105,7 +137,7 @@ export function Rig({ focus }: { focus: Vector3 }) {
     sample(s.progress, keys, want.current.pos, want.current.look);
     // portrait screens see less width: pull back along the view line (key 0 is exact already)
     const aspect = size.width / size.height;
-    if (aspect < 1.25 && s.progress > 0.02) {
+    if (aspect < 1.25 && s.progress > 0.02 && s.progress < KEYS[FINALE].at - 0.04) {
       const pull = Math.min(2.3, 1.25 / aspect) * Math.min(1, (s.progress - 0.02) / 0.03);
       const k = 1 + (pull - 1) * 1;
       want.current.pos.sub(want.current.look).multiplyScalar(Math.max(1, k)).add(want.current.look);
@@ -127,6 +159,13 @@ export function Rig({ focus }: { focus: Vector3 }) {
     }
     camera.position.copy(c.pos);
     camera.lookAt(c.look);
+    // depth of field only while the camera travels; the finale rests sharp with a softer bloom
+    const speed = c.pos.distanceTo(last.current) / Math.max(1e-3, dt);
+    last.current.copy(c.pos);
+    const dofWant = Math.min(1, Math.max(0, (speed - 3) / 30));
+    postState.dof += (dofWant - postState.dof) * Math.min(1, dt * (dofWant > postState.dof ? 6 : 2.5));
+    const bloomWant = s.progress > KEYS[FINALE].at - 0.02 ? 0.62 : 1;
+    postState.bloom += (bloomWant - postState.bloom) * Math.min(1, dt * 3);
     focus.copy(c.look);
     projectAnchors(camera, ANCHORS, size.width, size.height);
     // a few frames in, the glass is lit and compiled: hand the hero over to it
