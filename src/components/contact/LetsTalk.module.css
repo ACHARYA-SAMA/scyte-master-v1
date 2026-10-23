@@ -1,0 +1,19 @@
+.word {
+  display: flex;
+  flex-wrap: nowrap;
+  font-size: clamp(4.2rem, 1rem + 10vw, 12rem);
+  line-height: 0.82;
+  font-weight: 760;
+  font-stretch: 74%;
+  letter-spacing: -0.035em;
+  color: var(--cream);
+  white-space: nowrap;
+}
+
+.word span {
+  display: inline-block;
+}
+
+.space {
+  width: 0.22em;
+}

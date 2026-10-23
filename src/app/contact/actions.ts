@@ -21,6 +21,7 @@ const limited = (key: string) => {
 const format = (c: Contact) =>
   [
     `Intent: ${c.intent === "audit" ? "20-minute store audit" : "Studio project"}`,
+    `Service: ${c.service ?? "not given"}`,
     `Name: ${c.name}`,
     `Email: ${c.email}`,
     `Store: ${c.store || "not given"}`,
@@ -33,6 +34,7 @@ const format = (c: Contact) =>
 export async function submitContact(_prev: ContactState, form: FormData): Promise<ContactState> {
   const parsed = contactSchema.safeParse({
     intent: form.get("intent"),
+    service: form.get("service") || undefined,
     name: form.get("name"),
     email: form.get("email"),
     store: form.get("store") ?? "",

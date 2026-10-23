@@ -20,6 +20,8 @@ export const PAINS = [
 
 export const INTENTS = ["audit", "project"] as const;
 
+export const SERVICE_IDS = ["recovery", "website", "apps", "social"] as const;
+
 const url = z
   .string()
   .trim()
@@ -31,6 +33,7 @@ const url = z
 export const contactSchema = z
   .object({
     intent: z.enum(INTENTS),
+    service: z.enum(SERVICE_IDS).optional(),
     name: z.string().trim().min(2, "Your name, please").max(80),
     email: z.string().trim().email("An email we can reply to").max(120),
     store: url,
@@ -45,6 +48,14 @@ export const contactSchema = z
       ctx.addIssue({ code: "custom", path: ["store"], message: "The audit needs your store address" });
     }
   });
+
+/** The store address check, for the chat to reuse before it moves on. */
+export const storeError = (v: string) => {
+  const r = url.safeParse(v);
+  return r.success ? null : (r.error.issues[0]?.message ?? "Enter a store address like yourstore.in");
+};
+
+export const emailError = (v: string) => (z.string().trim().email().safeParse(v).success ? null : "That does not look like an email yet. Try name@domain.com.");
 
 export type ContactInput = z.input<typeof contactSchema>;
 export type Contact = z.output<typeof contactSchema>;

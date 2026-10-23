@@ -12,6 +12,8 @@ export type Action = {
   say?: string;
   /** a form field this answer fills (contact flow) */
   field?: { name: string; value: string };
+  /** several fields at once */
+  fields?: { name: string; value: string }[];
   tone?: "primary" | "quiet";
 };
 
@@ -42,7 +44,14 @@ export type FlowNode = {
   /** quick replies under the composer */
   replies?: Action[];
   /** free text expected here: where it goes, and which form field it fills */
-  input?: { placeholder: string; to: string; field?: string; type?: "text" | "email" | "url" | "tel" };
+  input?: {
+    placeholder: string;
+    to: string;
+    field?: string;
+    type?: "text" | "email" | "url" | "tel";
+    /** returns a reply when the text will not do; the conversation stays put */
+    validate?: (text: string) => string | null;
+  };
   /** dashboard events recorded on entering this node */
   events?: string[];
   /** an in-phone sheet, such as a UPI approval */

@@ -25,6 +25,8 @@ type Props = {
   tilt?: boolean;
   /** a replay button once the flow ends */
   replay?: boolean;
+  /** a message the page wants the business to say, such as a server result */
+  inject?: { id: number; text: string; end?: boolean } | null;
 };
 
 const istTime = () =>
@@ -132,6 +134,7 @@ export function InteractivePhone({
   onField,
   tilt = true,
   replay = true,
+  inject,
 }: Props) {
   const uid = useId();
   const root = useRef<HTMLDivElement>(null);
@@ -155,6 +158,11 @@ export function InteractivePhone({
     pace: reduced ? 0.15 : 1,
   });
   const { start, started } = chat;
+  const injectChat = chat.inject;
+
+  useEffect(() => {
+    if (inject) injectChat(inject.text, inject.end);
+  }, [inject, injectChat]);
 
   // start when asked, or when scrolled into view
   useEffect(() => {
@@ -353,6 +361,7 @@ export function InteractivePhone({
 
       <form
         className={styles.composer}
+        noValidate
         onSubmit={(e) => {
           e.preventDefault();
           submit();

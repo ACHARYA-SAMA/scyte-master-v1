@@ -97,6 +97,7 @@ export const useChat = (flow: Flow, { onEvent, onOutcome, onField, pace = 1 }: O
       if (ended) return;
       say(a.say ?? a.label);
       if (a.field) cb.current.onField?.(a.field.name, a.field.value);
+      a.fields?.forEach((f) => cb.current.onField?.(f.name, f.value));
       enter(a.to);
     },
     [ended, enter, say],
@@ -109,6 +110,15 @@ export const useChat = (flow: Flow, { onEvent, onOutcome, onField, pace = 1 }: O
       say(text);
       const n = node;
       if (n?.input) {
+        const problem = n.input.validate?.(text);
+        if (problem) {
+          later(() => setTyping(true), 200);
+          later(() => {
+            setTyping(false);
+            setMessages((list) => [...list, { id: ++seq.current, from: "bot", body: { kind: "text", text: problem }, time: clock() }]);
+          }, 900);
+          return;
+        }
         if (n.input.field) cb.current.onField?.(n.input.field, text);
         enter(n.input.to);
         return;
@@ -141,7 +151,13 @@ export const useChat = (flow: Flow, { onEvent, onOutcome, onField, pace = 1 }: O
     [choose],
   );
 
+  /** A message from outside the script, such as the server's answer to a form. */
+  const inject = useCallback((text: string, end = false) => {
+    setMessages((list) => [...list, { id: ++seq.current, from: "bot", body: { kind: "text", text }, time: clock() }]);
+    if (end) setEnded(true);
+  }, []);
+
   useEffect(() => () => clear(), []);
 
-  return { messages, typing, node, sheet, ended, started, start, choose, send, answerSheet };
+  return { messages, typing, node, sheet, ended, started, start, choose, send, answerSheet, inject };
 };
