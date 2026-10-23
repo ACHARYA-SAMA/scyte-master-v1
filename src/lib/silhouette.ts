@@ -84,37 +84,51 @@ export const silhouetteCanvas = (slug: string, scale = 1) => {
 /** Where the generated face sits, as a fraction of the portrait, for the HUD. */
 export const FACE = { x: 0.63, y: 0.38 };
 
+const RAMP: [number, number, number][] = [
+  [9, 18, 11], // abyss
+  [43, 58, 47], // raised
+  [146, 152, 132], // muted
+  [194, 184, 151], // khaki
+  [230, 213, 184], // cream
+];
+
+const ramp = (t: number): [number, number, number] => {
+  const x = Math.min(0.9999, Math.max(0, t)) * (RAMP.length - 1);
+  const i = Math.floor(x);
+  const f = x - i;
+  const a = RAMP[i];
+  const b = RAMP[i + 1];
+  return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f, a[2] + (b[2] - a[2]) * f];
+};
+
 /**
- * The silhouette as a halftone of square event pixels, bone on forest: the DOM twin
- * of the WebGL portrait, for thumbnails and the dossier.
+ * The silhouette in the palette, abyss through khaki to cream: the DOM twin of the
+ * hologram, for the dock and the dossier. Clean tones, no halftone.
  */
-export const halftoneDataUrl = (slug: string, width = 160, cell = 8) => {
-  const height = Math.round((width * SIL_H) / SIL_W);
-  const cols = Math.floor(width / cell);
-  const rows = Math.floor(height / cell);
-  // Paint the silhouette only as large as the halftone samples it (4 px per cell).
-  const src = silhouetteCanvas(slug, (cols * 4) / SIL_W);
-  const sample = document.createElement("canvas");
-  sample.width = cols;
-  sample.height = rows;
-  const sg = sample.getContext("2d", { willReadFrequently: true })!;
-  sg.drawImage(src, 0, 0, cols, rows);
-  const px = sg.getImageData(0, 0, cols, rows).data;
-  const out = document.createElement("canvas");
-  out.width = cols * cell;
-  out.height = rows * cell;
-  const g = out.getContext("2d", { willReadFrequently: true })!;
-  g.fillStyle = "#1c261f";
-  g.fillRect(0, 0, out.width, out.height);
-  g.fillStyle = "#c2b897";
-  for (let y = 0; y < rows; y++) {
-    for (let x = 0; x < cols; x++) {
-      const l = px[(y * cols + x) * 4] / 255;
-      const s = Math.floor(Math.pow(l, 0.85) * cell * 0.94);
-      if (s < 1) continue;
-      const o = Math.floor((cell - s) / 2);
-      g.fillRect(x * cell + o, y * cell + o, s, s);
-    }
+export const duotoneDataUrl = (slug: string, width = 160) => {
+  const scale = width / SIL_W;
+  const src = silhouetteCanvas(slug, scale);
+  const g = src.getContext("2d", { willReadFrequently: true })!;
+  const img = g.getImageData(0, 0, src.width, src.height);
+  const d = img.data;
+  for (let i = 0; i < d.length; i += 4) {
+    const [r, gg, b] = ramp(Math.pow(d[i] / 255, 0.9) * 0.92 + 0.04);
+    d[i] = r;
+    d[i + 1] = gg;
+    d[i + 2] = b;
   }
-  return out.toDataURL("image/png");
+  g.putImageData(img, 0, 0);
+  return src.toDataURL("image/png");
+};
+
+/** A soft depth map for a generated silhouette: its own luminance, blurred. */
+export const silhouetteDepth = (slug: string, size = 256) => {
+  const src = silhouetteCanvas(slug, size / SIL_H);
+  const c = document.createElement("canvas");
+  c.width = src.width;
+  c.height = src.height;
+  const g = c.getContext("2d", { willReadFrequently: true })!;
+  g.filter = `blur(${Math.max(2, Math.round(size / 40))}px)`;
+  g.drawImage(src, 0, 0);
+  return c;
 };

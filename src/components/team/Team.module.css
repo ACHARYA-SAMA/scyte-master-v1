@@ -1,212 +1,217 @@
 .team {
   position: relative;
-  z-index: 1;
-  min-height: 100svh;
-  display: grid;
-  grid-template-rows: auto 1fr;
-  padding: calc(var(--nav-h) + clamp(8px, 2vh, 20px)) var(--gutter) clamp(24px, 4vh, 44px);
-  overflow: clip;
+}
+
+.stage {
+  position: relative;
+  height: 100svh;
+  min-height: 640px;
+  overflow: hidden;
 }
 
 .top {
   position: relative;
-  z-index: 5;
+  z-index: 3;
   display: grid;
   justify-items: center;
-  gap: clamp(14px, 2.4vh, 24px);
-}
-
-.intro {
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-size: var(--step-0);
-  color: var(--bone);
+  gap: var(--s3);
+  padding: calc(var(--nav-h) + 6px) var(--margin) 0;
   text-align: center;
 }
 
+.title {
+  font-size: var(--t-hud);
+  font-stretch: 72%;
+  font-weight: 620;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--khaki);
+}
+
+.intro {
+  font-size: var(--t-small);
+  color: var(--khaki-light);
+}
+
 .hint {
-  font-family: var(--font-mono);
-  font-style: normal;
-  font-variation-settings: "wdth" 82;
-  font-size: var(--step--2);
-  color: var(--bone-dim);
-  margin-left: 10px;
+  color: var(--muted);
 }
 
-/* --- the dock --------------------------------------------------------------------- */
-.dock {
-  --size: clamp(44px, min(6.2vw, calc(680px / var(--n))), 78px);
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  padding: 14px 12px 26px;
-}
-
-.thumb {
-  position: relative;
-  flex: none;
-  width: var(--size);
-  height: var(--size);
-  border-radius: 10px;
-  overflow: visible;
-}
-
-.thumbImg {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 10px;
-  background: var(--forest);
-  outline: 1px solid var(--moss-hi);
-  outline-offset: -1px;
-  opacity: 0.72;
-  transition: opacity var(--dur-ui) linear;
-}
-
-.thumb[aria-pressed="true"] {
-  z-index: 2;
-}
-
-.thumb[aria-pressed="true"] .thumbImg {
-  opacity: 1;
-  outline-color: var(--signal);
-}
-
-
-.thumbTag {
+/* the giant word sits low, over the hologram's shoulders */
+.word {
   position: absolute;
   left: 50%;
-  top: calc(100% + 6px);
-  transform: translateX(-50%) scale(0.65);
-  font-family: var(--font-mono);
-  font-variation-settings: "wdth" 80;
-  font-size: 10px;
-  color: var(--bone);
-  white-space: nowrap;
-  opacity: 0;
-  transition: opacity var(--dur-ui) linear;
+  bottom: clamp(16px, 3vh, 36px);
+  width: min(calc(100% - 2 * var(--margin)), 118svh, 1180px);
+  translate: -50% 0;
+  z-index: 2;
+  pointer-events: none;
+  transition: opacity var(--dur-panel) linear;
 }
 
-.thumb[aria-pressed="true"] .thumbTag {
-  opacity: 1;
-}
-
-/* --- the word --------------------------------------------------------------------- */
-.word {
-  position: relative;
-  z-index: 3;
-  align-self: center;
-  width: 100%;
-  color: var(--bone);
-}
-
-/* Over the halftone, the name inverts what is behind it. */
 .word[data-member="1"] {
-  mix-blend-mode: difference;
+  opacity: 0.92;
 }
 
-/* --- touch: carousel and bottom sheet ------------------------------------------------ */
-@media (hover: none), (max-width: 900px) {
-  .team {
-    grid-template-rows: auto 1fr auto;
-  }
-  .dock {
-    --size: 64px;
-    justify-content: flex-start;
-    width: calc(100% + var(--gutter) * 2);
-    margin-inline: calc(var(--gutter) * -1);
-    padding-inline: var(--gutter);
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scrollbar-width: none;
-  }
-  .dock::-webkit-scrollbar {
-    display: none;
-  }
-  .thumb {
-    scroll-snap-align: center;
-  }
-  .word {
-    align-self: start;
-    margin-top: 18vh;
-  }
-}
-
+/* phones: a bottom sheet instead of the HUD */
 .sheet {
-  position: fixed;
+  position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 6;
+  z-index: 4;
   display: grid;
   gap: 6px;
-  padding: 10px var(--gutter) calc(16px + env(safe-area-inset-bottom));
-  background: rgba(10, 15, 12, 0.94);
-  border-top: 1px solid var(--moss-hi);
-  animation: sheetIn 420ms var(--ease-latch) both;
+  padding: 12px var(--margin) calc(88px + env(safe-area-inset-bottom));
+  background: var(--ground-deep);
+  border-top: var(--hair) solid var(--khaki);
+  animation: up var(--dur-panel) var(--ease-glide) both;
 }
 
-@keyframes sheetIn {
+@keyframes up {
   from {
     transform: translateY(100%);
   }
 }
 
-.sheetGrip {
+.grip {
   justify-self: center;
   width: 36px;
   height: 3px;
-  background: var(--moss-hi);
+  background: var(--line);
   margin-bottom: 6px;
 }
 
 .sheetId {
   display: flex;
-  justify-content: space-between;
-  font-family: var(--font-mono);
-  font-variation-settings: "wdth" 82;
-  font-size: var(--step--2);
-  color: var(--signal);
+  gap: 12px;
+  color: var(--muted);
 }
 
 .sheetName {
-  font-family: var(--font-display);
-  font-weight: 860;
-  font-variation-settings: "opsz" 72;
-  text-transform: uppercase;
-  font-size: var(--step-2);
-  line-height: 0.95;
-  color: var(--paper);
+  font-size: var(--t-h3);
+  font-weight: 760;
+  font-stretch: 80%;
+  color: var(--cream);
 }
 
 .sheetRole {
-  font-style: italic;
-  font-size: var(--step--1);
-  color: var(--bone);
+  font-size: var(--t-small);
+  color: var(--khaki-light);
 }
 
-.sheetChips {
+.sheetActions {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
-  font-family: var(--font-mono);
-  font-variation-settings: "wdth" 82;
-  font-size: 10.5px;
+  gap: 10px;
+  margin-top: 8px;
 }
 
-.sheetChips li {
-  padding: 2px 6px;
-  border: 1px solid var(--moss-hi);
+.sheetOpen,
+.sheetPortfolio,
+.sheetSoon {
+  padding: 12px 14px;
+  font-size: var(--t-small);
+  font-weight: 650;
 }
 
 .sheetOpen {
-  margin-top: 6px;
-  padding: 12px;
-  background: var(--bone);
-  color: var(--ink);
-  font-family: var(--font-display);
-  font-weight: 800;
-  text-transform: uppercase;
-  font-size: var(--step-0);
+  background: var(--khaki);
+  color: var(--ground);
+}
+
+.sheetPortfolio {
+  border: var(--hair) solid var(--khaki);
+  color: var(--cream);
+}
+
+.sheetSoon {
+  border: 1px dashed var(--line);
+  color: var(--muted);
+}
+
+/* the roster, plain and complete, for everyone and for search */
+.roster {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  gap: var(--s5);
+  padding: clamp(80px, 12vh, 140px) var(--margin);
+  background: var(--ground);
+  border-top: var(--hair) solid var(--line);
+}
+
+.rosterTitle {
+  font-size: var(--t-h2);
+  font-weight: 760;
+  font-stretch: 84%;
+  letter-spacing: -0.03em;
+  color: var(--cream);
+}
+
+.rosterNote {
+  color: var(--khaki-light);
+  max-width: 52ch;
+}
+
+.rows {
+  display: grid;
+}
+
+.rows li {
+  display: grid;
+  grid-template-columns: 3em minmax(0, 2fr) minmax(0, 4fr) minmax(0, 1.4fr) minmax(0, 1.4fr);
+  gap: var(--gutter);
+  align-items: baseline;
+  padding: var(--s4) 0;
+  border-top: var(--hair) solid var(--line);
+}
+
+.ri {
+  color: var(--khaki);
+}
+
+.rn {
+  font-weight: 650;
+  color: var(--cream);
+}
+
+.rr {
+  font-size: var(--t-small);
+  color: var(--khaki-light);
+}
+
+.rl,
+.rp {
+  font-size: var(--t-small);
+}
+
+.rp a {
+  color: var(--cream);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+@media (max-width: 900px) {
+  .top {
+    justify-items: stretch;
+    text-align: left;
+    padding-inline: 0;
+  }
+  .title,
+  .intro {
+    padding-inline: var(--margin);
+  }
+  .word {
+    bottom: auto;
+    top: 42%;
+  }
+  .rows li {
+    grid-template-columns: 2.4em 1fr;
+  }
+  .rr,
+  .rl,
+  .rp {
+    grid-column: 2;
+  }
 }

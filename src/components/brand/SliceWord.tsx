@@ -10,7 +10,7 @@ export const STRIPS = LOGO_WIDTH / LOGO_STROKE;
 
 export type Face = { id: string; kind: "logo" } | { id: string; kind: "text"; text: string };
 
-export type Tone = "bone" | "signal" | "paper" | "ink";
+export type Tone = "khaki" | "cream" | "lumen" | "ground";
 
 type Layer = { face: Face; tone: Tone; key: number; state: "in" | "out" };
 
@@ -40,12 +40,13 @@ const DIR = Array.from({ length: STRIPS }, (_, i) => ((i * 7) % 5 < 2 ? -1 : 1))
 const DIST = Array.from({ length: STRIPS }, (_, i) => 100 + ((i * 37) % 41));
 
 const DEFAULT_CAP = 0.72;
+const NARROW = { stretch: 62, scale: 1 };
 let capRatio = DEFAULT_CAP;
 let capMeasured = false;
 const measureCap = () => {
   if (capMeasured || typeof document === "undefined") return capRatio;
   const c = document.createElement("canvas").getContext("2d", { willReadFrequently: true });
-  const family = getComputedStyle(document.documentElement).getPropertyValue("--font-big-shoulders").trim();
+  const family = getComputedStyle(document.body).fontFamily;
   if (!c || !family) return capRatio;
   c.font = `900 200px ${family}`;
   const m = c.measureText("H");
@@ -56,26 +57,85 @@ const measureCap = () => {
   return capRatio;
 };
 
-function FaceArt({ face, capH }: { face: Face; capH: number }) {
+/**
+ * How wide (font-stretch %) a word must be set to span the wordmark's width at the
+ * wordmark's cap height. Measured once per word with the real font.
+ */
+const fitCache = new Map<string, { stretch: number; scale: number }>();
+const fitText = (text: string, capH: number) => {
+  const key = `${text}|${capH.toFixed(3)}`;
+  const hit = fitCache.get(key);
+  if (hit) return hit;
+  if (typeof document === "undefined") return { stretch: 62, scale: 1 };
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", LOGO_VIEWBOX);
+  svg.style.cssText = "position:absolute;visibility:hidden;width:1400px;left:-9999px;top:0";
+  const t = document.createElementNS("http://www.w3.org/2000/svg", "text");
+  t.setAttribute("font-size", String(LOGO_CAP_HEIGHT / capH));
+  t.setAttribute("class", styles.text);
+  t.textContent = text.toUpperCase();
+  svg.appendChild(t);
+  document.body.appendChild(svg);
+  const widthAt = (st: number) => {
+    t.style.fontStretch = `${st}%`;
+    return t.getComputedTextLength();
+  };
+  let lo = 62;
+  let hi = 125;
+  let wLo = widthAt(lo);
+  let wHi = widthAt(hi);
+  let out: { stretch: number; scale: number };
+  if (wLo >= LOGO_WIDTH) {
+    // even the narrowest cut is too wide: keep it narrow and set it smaller
+    out = { stretch: 62, scale: (LOGO_WIDTH / wLo) * 0.995 };
+  } else if (wHi <= LOGO_WIDTH) {
+    out = { stretch: 125, scale: 1 };
+  } else {
+    let st = lo + ((LOGO_WIDTH - wLo) / (wHi - wLo)) * (hi - lo);
+    for (let i = 0; i < 4; i++) {
+      const w = widthAt(st);
+      if (Math.abs(w - LOGO_WIDTH) < 0.3) break;
+      if (w > LOGO_WIDTH) {
+        hi = st;
+        wHi = w;
+      } else {
+        lo = st;
+        wLo = w;
+      }
+      st = lo + ((LOGO_WIDTH - wLo) / Math.max(0.001, wHi - wLo)) * (hi - lo);
+    }
+    out = { stretch: st, scale: 1 };
+  }
+  document.body.removeChild(svg);
+  fitCache.set(key, out);
+  return out;
+};
+
+function FaceArt({ face, capH, fit }: { face: Face; capH: number; fit: { stretch: number; scale: number } }) {
   if (face.kind === "logo") return <path d={LOGO_PATH} />;
+  const size = (LOGO_CAP_HEIGHT / capH) * fit.scale;
+  // centred on the wordmark's height when the word had to be set smaller
+  const y = LOGO_CAP_HEIGHT - (LOGO_CAP_HEIGHT * (1 - fit.scale)) / 2;
   return (
     <text
       x={0}
-      y={LOGO_CAP_HEIGHT}
-      textLength={LOGO_WIDTH}
-      lengthAdjust="spacingAndGlyphs"
-      fontSize={LOGO_CAP_HEIGHT / capH}
+      y={y}
+      textLength={fit.scale < 1 ? undefined : LOGO_WIDTH}
+      lengthAdjust="spacing"
+      fontSize={size}
       className={styles.text}
+      style={{ fontStretch: `${fit.stretch}%` }}
     >
       {face.text.toUpperCase()}
     </text>
   );
 }
 
-export function SliceWord({ face, tone = "bone", origin = STRIPS / 2, className, style, onStrips, label }: Props) {
+export function SliceWord({ face, tone = "khaki", origin = STRIPS / 2, className, style, onStrips, label }: Props) {
   const [layers, setLayers] = useState<Layer[]>(() => [{ face, tone, key: 0, state: "in" }]);
   // Start from the constant so server and client render the same; measure after mount.
   const [capH, setCapH] = useState(DEFAULT_CAP);
+  const [fonts, setFonts] = useState(false);
   const keyRef = useRef(1);
   const rootRef = useRef<HTMLDivElement>(null);
   const firstRef = useRef(true);
@@ -85,7 +145,10 @@ export function SliceWord({ face, tone = "bone", origin = STRIPS / 2, className,
   }, [origin]);
 
   useEffect(() => {
-    document.fonts?.ready.then(() => setCapH(measureCap()));
+    document.fonts?.ready.then(() => {
+      setCapH(measureCap());
+      setFonts(true);
+    });
   }, []);
 
   // A new face: everything on stage leaves, the new face enters.
@@ -128,7 +191,7 @@ export function SliceWord({ face, tone = "bone", origin = STRIPS / 2, className,
               {
                 yPercent: 0,
                 duration: 0.62,
-                ease: "latch",
+                ease: "snap",
                 stagger: { each: 0.016, from },
                 delay: 0.05,
                 overwrite: "auto",
@@ -187,7 +250,7 @@ export function SliceWord({ face, tone = "bone", origin = STRIPS / 2, className,
         >
           {/* At rest the face is one unsliced drawing, so no strip seams ever show. */}
           <svg className={styles.whole} viewBox={LOGO_VIEWBOX} overflow="visible" fill="currentColor" focusable="false">
-            <FaceArt face={layer.face} capH={capH} />
+            <FaceArt face={layer.face} capH={capH} fit={fonts && layer.face.kind === "text" ? fitText(layer.face.text, capH) : NARROW} />
           </svg>
           <div className={styles.strips} data-strips>
             {Array.from({ length: STRIPS }, (_, i) => (
@@ -197,7 +260,7 @@ export function SliceWord({ face, tone = "bone", origin = STRIPS / 2, className,
                 style={{ clipPath: `inset(-40% ${100 - ((i + 1) / STRIPS) * 100}% -40% ${(i / STRIPS) * 100}%)` }}
               >
                 <svg viewBox={LOGO_VIEWBOX} overflow="visible" fill="currentColor" focusable="false">
-                  <FaceArt face={layer.face} capH={capH} />
+                  <FaceArt face={layer.face} capH={capH} fit={fonts && layer.face.kind === "text" ? fitText(layer.face.text, capH) : NARROW} />
                 </svg>
               </div>
             ))}

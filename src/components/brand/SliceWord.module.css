@@ -28,23 +28,22 @@
 }
 
 .text {
-  font-family: var(--font-display);
+  font-family: var(--font);
   font-weight: 900;
-  font-variation-settings: "opsz" 72;
   letter-spacing: 0;
 }
 
-.bone {
-  color: var(--bone);
+.khaki {
+  color: var(--khaki);
 }
-.signal {
-  color: var(--signal);
+.cream {
+  color: var(--cream);
 }
-.paper {
-  color: var(--paper);
+.lumen {
+  color: var(--lumen);
 }
-.ink {
-  color: var(--ink);
+.ground {
+  color: var(--ground);
 }
 
 .whole,

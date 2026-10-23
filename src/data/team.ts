@@ -1,18 +1,16 @@
-/**
- * The team. Adding a person is one object in TEAM.
- *
- * Nothing here is invented. The four seats below are the roles the business report
- * plans for "now (3–4 people)" (section 12.1); every personal field is null until the
- * real person is supplied, and null renders as a visible [ FILL ] state on the site.
- * Portraits: leave `photo` null to get a generated silhouette, or point it at a file
- * in /public/team/ (portrait, at least 1200 px tall, face roughly centred).
- */
+import assets from "./team-assets.json";
 
-export type Link = {
-  kind: "linkedin" | "github" | "x" | "email" | "site";
-  href: string;
-  label?: string;
-};
+/**
+ * The team. Adding a person is two steps:
+ *   1. drop a portrait at public/team/<slug>.jpg (or .webp / .png) and run
+ *      `npm run team:assets` (thumbnail, depth map, dominant colour);
+ *   2. add one object to TEAM below.
+ *
+ * Nothing here is invented. The four seats are the roles the business report plans
+ * for "now (3-4 people)" (section 12.1). Every personal field is null until the real
+ * person is supplied, and null renders as a visible [ FILL ] state. Without a photo,
+ * a generated silhouette is drawn; never a stock face.
+ */
 
 export type Skill = {
   label: string;
@@ -20,92 +18,84 @@ export type Skill = {
   value: number | null;
 };
 
-export type Project = {
-  name: string;
-  year: string;
-  note: string;
-  href?: string;
+export type Links = {
+  /** drives the "Visit portfolio" action; null shows "Portfolio coming soon" */
+  portfolio: string | null;
+  linkedin: string | null;
+  github: string | null;
+  x: string | null;
+  email: string | null;
 };
 
 export type Member = {
-  /** URL-safe id, also seeds the HUD hex id. */
+  /** URL-safe id; also the photo file name */
   slug: string;
-  /** Short call sign shown in the HUD header. */
+  /** short call sign for the HUD */
   codename: string | null;
   name: string | null;
-  /** Shown giant when the name is not filled in yet. */
-  roleShort: string;
   role: string;
+  /** shown giant when the name is not filled in yet */
+  roleShort: string;
   location: string | null;
-  coordinates: { lat: number; lon: number } | null;
+  /** public path; filled automatically from public/team/<slug>.* by the asset script */
   photo: string | null;
   bio: string | null;
   skills: Skill[];
   tools: string[];
   currently: string | null;
-  links: Link[];
   joined: string | null;
-  status: string;
-  projects: Project[];
-  timeline: { year: string; event: string }[];
+  links: Links;
 };
 
-const seat = (
-  slug: string,
-  roleShort: string,
-  role: string,
-  skillLabels: string[],
-  tools: string[],
-): Member => ({
+const NO_LINKS: Links = { portfolio: null, linkedin: null, github: null, x: null, email: null };
+
+const seat = (slug: string, roleShort: string, role: string, skillLabels: string[], tools: string[]): Member => ({
   slug,
   codename: null,
   name: null,
-  roleShort,
   role,
+  roleShort,
   location: null,
-  coordinates: null,
   photo: null,
   bio: null,
   skills: skillLabels.map((label) => ({ label, value: null })),
   tools,
   currently: null,
-  links: [],
   joined: null,
-  status: "Seat defined in the plan, person not yet listed",
-  projects: [],
-  timeline: [],
+  links: NO_LINKS,
 });
 
-export const TEAM: Member[] = [
-  seat(
-    "technical-lead",
-    "Tech lead",
-    "Technical lead: backend, event pipeline, WhatsApp integration",
-    ["Backend", "Pipelines", "WhatsApp API", "Data", "Infra"],
-    ["TypeScript", "Postgres", "ClickHouse", "Redis"],
-  ),
-  seat(
-    "full-stack",
-    "Full stack",
-    "Full-stack and frontend: SDK, Shopify app, dashboard",
-    ["Frontend", "SDK", "Shopify", "Dashboards", "Motion"],
-    ["Next.js", "React", "Shopify CLI"],
-  ),
-  seat(
-    "product-sales",
-    "Product",
-    "Product and sales founder: customer calls, onboarding, pricing",
-    ["Discovery", "Sales", "Onboarding", "Pricing", "Ops"],
-    ["Calls", "Store audits", "Spreadsheets"],
-  ),
-  seat(
-    "design-copy",
-    "Design",
-    "Designer and template copywriter (part time)",
-    ["Interface", "Brand", "Templates", "Copy", "Hindi / Telugu"],
-    ["Figma", "Type", "WhatsApp templates"],
-  ),
+const SEATS: Member[] = [
+  seat("technical-lead", "Tech lead", "Technical lead: backend, event pipeline, WhatsApp integration", ["Backend", "Pipelines", "WhatsApp API", "Data", "Infra"], [
+    "TypeScript",
+    "Postgres",
+    "ClickHouse",
+    "Redis",
+  ]),
+  seat("full-stack", "Full stack", "Full-stack and frontend: SDK, Shopify app, dashboard", ["Frontend", "SDK", "Shopify", "Dashboards", "Motion"], [
+    "Next.js",
+    "React",
+    "Shopify CLI",
+  ]),
+  seat("product-sales", "Product", "Product and sales: customer calls, onboarding, pricing", ["Discovery", "Sales", "Onboarding", "Pricing", "Ops"], [
+    "Calls",
+    "Store audits",
+    "Spreadsheets",
+  ]),
+  seat("design-copy", "Design", "Designer and template copywriter (part time)", ["Interface", "Brand", "Templates", "Copy", "Hindi and Telugu"], [
+    "Figma",
+    "Type",
+    "WhatsApp templates",
+  ]),
 ];
+
+type Asset = { photo: string; thumb: string; depth: string; color: string; face: [number, number] };
+const ASSETS = assets as Record<string, Asset>;
+
+/** The team, with any processed photo attached. */
+export const TEAM: Member[] = SEATS.map((m) => ({ ...m, photo: m.photo ?? ASSETS[m.slug]?.photo ?? null }));
+
+export const assetsFor = (slug: string): Asset | null => ASSETS[slug] ?? null;
 
 export const displayName = (m: Member) => m.name ?? m.roleShort;
 

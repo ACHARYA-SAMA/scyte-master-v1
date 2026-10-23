@@ -1,0 +1,160 @@
+.dock {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: clamp(10px, 1.4vw, 20px);
+  padding: 16px 12px 6px;
+}
+
+.thumb {
+  --s: 1;
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  transform-origin: 50% 100%;
+  transform: scale(var(--s));
+  transition: filter var(--dur-ui) linear;
+  will-change: transform;
+}
+
+.frame {
+  position: relative;
+  display: block;
+  width: clamp(48px, 4.4vw, 68px);
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: var(--ground-deep);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(0.6) brightness(0.8);
+  transition: filter var(--dur-ui) linear;
+}
+
+.thumb[aria-pressed="true"] .img,
+.thumb:hover .img,
+.thumb:focus-visible .img {
+  filter: none;
+}
+
+.thumb[aria-pressed="true"] {
+  transform: scale(var(--s)) translateY(-6px);
+}
+
+.cap {
+  display: flex;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.n {
+  color: var(--khaki);
+}
+
+.thumb[aria-pressed="true"] .cap {
+  color: var(--cream);
+}
+
+.thumb:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
+.thumb:focus-visible .frame {
+  outline: 2px solid var(--cream);
+  outline-offset: 3px;
+}
+
+/* the reticle: four bright-line corners and two centre ticks */
+.reticle {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition:
+    transform var(--dur-panel) var(--ease-snap),
+    width var(--dur-panel) var(--ease-snap),
+    height var(--dur-panel) var(--ease-snap),
+    opacity var(--dur-ui) linear;
+}
+
+.reticle[data-on="1"] {
+  opacity: 1;
+}
+
+.reticle i {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border: 0 solid var(--lumen);
+}
+.reticle i:nth-child(1) {
+  left: 0;
+  top: 0;
+  border-left-width: 1px;
+  border-top-width: 1px;
+}
+.reticle i:nth-child(2) {
+  right: 0;
+  top: 0;
+  border-right-width: 1px;
+  border-top-width: 1px;
+}
+.reticle i:nth-child(3) {
+  right: 0;
+  bottom: 22px;
+  border-right-width: 1px;
+  border-bottom-width: 1px;
+}
+.reticle i:nth-child(4) {
+  left: 0;
+  bottom: 22px;
+  border-left-width: 1px;
+  border-bottom-width: 1px;
+}
+.reticle b {
+  position: absolute;
+  left: 50%;
+  width: 1px;
+  height: 6px;
+  background: var(--lumen);
+}
+.reticle b:nth-of-type(1) {
+  top: -8px;
+}
+.reticle b:nth-of-type(2) {
+  bottom: 14px;
+}
+
+.dock[data-touch="1"] {
+  justify-content: flex-start;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  padding-inline: var(--margin);
+  gap: 14px;
+}
+
+.dock[data-touch="1"] .thumb {
+  scroll-snap-align: center;
+  transform: none;
+}
+
+.dock[data-touch="1"] .frame {
+  width: 84px;
+}
+
+.dock[data-touch="1"] .thumb[aria-pressed="true"] {
+  transform: none;
+}

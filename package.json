@@ -10,7 +10,9 @@
     "typecheck": "tsc --noEmit",
     "logo:verify": "node scripts/verify-logo.mjs",
     "brand:icons": "node scripts/build-icons.mjs",
-    "qa:shots": "node scripts/qa-screenshots.mjs"
+    "qa:shots": "node scripts/qa-screenshots.mjs",
+    "team:assets": "python scripts/team-assets.py",
+    "font:build": "python scripts/build-font.py"
   },
   "dependencies": {
     "@gsap/react": "2.1.2",

@@ -1,41 +1,40 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { Member } from "@/data/team";
-import { halftoneDataUrl } from "@/lib/silhouette";
+import { assetsFor, type Member } from "@/data/team";
+import { duotoneDataUrl } from "@/lib/silhouette";
 
 const cache = new Map<string, string>();
 
-/** The member's photo, or their generated silhouette as an event-pixel halftone. */
-export function Portrait({
-  member,
-  className,
-  alt,
-  size = "thumb",
-}: {
-  member: Member;
-  className?: string;
-  alt?: string;
-  size?: "thumb" | "large";
-}) {
+/**
+ * A member's portrait: the processed photo when there is one, otherwise the
+ * generated silhouette in the palette. Drawn when idle, cached per size.
+ */
+export function Portrait({ member, size = "thumb", className }: { member: Member; size?: "thumb" | "large"; className?: string }) {
+  const asset = assetsFor(member.slug);
   const key = `${member.slug}:${size}`;
-  const [src, setSrc] = useState<string | null>(() => member.photo ?? cache.get(key) ?? null);
+  const [src, setSrc] = useState<string | null>(() => (asset ? (size === "thumb" ? asset.thumb : asset.photo) : (cache.get(key) ?? null)));
+
   useEffect(() => {
-    if (member.photo || cache.has(key)) return;
-    // Off the critical path: thumbnails are drawn when the main thread is idle.
-    const w = window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number; cancelIdleCallback?: (id: number) => void };
+    if (asset || src) return;
+    const w = window as Window & { requestIdleCallback?: (cb: () => void) => number; cancelIdleCallback?: (id: number) => void };
     const run = () => {
-      const url = size === "thumb" ? halftoneDataUrl(member.slug, 160, 7) : halftoneDataUrl(member.slug, 480, 9);
+      const url = duotoneDataUrl(member.slug, size === "thumb" ? 200 : 720);
       cache.set(key, url);
       setSrc(url);
     };
-    if (size === "large" || !w.requestIdleCallback) return run();
-    const id = w.requestIdleCallback(run, { timeout: 800 });
-    return () => w.cancelIdleCallback?.(id);
-  }, [member.photo, member.slug, size, key]);
+    if (w.requestIdleCallback) {
+      const id = w.requestIdleCallback(run);
+      return () => w.cancelIdleCallback?.(id);
+    }
+    const t = window.setTimeout(run, 60);
+    return () => window.clearTimeout(t);
+  }, [asset, key, member.slug, size, src]);
 
-  const label = alt ?? (member.photo ? `Portrait of ${member.name ?? member.roleShort}` : `Placeholder silhouette for the ${member.roleShort} seat`);
-  if (!src) return <span className={className} role="img" aria-label={label} />;
-  // eslint-disable-next-line @next/next/no-img-element
-  return <img src={src} alt={label} className={className} draggable={false} />;
+  return src ? (
+    // eslint-disable-next-line @next/next/no-img-element -- data URLs and generated assets, sized by CSS
+    <img src={src} alt="" className={className} draggable={false} />
+  ) : (
+    <span className={className} aria-hidden />
+  );
 }

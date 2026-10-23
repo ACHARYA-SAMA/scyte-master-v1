@@ -1,313 +1,273 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { hexId, type Member } from "@/data/team";
-import { FACE, SIL_H, SIL_W } from "@/lib/silhouette";
+import { readAnchor } from "@/components/gl/anchors";
+import { scan } from "@/components/gl/scenes/team/scan";
 import { gsap, prefersReducedMotion } from "@/lib/motion";
 import { sfx } from "@/lib/sound";
-import { bridge } from "@/components/stage/bridge";
 import styles from "./TeamHud.module.css";
 
-const FILL = "[ FILL ]";
+const FILL = (what: string) => `[ FILL: ${what} ]`;
 
-/** Where the portrait's face lands on screen, through the same cover-fit the shader uses. */
-export const faceOnScreen = (w: number, h: number) => {
-  const A = w / h;
-  const T = SIL_W / SIL_H;
-  const sx = A > T ? 1 : A / T;
-  const sy = A > T ? T / A : 1;
-  return { x: ((FACE.x - 0.5) / sx + 0.5) * w, y: ((FACE.y - 0.5) / sy + 0.5) * h };
-};
-
-const charsOf = (text: string) => Array.from(new Set(text.replace(/\s/g, ""))).join("") || "0";
-
+/** Five skills as a radar on segmented rings. Unknown values draw as dashed, empty spokes. */
 function Radar({ skills }: { skills: Member["skills"] }) {
   const n = skills.length;
-  const R = 62;
+  const R = 54;
   const pt = (i: number, r: number) => {
-    const a = -Math.PI / 2 + (i / n) * Math.PI * 2;
-    return [80 + Math.cos(a) * r, 80 + Math.sin(a) * r];
+    const a = (i / n) * Math.PI * 2 - Math.PI / 2;
+    return [60 + Math.cos(a) * r, 60 + Math.sin(a) * r];
   };
-  const filled = skills.every((s) => s.value !== null);
+  const known = skills.every((s) => s.value !== null);
   const poly = skills.map((s, i) => pt(i, ((s.value ?? 0) / 100) * R).join(",")).join(" ");
   return (
-    <svg viewBox="0 0 160 160" className={styles.radar} aria-hidden>
-      {[0.33, 0.66, 1].map((k) => (
-        <polygon
-          key={k}
-          points={skills.map((_, i) => pt(i, R * k).join(",")).join(" ")}
-          className={styles.radarRing}
-        />
+    <svg viewBox="0 0 120 120" className={styles.radar} role="img" aria-label={known ? skills.map((s) => `${s.label} ${s.value}`).join(", ") : "Skills not yet filled in"}>
+      {[0.25, 0.5, 0.75, 1].map((k) => (
+        <polygon key={k} points={skills.map((_, i) => pt(i, R * k).join(",")).join(" ")} className={styles.ring} />
       ))}
       {skills.map((s, i) => {
         const [x, y] = pt(i, R);
-        const [lx, ly] = pt(i, R + 12);
+        return <line key={s.label} x1={60} y1={60} x2={x} y2={y} className={styles.spoke} data-empty={s.value === null ? "1" : undefined} />;
+      })}
+      {known ? <polygon points={poly} className={styles.area} /> : null}
+      {skills.map((s, i) => {
+        const [x, y] = pt(i, R + 9);
         return (
-          <g key={s.label}>
-            <line x1={80} y1={80} x2={x} y2={y} className={styles.radarSpoke} data-empty={s.value === null ? "1" : undefined} />
-            <text x={lx} y={ly} className={styles.radarLabel} textAnchor={lx < 70 ? "end" : lx > 90 ? "start" : "middle"}>
-              {s.label}
-            </text>
-          </g>
+          <text key={s.label} x={x} y={y} className={styles.radarLabel} textAnchor={x < 55 ? "end" : x > 65 ? "start" : "middle"} dominantBaseline="middle">
+            {s.label}
+          </text>
         );
       })}
-      {filled ? <polygon points={poly} className={styles.radarShape} data-shape /> : null}
-      {!filled ? (
-        <text x={80} y={83} className={styles.radarFill} textAnchor="middle">
-          {FILL}
-        </text>
-      ) : null}
     </svg>
   );
 }
 
-function Wave({ seed }: { seed: string }) {
-  const d = useMemo(() => {
-    let h = 0;
-    for (const c of seed) h = (h * 31 + c.charCodeAt(0)) >>> 0;
-    const pts: string[] = [];
-    for (let i = 0; i <= 120; i++) {
-      h = (h * 1664525 + 1013904223) >>> 0;
-      const noise = (h / 4294967296 - 0.5) * 6;
-      const y = 14 + Math.sin(i * 0.42) * 6 + Math.sin(i * 0.11 + 1) * 3 + noise;
-      pts.push(`${i ? "L" : "M"}${i * 2} ${y.toFixed(1)}`);
-    }
-    return pts.join("");
-  }, [seed]);
-  return (
-    <svg viewBox="0 0 240 28" className={styles.wave} preserveAspectRatio="none" aria-hidden>
-      <path d={d} />
-      <path d={d} transform="translate(240 0)" />
-    </svg>
-  );
-}
-
-type Props = { member: Member | null; index: number; total: number; scanning: boolean };
-
-export function TeamHud({ member, index, total, scanning }: Props) {
-  const root = useRef<HTMLDivElement>(null);
-  const [size, setSize] = useState({ w: 1440, h: 900 });
-  const [lines, setLines] = useState<{ x1: number; y1: number; x2: number; y2: number }[]>([]);
-
+/** A quiet waveform: the scanner's carrier, never decoration at full volume. */
+function Wave({ live }: { live: boolean }) {
+  const path = useRef<SVGPathElement>(null);
   useEffect(() => {
-    const onResize = () => setSize({ w: window.innerWidth, h: window.innerHeight });
-    onResize();
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, []);
-
-  const face = faceOnScreen(size.w, size.h);
-
-  // Leader lines from the face to the nearest edge of each panel.
-  useEffect(() => {
-    const el = root.current;
-    if (!el) return;
-    const panels = Array.from(el.querySelectorAll<HTMLElement>("[data-panel]"));
-    setLines(
-      panels.map((p) => {
-        const r = p.getBoundingClientRect();
-        const x2 = r.left > face.x ? r.left : r.right;
-        const y2 = Math.min(Math.max(face.y, r.top + 14), r.bottom - 14);
-        return { x1: face.x, y1: face.y, x2, y2 };
-      }),
-    );
-  }, [face.x, face.y, member]);
-
-  // Assembly: brackets snap, the scan sweeps the face, lines draw out, panels decode.
-  useEffect(() => {
-    const el = root.current;
-    if (!el || !member) return;
-    const reduced = prefersReducedMotion();
-    const ctx = gsap.context(() => {
-      if (reduced) {
-        gsap.set(el.querySelectorAll("[data-panel], [data-bracket], [data-line]"), { clearProps: "all", opacity: 1 });
-        return;
+    if (prefersReducedMotion()) return;
+    let raf = 0;
+    const draw = () => {
+      raf = requestAnimationFrame(draw);
+      const t = performance.now() / 1000;
+      let d = "";
+      for (let x = 0; x <= 200; x += 4) {
+        const amp = live ? 7 : 2;
+        const y = 14 + Math.sin(x * 0.11 + t * 3) * amp * Math.sin(x * 0.015 + t * 0.7) + Math.sin(x * 0.4 + t * 9) * (live ? 1.2 : 0.4);
+        d += (x ? "L" : "M") + x + " " + y.toFixed(2);
       }
-      const tl = gsap.timeline();
-      tl.fromTo(
-        el.querySelectorAll("[data-bracket]"),
-        { scale: 1.6, opacity: 0 },
-        { scale: 1, opacity: 1, duration: 0.32, ease: "latch", stagger: 0.03 },
-      );
-      const scan = { y: 0.04 };
-      tl.add(() => sfx.scan(), 0.05);
-      tl.to(
-        scan,
-        {
-          y: 0.7,
-          duration: 0.55,
-          ease: "drift",
-          onUpdate: () => {
-            bridge.scan = scan.y;
-          },
-          onComplete: () => {
-            bridge.scan = -1;
-          },
-        },
-        0.05,
-      );
-      tl.fromTo(el.querySelector("[data-scanline]"), { yPercent: 0, opacity: 1 }, { yPercent: 1000, opacity: 0, duration: 0.55, ease: "drift" }, 0.05);
-      tl.fromTo(
-        el.querySelectorAll("[data-line]"),
-        { strokeDashoffset: 1 },
-        { strokeDashoffset: 0, duration: 0.32, ease: "glide", stagger: 0.06 },
-        0.14,
-      );
-      tl.fromTo(
-        el.querySelectorAll("[data-panel]"),
-        { opacity: 0, clipPath: "inset(0 100% 0 0)" },
-        { opacity: 1, clipPath: "inset(0 0% 0 0)", duration: 0.34, ease: "latch", stagger: 0.07 },
-        0.2,
-      );
-      el.querySelectorAll<HTMLElement>("[data-decode]").forEach((node, i) => {
-        const text = node.dataset.decode ?? "";
-        tl.to(
-          node,
-          {
-            duration: Math.min(0.7, 0.18 + text.length * 0.012),
-            scrambleText: { text, chars: charsOf(text), speed: 0.9, revealDelay: 0.05 },
-            ease: "none",
-            onStart: () => sfx.tick(),
-          },
-          0.26 + i * 0.025,
-        );
-      });
-      const shape = el.querySelector("[data-shape]");
-      if (shape) tl.fromTo(shape, { scale: 0, transformOrigin: "50% 50%" }, { scale: 1, duration: 0.5, ease: "latch" }, 0.4);
-    }, el);
-    return () => {
-      ctx.revert();
-      bridge.scan = -1;
+      path.current?.setAttribute("d", d);
     };
+    draw();
+    return () => cancelAnimationFrame(raf);
+  }, [live]);
+  return (
+    <svg viewBox="0 0 200 28" className={styles.wave} aria-hidden>
+      <path ref={path} d="M0 14 H200" />
+    </svg>
+  );
+}
+
+/** Types a line out, character by character, after the frame has drawn. */
+function TypeOut({ text, delay = 0.45 }: { text: string; delay?: number }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (prefersReducedMotion()) {
+      el.textContent = text;
+      return;
+    }
+    el.textContent = "";
+    const s = { n: 0 };
+    const tween = gsap.to(s, {
+      n: text.length,
+      duration: Math.min(1.6, 0.25 + text.length * 0.012),
+      delay,
+      ease: "none",
+      onUpdate: () => {
+        const n = Math.round(s.n);
+        if (el.textContent?.length !== n) {
+          el.textContent = text.slice(0, n);
+          if (n % 3 === 0) sfx.tick();
+        }
+      },
+    });
+    return () => {
+      tween.kill();
+    };
+  }, [text, delay]);
+  return <span ref={ref} aria-hidden />;
+}
+
+function Clock({ since }: { since: number }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      const t = Math.max(0, (performance.now() - since) / 1000);
+      if (ref.current) ref.current.textContent = `${String(Math.floor(t / 60)).padStart(2, "0")}:${(t % 60).toFixed(1).padStart(4, "0")}`;
+      const rot = scan.get().rot;
+      const r = ref.current?.parentElement?.parentElement?.querySelector<HTMLElement>("[data-rot]");
+      if (r) r.textContent = `${rot >= 0 ? "+" : "−"}${String(Math.abs(rot)).padStart(2, "0")}°`;
+    }, 100);
+    return () => window.clearInterval(id);
+  }, [since]);
+  return <span ref={ref}>00:00.0</span>;
+}
+
+/**
+ * The HUD around the hologram: hairline panels that draw their frame first, then
+ * their text, joined to the face by leader lines at the logo's own angles.
+ */
+export function TeamHud({ member, index, total, attract }: { member: Member | null; index: number; total: number; attract: boolean }) {
+  const lines = useRef<SVGSVGElement>(null);
+  const left = useRef<HTMLDivElement>(null);
+  const right = useRef<HTMLDivElement>(null);
+  const [lockedAt, setLockedAt] = useState(0);
+
+  useEffect(() => {
+    if (!member) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- the lock time is the moment the selection lands
+    setLockedAt(performance.now());
+    sfx.lock();
   }, [member]);
 
-  const show = member !== null;
-  const m = member;
-  const name = m?.name ?? FILL;
-  const codename = m?.codename ?? FILL;
-  const coords = m?.coordinates ? `${m.coordinates.lat.toFixed(3)}° N  ${m.coordinates.lon.toFixed(3)}° E` : FILL;
+  // leader lines from the face to the inside edges of the two panel stacks
+  useEffect(() => {
+    let raf = 0;
+    const draw = () => {
+      raf = requestAnimationFrame(draw);
+      const svg = lines.current;
+      if (!svg) return;
+      const face = readAnchor("face");
+      const crown = readAnchor("crown");
+      const shoulder = readAnchor("shoulder");
+      const box = svg.getBoundingClientRect();
+      const paths = svg.querySelectorAll("path");
+      const toPanel = (from: { x: number; y: number } | undefined, el: HTMLElement | null, side: "l" | "r", p: SVGPathElement | undefined) => {
+        if (!p) return;
+        if (!from || !el || !member) {
+          p.setAttribute("d", "");
+          return;
+        }
+        const r = el.getBoundingClientRect();
+        const x0 = from.x - box.left;
+        const y0 = from.y - box.top;
+        const x1 = (side === "l" ? r.right : r.left) - box.left;
+        const y1 = r.top + 24 - box.top;
+        // a 45 degree run, then level into the panel
+        const dy = y1 - y0;
+        const kx = x0 + (side === "l" ? -1 : 1) * Math.abs(dy);
+        const bend = side === "l" ? Math.max(kx, x1 + 20) : Math.min(kx, x1 - 20);
+        p.setAttribute("d", `M${x0.toFixed(1)} ${y0.toFixed(1)} L${bend.toFixed(1)} ${(y0 + Math.sign(dy) * Math.abs(bend - x0)).toFixed(1)} L${x1.toFixed(1)} ${y1.toFixed(1)}`);
+      };
+      toPanel(face, left.current?.querySelector("[data-panel='id']") ?? null, "l", paths[0]);
+      toPanel(crown, right.current?.querySelector("[data-panel='bio']") ?? null, "r", paths[1]);
+      toPanel(shoulder, left.current?.querySelector("[data-panel='skills']") ?? null, "l", paths[2]);
+      const dot = svg.querySelector<SVGRectElement>("rect");
+      if (dot && face && member) {
+        dot.setAttribute("x", String(face.x - box.left - 4));
+        dot.setAttribute("y", String(face.y - box.top - 4));
+        dot.style.opacity = "1";
+      } else if (dot) dot.style.opacity = "0";
+    };
+    draw();
+    return () => cancelAnimationFrame(raf);
+  }, [member]);
+
+  const key = member?.slug ?? "none";
 
   return (
-    <div ref={root} className={styles.hud} data-show={show ? "1" : "0"} aria-hidden={!show}>
-      <svg className={styles.lines} width={size.w} height={size.h} aria-hidden>
-        {show
-          ? lines.map((l, i) => (
-              <path
-                key={i}
-                d={`M${l.x1} ${l.y1} L${(l.x1 + l.x2) / 2} ${l.y1} L${(l.x1 + l.x2) / 2} ${l.y2} L${l.x2} ${l.y2}`}
-                pathLength={1}
-                className={styles.line}
-                data-line
-              />
-            ))
-          : null}
+    <div className={styles.hud} data-on={member ? "1" : "0"} aria-hidden={!member}>
+      <svg ref={lines} className={styles.lines} aria-hidden>
+        <path />
+        <path />
+        <path />
+        <rect width={8} height={8} />
       </svg>
 
-      <div className={styles.focus} style={{ left: face.x, top: face.y }} aria-hidden>
-        <i data-bracket />
-        <i data-bracket />
-        <i data-bracket />
-        <i data-bracket />
-        <span className={styles.scanline} data-scanline />
-        <span className={styles.reticle} />
+      <div ref={left} className={styles.col} data-side="left">
+        <section key={`id-${key}`} className={styles.panel} data-panel="id">
+          <p className={`${styles.ph} t-hud`}>
+            <span>Subject {String(index + 1).padStart(2, "0")} of {String(total).padStart(2, "0")}</span>
+            <span className="t-num">{member ? hexId(member.slug) : ""}</span>
+          </p>
+          <p className={styles.codename}>{member?.codename ?? FILL("codename")}</p>
+          <p className={styles.name} data-fill={member?.name ? undefined : "1"}>
+            {member?.name ?? FILL("name")}
+          </p>
+          <p className={styles.role}>{member?.role}</p>
+          <dl className={styles.kv}>
+            <div>
+              <dt className="t-hud">Location</dt>
+              <dd>{member?.location ?? FILL("city")}</dd>
+            </div>
+            <div>
+              <dt className="t-hud">Joined</dt>
+              <dd>{member?.joined ?? FILL("year")}</dd>
+            </div>
+          </dl>
+        </section>
+        <section key={`sk-${key}`} className={styles.panel} data-panel="skills">
+          <p className={`${styles.ph} t-hud`}>
+            <span>Skills</span>
+            <span>{member?.skills.every((s) => s.value !== null) ? "self-rated" : FILL("0 to 100 each")}</span>
+          </p>
+          {member ? <Radar skills={member.skills} /> : null}
+        </section>
       </div>
 
-      {m ? (
-        <>
-          <section className={`${styles.panel} ${styles.tl}`} data-panel aria-label="Identity">
-            <p className={styles.k}>
-              <span data-decode={hexId(m.slug)}>{hexId(m.slug)}</span>
-              <span className={styles.idx}>
-                {String(index + 1).padStart(2, "0")}/{String(total).padStart(2, "0")}
-              </span>
-            </p>
-            <dl className={styles.rows}>
-              <div>
-                <dt>Codename</dt>
-                <dd data-decode={codename} data-fill={m.codename ? undefined : "1"}>
-                  {codename}
-                </dd>
-              </div>
-              <div>
-                <dt>Name</dt>
-                <dd data-decode={name} data-fill={m.name ? undefined : "1"}>
-                  {name}
-                </dd>
-              </div>
-              <div>
-                <dt>Role</dt>
-                <dd data-decode={m.role}>{m.role}</dd>
-              </div>
-              <div>
-                <dt>Status</dt>
-                <dd className={styles.status} data-decode={scanning ? "Scanning" : m.status}>
-                  {scanning ? "Scanning" : m.status}
-                </dd>
-              </div>
-            </dl>
-          </section>
-
-          <section className={`${styles.panel} ${styles.tr}`} data-panel aria-label="Field data">
-            <dl className={styles.rows}>
-              <div>
-                <dt>Location</dt>
-                <dd data-decode={m.location ?? FILL} data-fill={m.location ? undefined : "1"}>
-                  {m.location ?? FILL}
-                </dd>
-              </div>
-              <div>
-                <dt>Coordinates</dt>
-                <dd data-decode={coords} data-fill={m.coordinates ? undefined : "1"}>
-                  {coords}
-                </dd>
-              </div>
-              <div>
-                <dt>Joined</dt>
-                <dd data-decode={m.joined ?? FILL} data-fill={m.joined ? undefined : "1"}>
-                  {m.joined ?? FILL}
-                </dd>
-              </div>
-              <div>
-                <dt>Currently</dt>
-                <dd data-decode={m.currently ?? FILL} data-fill={m.currently ? undefined : "1"}>
-                  {m.currently ?? FILL}
-                </dd>
-              </div>
-            </dl>
-          </section>
-
-          <section className={`${styles.panel} ${styles.bl}`} data-panel aria-label="Skills">
-            <p className={styles.k}>Skills</p>
-            <Radar skills={m.skills} />
-            <p className={styles.k}>Signal</p>
-            <Wave seed={m.slug} />
-          </section>
-
-          <section className={`${styles.panel} ${styles.br}`} data-panel aria-label="Loadout and links">
-            <p className={styles.k}>Loadout</p>
-            <ul className={styles.chips}>
-              {m.tools.map((t) => (
-                <li key={t}>{t}</li>
-              ))}
-            </ul>
-            <p className={styles.k}>Bio</p>
-            <p className={styles.bio} data-decode={m.bio ?? FILL} data-fill={m.bio ? undefined : "1"}>
-              {m.bio ?? FILL}
-            </p>
-            <div className={styles.links}>
-              {m.links.length ? (
-                m.links.map((l) => (
-                  <a key={l.href} href={l.href} target="_blank" rel="noopener noreferrer" className={styles.link}>
-                    {l.label ?? l.kind}
-                  </a>
-                ))
-              ) : (
-                <span className="fill">[ FILL: links ]</span>
-              )}
+      <div ref={right} className={styles.col} data-side="right">
+        <section key={`bio-${key}`} className={styles.panel} data-panel="bio">
+          <p className={`${styles.ph} t-hud`}>
+            <span>Bio</span>
+            <span>decoded</span>
+          </p>
+          <p className={styles.bio}>
+            {member ? <TypeOut text={member.bio ?? FILL("two lines, in their own words")} /> : null}
+            <span className="sr-only">{member?.bio ?? "Bio not yet filled in."}</span>
+          </p>
+        </section>
+        <section key={`now-${key}`} className={styles.panel} data-panel="now">
+          <dl className={styles.kv}>
+            <div>
+              <dt className="t-hud">Currently</dt>
+              <dd>{member?.currently ?? FILL("what they are working on")}</dd>
             </div>
-          </section>
-        </>
-      ) : null}
+            <div>
+              <dt className="t-hud">Tools</dt>
+              <dd className={styles.tools}>
+                {member?.tools.map((t) => (
+                  <span key={t}>{t}</span>
+                ))}
+              </dd>
+            </div>
+          </dl>
+        </section>
+        <section className={styles.panel} data-panel="signal">
+          <div className={`${styles.readouts} t-hud`}>
+            <span>
+              Lock <Clock since={lockedAt} />
+            </span>
+            <span>
+              Turn <span data-rot>+00°</span>
+            </span>
+            <span>{attract ? "Scanning" : "Held"}</span>
+          </div>
+          <Wave live={!!member} />
+        </section>
+        {member?.links.portfolio ? (
+          <a className={styles.portfolio} href={member.links.portfolio} target="_blank" rel="noopener noreferrer" data-magnetic data-cursor="open">
+            <span>Visit portfolio</span>
+            <span className={styles.out} aria-hidden />
+          </a>
+        ) : (
+          <button type="button" className={styles.portfolio} disabled>
+            <span>Portfolio coming soon</span>
+          </button>
+        )}
+      </div>
     </div>
   );
 }

@@ -16,6 +16,7 @@ const LOADERS: Partial<Record<SceneKey, Loader>> = {
   identify: () => import("./scenes/identify/IdentifyScene"),
   understand: () => import("./scenes/understand/UnderstandScene"),
   measure: () => import("./scenes/measure/MeasureScene"),
+  team: () => import("./scenes/team/TeamScene"),
 };
 
 /** Built once at module scope, so React sees a stable component per scene. */

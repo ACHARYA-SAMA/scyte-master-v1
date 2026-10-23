@@ -1,230 +1,153 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { displayName, hexId, type Member } from "@/data/team";
 import { gsap, prefersReducedMotion } from "@/lib/motion";
 import { scroller } from "@/components/providers/SmoothScroll";
 import { Portrait } from "./Portrait";
 import styles from "./Dossier.module.css";
 
-type Props = { member: Member; fromEl: HTMLElement | null; onClose: () => void };
+const FILL = (what: string) => <span className="fill">[ FILL: {what} ]</span>;
+
+const LINKS: { key: keyof Member["links"]; label: string }[] = [
+  { key: "portfolio", label: "Portfolio" },
+  { key: "linkedin", label: "LinkedIn" },
+  { key: "github", label: "GitHub" },
+  { key: "x", label: "X" },
+  { key: "email", label: "Email" },
+];
 
 /**
- * The full dossier. The portrait flies from its thumbnail to its place here (a
- * shared-element transition) and the panels reflow around it. Back or Escape reverses.
+ * The full dossier. The thumbnail grows into the large portrait (a shared-element
+ * move), the record slides in beside it. Escape, the close button or Back close it.
  */
-export function Dossier({ member, fromEl, onClose }: Props) {
+export function Dossier({ member, fromEl, onClose }: { member: Member; fromEl: HTMLElement | null; onClose: () => void }) {
   const root = useRef<HTMLDivElement>(null);
   const portrait = useRef<HTMLDivElement>(null);
-  const closing = useRef(false);
-
-  useLayoutEffect(() => {
-    const el = root.current;
-    const target = portrait.current;
-    if (!el || !target) return;
-    scroller.lenis?.stop();
-    const reduced = prefersReducedMotion();
-    const img = fromEl?.querySelector("img");
-    const tl = gsap.timeline();
-    if (img && !reduced) {
-      // FLIP from the thumbnail's rect to the dossier slot
-      const from = img.getBoundingClientRect();
-      const to = target.getBoundingClientRect();
-      tl.fromTo(
-        target,
-        {
-          x: from.left - to.left,
-          y: from.top - to.top,
-          scaleX: from.width / to.width,
-          scaleY: from.height / to.height,
-          transformOrigin: "0 0",
-        },
-        { x: 0, y: 0, scaleX: 1, scaleY: 1, duration: 0.8, ease: "latch" },
-      );
-    }
-    tl.fromTo(el.querySelector("[data-bg]"), { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "none" }, 0);
-    if (!reduced) {
-      tl.fromTo(
-        el.querySelectorAll("[data-reflow]"),
-        { y: 30, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.55, ease: "glide", stagger: 0.06 },
-        0.25,
-      );
-    }
-    el.querySelector<HTMLElement>("[data-close]")?.focus({ preventScroll: true });
-    return () => {
-      tl.kill();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const close = () => {
-    if (closing.current) return;
-    closing.current = true;
-    const el = root.current;
-    const target = portrait.current;
-    const img = fromEl?.querySelector("img");
-    const done = () => {
-      scroller.lenis?.start();
-      onClose();
-      fromEl?.focus({ preventScroll: true });
-    };
-    if (!el || !target || prefersReducedMotion()) return done();
-    const tl = gsap.timeline({ onComplete: done });
-    tl.to(el.querySelectorAll("[data-reflow]"), { y: -16, opacity: 0, duration: 0.25, ease: "cut", stagger: 0.02 });
-    if (img) {
-      const from = target.getBoundingClientRect();
-      const to = img.getBoundingClientRect();
-      tl.to(
-        target,
-        {
-          x: `+=${to.left - from.left}`,
-          y: `+=${to.top - from.top}`,
-          scaleX: to.width / from.width,
-          scaleY: to.height / from.height,
-          transformOrigin: "0 0",
-          duration: 0.6,
-          ease: "latch",
-        },
-        0.05,
-      );
-    }
-    tl.to(el.querySelector("[data-bg]"), { opacity: 0, duration: 0.3 }, "-=0.3");
-  };
+  const close = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && close();
-    const onPop = () => close();
+    scroller.lenis?.stop();
+    const el = root.current;
+    const p = portrait.current;
+    const reduced = prefersReducedMotion();
+    const from = fromEl?.querySelector("img, span")?.getBoundingClientRect();
+    if (el && p && from && !reduced) {
+      const to = p.getBoundingClientRect();
+      gsap.fromTo(
+        p,
+        { x: from.left - to.left, y: from.top - to.top, scaleX: from.width / to.width, scaleY: from.height / to.height, transformOrigin: "0 0" },
+        { x: 0, y: 0, scaleX: 1, scaleY: 1, duration: 0.8, ease: "snap" },
+      );
+      gsap.fromTo(el.querySelectorAll("[data-row]"), { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.55, ease: "glide", stagger: 0.04, delay: 0.25 });
+    }
+    close.current?.focus({ preventScroll: true });
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+      if (e.key !== "Tab" || !el) return;
+      const f = el.querySelectorAll<HTMLElement>("a, button");
+      const first = f[0];
+      const last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+    const onPop = () => onClose();
     window.addEventListener("keydown", onKey);
     window.addEventListener("popstate", onPop);
     return () => {
       window.removeEventListener("keydown", onKey);
       window.removeEventListener("popstate", onPop);
+      scroller.lenis?.start();
+      fromEl?.focus({ preventScroll: true });
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const name = displayName(member);
+  }, [fromEl, onClose]);
 
   return (
-    <div ref={root} className={styles.dossier} role="dialog" aria-modal="true" aria-labelledby="dossier-name">
-      <div className={styles.bg} data-bg />
-      <div className={styles.scroll} data-lenis-prevent>
-        <div className={styles.inner}>
-          <button type="button" className={styles.close} onClick={close} data-close>
-            Back to the team <span aria-hidden>Esc</span>
+    <div ref={root} className={styles.dossier} role="dialog" aria-modal="true" aria-label={`Dossier: ${displayName(member)}`} data-lenis-prevent>
+      <div ref={portrait} className={styles.portrait}>
+        <Portrait member={member} size="large" className={styles.img} />
+        <span className={`${styles.tag} t-hud`}>{member.photo ? "Photo" : "Placeholder silhouette, no photo yet"}</span>
+      </div>
+      <div className={styles.record}>
+        <header className={styles.head} data-row>
+          <p className="t-hud c-muted">
+            Dossier <span className="t-num">{hexId(member.slug)}</span>
+          </p>
+          <button ref={close} type="button" className={styles.close} onClick={onClose} data-cursor="tap">
+            Close <kbd>Esc</kbd>
           </button>
-
-          <div className={styles.portraitCol}>
-            <div ref={portrait} className={styles.portrait}>
-              <Portrait member={member} className={styles.portraitImg} size="large" />
-              <span className={styles.corner} aria-hidden />
-            </div>
-            <p className={styles.caption} data-reflow>
-              {member.photo ? "Portrait" : "Generated placeholder. Supply a photo in src/data/team.ts."}
-            </p>
+        </header>
+        <p className={`${styles.codename} t-hud`} data-row>
+          {member.codename ?? FILL("codename")}
+        </p>
+        <h2 className={styles.name} data-row>
+          {member.name ?? FILL("name")}
+        </h2>
+        <p className={styles.role} data-row>
+          {member.role}
+        </p>
+        <dl className={styles.facts} data-row>
+          <div>
+            <dt className="t-hud">Location</dt>
+            <dd>{member.location ?? FILL("city")}</dd>
           </div>
-
-          <div className={styles.body}>
-            <p className={styles.id} data-reflow>
-              <span className="t-num">{hexId(member.slug)}</span>
-              <span>{member.codename ?? "[ FILL: codename ]"}</span>
-            </p>
-            <h2 id="dossier-name" className={styles.name} data-reflow>
-              {name}
-            </h2>
-            <p className={styles.role} data-reflow>
-              {member.role}
-            </p>
-            {member.name ? null : (
-              <p className={styles.fillNote} data-reflow>
-                <span className="fill">[ FILL ]</span> This seat comes from the plan in our business report. The person
-                in it has not been listed yet.
-              </p>
-            )}
-
-            <section className={styles.block} data-reflow aria-labelledby="d-bio">
-              <h3 id="d-bio">Bio</h3>
-              {member.bio ? <p className={styles.bio}>{member.bio}</p> : <p className="fill">[ FILL: bio, two or three lines ]</p>}
-            </section>
-
-            <section className={styles.block} data-reflow aria-labelledby="d-skills">
-              <h3 id="d-skills">Skills</h3>
-              <ul className={styles.skills}>
-                {member.skills.map((s) => (
-                  <li key={s.label}>
-                    <span>{s.label}</span>
-                    <span className={styles.meter} data-empty={s.value === null ? "1" : undefined}>
-                      <i style={{ width: `${s.value ?? 0}%` }} />
-                    </span>
-                    <span className="t-num">{s.value ?? "[ FILL ]"}</span>
-                  </li>
-                ))}
-              </ul>
-            </section>
-
-            <section className={styles.block} data-reflow aria-labelledby="d-tools">
-              <h3 id="d-tools">Loadout</h3>
-              <ul className={styles.chips}>
-                {member.tools.map((t) => (
-                  <li key={t}>{t}</li>
-                ))}
-              </ul>
-            </section>
-
-            <section className={styles.block} data-reflow aria-labelledby="d-projects">
-              <h3 id="d-projects">Projects</h3>
-              {member.projects.length ? (
-                <ul className={styles.list}>
-                  {member.projects.map((p) => (
-                    <li key={p.name}>
-                      <span className="t-num">{p.year}</span>
-                      <strong>{p.name}</strong>
-                      <span>{p.note}</span>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className={styles.empty}>
-                  Nothing listed yet. Projects appear here as one line each: year, name, what they did.
-                </p>
-              )}
-            </section>
-
-            <section className={styles.block} data-reflow aria-labelledby="d-timeline">
-              <h3 id="d-timeline">Timeline</h3>
-              {member.timeline.length ? (
-                <ol className={styles.list}>
-                  {member.timeline.map((t) => (
-                    <li key={t.year + t.event}>
-                      <span className="t-num">{t.year}</span>
-                      <span>{t.event}</span>
-                    </li>
-                  ))}
-                </ol>
-              ) : (
-                <p className={styles.empty}>No entries yet.</p>
-              )}
-            </section>
-
-            <section className={styles.block} data-reflow aria-labelledby="d-links">
-              <h3 id="d-links">Links</h3>
-              {member.links.length ? (
-                <ul className={styles.chips}>
-                  {member.links.map((l) => (
-                    <li key={l.href}>
-                      <a href={l.href} target="_blank" rel="noopener noreferrer">
-                        {l.label ?? l.kind}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="fill">[ FILL: LinkedIn, GitHub, X, email ]</p>
-              )}
-            </section>
+          <div>
+            <dt className="t-hud">Joined</dt>
+            <dd>{member.joined ?? FILL("year")}</dd>
           </div>
+          <div>
+            <dt className="t-hud">Currently</dt>
+            <dd>{member.currently ?? FILL("current work")}</dd>
+          </div>
+        </dl>
+        <div className={styles.bio} data-row>
+          {member.bio ? <p>{member.bio}</p> : <p>{FILL("a short bio, in their own words")}</p>}
         </div>
+        <div className={styles.skills} data-row>
+          <p className="t-hud c-muted">Skills</p>
+          <ul>
+            {member.skills.map((s) => (
+              <li key={s.label}>
+                <span>{s.label}</span>
+                <span className={styles.meter} aria-label={s.value === null ? "not yet rated" : `${s.value} of 100`}>
+                  {Array.from({ length: 10 }, (_, i) => (
+                    <i key={i} data-on={s.value !== null && i < Math.round(s.value / 10) ? "1" : undefined} data-empty={s.value === null ? "1" : undefined} />
+                  ))}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className={styles.tools} data-row>
+          <p className="t-hud c-muted">Tools</p>
+          <p>
+            {member.tools.map((t) => (
+              <span key={t}>{t}</span>
+            ))}
+          </p>
+        </div>
+        <ul className={styles.links} data-row>
+          {LINKS.map((l) => {
+            const href = member.links[l.key];
+            const url = href && l.key === "email" ? `mailto:${href}` : href;
+            return (
+              <li key={l.key}>
+                {url ? (
+                  <a href={url} target={l.key === "email" ? undefined : "_blank"} rel="noopener noreferrer" className={l.key === "portfolio" ? styles.primary : undefined}>
+                    {l.key === "portfolio" ? "Visit portfolio" : l.label}
+                  </a>
+                ) : (
+                  <span className={styles.missing}>{l.key === "portfolio" ? "Portfolio coming soon" : `${l.label}: [ FILL ]`}</span>
+                )}
+              </li>
+            );
+          })}
+        </ul>
       </div>
     </div>
   );
