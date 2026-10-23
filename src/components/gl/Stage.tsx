@@ -1,12 +1,13 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState, type ReactNode } from "react";
 import { Canvas, advance, useThree } from "@react-three/fiber";
 import { PerformanceMonitor } from "@react-three/drei";
-import { NoToneMapping, SRGBColorSpace } from "three";
+import { HalfFloatType, NoToneMapping, SRGBColorSpace, WebGLRenderTarget } from "three";
 import { gsap } from "@/lib/motion";
 import { gl as glStore, ui, useStore } from "@/lib/store";
 import { SCENES } from "./scenes";
+import { hold, warming } from "./warm";
 import styles from "./Stage.module.css";
 
 const initialQuality = (): 0 | 1 | 2 => {
@@ -29,18 +30,11 @@ const maxDpr = (q: number) => {
  * are only drawn while the active scene's section is on screen.
  */
 function Driver() {
-  const { gl, scene, camera } = useThree();
   useEffect(() => {
     let frames = 0;
     let alive = true;
-    let compiled = false;
-    gl.compileAsync(scene, camera)
-      .catch(() => gl.compile(scene, camera))
-      .finally(() => {
-        compiled = true;
-      });
     const tick = () => {
-      if (!alive || !compiled) return;
+      if (!alive || warming()) return;
       const s = glStore.get();
       if ((!s.visible || s.scene === "none") && frames > 2) return;
       advance(performance.now() / 1000);
@@ -52,8 +46,40 @@ function Driver() {
       alive = false;
       gsap.ticker.remove(tick);
     };
-  }, [gl, scene, camera]);
+  }, []);
   return null;
+}
+
+/**
+ * Compiles a scene's shaders before its first frame. Scenes are lazy, so they mount
+ * long after the canvas; without this the first frame compiles every program on the
+ * main thread (about a second on Windows, where each shader is also compiled for
+ * Direct3D). compileAsync uses the parallel-compile extension where there is one.
+ */
+function Warm({ children }: { children: ReactNode }) {
+  const { gl, scene, camera, get } = useThree();
+  useEffect(() => {
+    let alive = true;
+    const compile = () => {
+      if (!alive) return;
+      // a scene with the post chain draws into a linear target, and three keys programs on
+      // the output colour space: compile for the target the scene will really draw into
+      const post = get().internal.priority > 0;
+      const target = post ? new WebGLRenderTarget(1, 1, { type: HalfFloatType }) : null;
+      const prev = gl.getRenderTarget();
+      gl.setRenderTarget(target);
+      const compiling = gl.compileAsync(scene, camera);
+      gl.setRenderTarget(prev);
+      target?.dispose();
+      return compiling;
+    };
+    const release = hold(Promise.resolve().then(compile));
+    return () => {
+      alive = false;
+      release();
+    };
+  }, [gl, scene, camera, get]);
+  return <>{children}</>;
 }
 
 /** Tracks the pointer for every scene, in normalised device coordinates. */
@@ -74,7 +100,9 @@ function ActiveScene() {
   if (!Scene) return null;
   return (
     <Suspense fallback={null}>
-      <Scene key={key} />
+      <Warm key={key}>
+        <Scene />
+      </Warm>
     </Suspense>
   );
 }
