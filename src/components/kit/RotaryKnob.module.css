@@ -20,6 +20,16 @@
 .label {
   color: var(--khaki);
   max-width: 16ch;
+  min-height: 2.6em;
+  display: grid;
+  align-items: end;
+  line-height: 1.25;
+  text-wrap: balance;
+}
+
+/* small knobs sit in banks: labels wrap to two short lines instead of colliding */
+.knob[data-size="s"] .label {
+  max-width: 10ch;
 }
 
 .body {

@@ -1,15 +1,32 @@
 .section {
-  padding: clamp(96px, 14vh, 160px) var(--margin);
+  padding: calc(var(--nav-h) + 4vh) calc(var(--margin) + 64px) var(--s9) var(--margin);
   background: var(--ground-deep);
   border-top: var(--hair) solid var(--line);
   display: grid;
   gap: var(--s8);
 }
 
+/* title and lede side by side: the room needs the height */
 .intro {
   display: grid;
-  gap: var(--s4);
-  max-width: 54rem;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  grid-template-areas:
+    "flag flag"
+    "title lede";
+  align-items: end;
+  gap: var(--s3) var(--s7);
+}
+
+.intro .flag {
+  grid-area: flag;
+}
+
+.intro .title {
+  grid-area: title;
+}
+
+.intro .lede {
+  grid-area: lede;
 }
 
 .flag {
@@ -25,17 +42,17 @@
 }
 
 .title {
-  font-size: var(--t-h1);
-  line-height: 0.92;
-  font-weight: 760;
-  font-stretch: 88%;
+  font-size: clamp(2.4rem, 1rem + 3.6vw, 5rem);
+  line-height: 0.9;
+  font-weight: 840;
+  font-stretch: 68%;
   letter-spacing: -0.035em;
   color: var(--cream);
   text-wrap: balance;
 }
 
 .lede {
-  font-size: var(--t-lead);
+  font-size: var(--t-body);
   line-height: 1.4;
   color: var(--khaki-light);
   max-width: 46ch;
@@ -151,7 +168,7 @@
 }
 
 .heroValue {
-  font-size: clamp(3.5rem, 2rem + 4.5vw, 7rem);
+  font-size: clamp(2.8rem, 1.6rem + 3vw, 5rem);
   line-height: 0.85;
   font-weight: 860;
   font-stretch: 66%;
@@ -360,5 +377,221 @@
   }
   .waterfall li {
     grid-template-columns: 8em 1fr 6.5em;
+  }
+}
+
+/* ------------------------------------------------------------- the control room */
+.room {
+  display: grid;
+  grid-template-columns: minmax(0, 4.6fr) minmax(0, 4fr) minmax(0, 3.6fr);
+  gap: var(--gutter);
+  align-items: start;
+}
+
+.console {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "plate plate"
+    "knobs margin"
+    "hint hint"
+    "reset reset";
+  gap: var(--s4) var(--s5);
+  padding: var(--s5);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--raised) 60%, transparent), transparent 40%),
+    var(--ground);
+  border: var(--hair) solid var(--line);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--khaki-light) 12%, transparent);
+}
+
+/* screws in the corners: it is a panel, bolted down */
+.console::before,
+.console::after {
+  content: "";
+  position: absolute;
+  top: 10px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, var(--muted), var(--line));
+}
+
+.console::before {
+  left: 10px;
+}
+
+.console::after {
+  right: 10px;
+}
+
+.plate {
+  grid-area: plate;
+  justify-self: start;
+  padding: 3px 8px 2px;
+  border: var(--hair) solid var(--line);
+  color: var(--khaki);
+}
+
+.knobs {
+  grid-area: knobs;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--s4) var(--s2);
+  justify-items: center;
+}
+
+.margin {
+  grid-area: margin;
+  display: grid;
+  place-items: center;
+  padding-left: var(--s4);
+  border-left: var(--hair) solid var(--line);
+}
+
+.console .hint {
+  grid-area: hint;
+}
+
+.console .reset {
+  grid-area: reset;
+  justify-self: start;
+}
+
+.readout {
+  display: grid;
+  justify-items: center;
+  gap: var(--s3);
+  text-align: center;
+}
+
+.basis {
+  display: grid;
+  place-items: center;
+}
+
+.gauge {
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+  overflow: visible;
+}
+
+.gTrack {
+  fill: none;
+  stroke: var(--line);
+  stroke-width: 18;
+}
+
+.gRange {
+  fill: none;
+  stroke: color-mix(in srgb, var(--lumen) 45%, transparent);
+  stroke-width: 18;
+  transition: d 400ms var(--ease-glide);
+}
+
+.gTick {
+  stroke: var(--muted);
+  stroke-width: 1.5;
+}
+
+.gTick[data-zero="1"] {
+  stroke: var(--cream);
+  stroke-width: 2.5;
+}
+
+.gLabel {
+  fill: var(--muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.gNeedle {
+  --a: 0deg;
+  transform-origin: 200px 190px;
+  transform: rotate(var(--a));
+  transition: transform 700ms cubic-bezier(0.34, 1.5, 0.5, 1);
+}
+
+.gNeedle line {
+  stroke: var(--lumen);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.gNeedle circle {
+  fill: var(--cream);
+}
+
+.readout .rangeBar {
+  width: 100%;
+}
+
+.trail {
+  display: grid;
+  gap: var(--s4);
+}
+
+.print {
+  justify-self: start;
+  padding: 10px 14px;
+  border: 1px solid var(--khaki);
+  background: transparent;
+  color: var(--cream);
+  font: inherit;
+  font-size: var(--t-small);
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.print:hover,
+.print:focus-visible {
+  background: var(--khaki);
+  color: var(--ground);
+}
+
+.receipt {
+  width: 100%;
+}
+
+@media (max-width: 1200px) {
+  .room {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .console {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 760px) {
+  .section {
+    padding-right: var(--margin);
+  }
+  .intro {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "flag"
+      "title"
+      "lede";
+  }
+  .room {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .console {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "plate"
+      "knobs"
+      "margin"
+      "hint"
+      "reset";
+  }
+  .knobs {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .margin {
+    padding-left: 0;
+    border-left: 0;
   }
 }
