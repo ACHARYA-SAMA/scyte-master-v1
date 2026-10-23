@@ -5,7 +5,7 @@
 //   node scripts/qa-junction.mjs [baseUrl] [--from=/product] [--w=1440] [--h=900]
 //        [--out=docs/proof/junction] [--key]   (--key: steer and go with the keyboard)
 //
-// Needs the development build (it reads window.__scyte).
+// Runs on either build: development exposes window.__scyte, production is read from the DOM.
 
 import fs from "node:fs";
 import os from "node:os";
@@ -50,7 +50,16 @@ const page = await ctx.newPage();
 const errors = [];
 page.on("pageerror", (e) => errors.push(String(e)));
 page.on("console", (m) => m.type() === "error" && errors.push(m.text().slice(0, 300)));
-const state = () => page.evaluate(() => window.__scyte?.junction?.get());
+// the development build exposes the store; the production build is read from the DOM
+const state = () =>
+  page.evaluate(() => {
+    const dev = window.__scyte?.junction?.get();
+    if (dev) return dev;
+    const stage = document.querySelector("#junction > div");
+    const pct = stage?.querySelector("[data-charge]")?.textContent ?? "000";
+    const on = [...(stage?.querySelectorAll("a[data-cursor]") ?? [])].findIndex((a) => a.dataset.on === "1");
+    return { phase: stage?.dataset.phase ?? "away", drawn: stage?.dataset.live === "1", hi: on, charge: Number(pct) / 100 };
+  });
 const shot = (name) => page.screenshot({ path: path.join(out, `${name}.png`) });
 
 await page.goto(base + from, { waitUntil: "networkidle", timeout: 120000 }).catch(() => {});

@@ -10,7 +10,7 @@ import { useTransitionRouter } from "@/components/transition/navigation";
 import { RotaryKnob } from "@/components/kit/RotaryKnob";
 import { CopyEmail } from "@/components/shell/CopyEmail";
 import { Clock } from "@/components/nav/Nav";
-import { CHARGE_PX, LOCK_MS, SCENE_FOR, SLOTS, TRAVEL_MS, junction, markVisited, slotOf, storyNext } from "@/lib/junction";
+import { CHARGE_PX, LOCK_MS, SCENE_FOR, SLOTS, TRAVEL_MS, junction, markVisited, registerTravel, slotOf, storyNext } from "@/lib/junction";
 import { prefersReducedMotion, ScrollTrigger } from "@/lib/motion";
 import { gl, session, ui, useStore } from "@/lib/store";
 import { sfx } from "@/lib/sound";
@@ -139,6 +139,11 @@ export function Junction() {
     commitRef.current = commit;
     setHiRef.current = setHi;
   });
+  // the minimap and the menu travel the same way, from anywhere on the page
+  useEffect(() => {
+    registerTravel((i) => void commitRef.current(i, true));
+    return () => registerTravel(null);
+  }, []);
 
   /* -------------------------------------------------------------- the charge: native scroll, armed by deliberate input */
   useEffect(() => {

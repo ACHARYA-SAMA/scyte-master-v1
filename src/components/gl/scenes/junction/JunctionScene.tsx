@@ -276,6 +276,10 @@ const frameGeometry = () => {
  * down it into the portal. Only the dive carries chromatic aberration; at rest the
  * chamber is sharp.
  */
+/** Development only: ?jprof=post,portal,bulbs,floor,glass,metal switches parts off, to find what a frame costs. */
+const prof = typeof window !== "undefined" && process.env.NODE_ENV !== "production" ? new URLSearchParams(window.location.search).get("jprof") ?? "" : "";
+const off = (k: string) => prof.split(",").includes(k);
+
 export default function JunctionScene() {
   const camera = useThree((s) => s.camera) as PerspectiveCamera;
   const size = useThree((s) => s.size);
@@ -481,7 +485,7 @@ export default function JunctionScene() {
       <Studio intensity={0.45} />
       <ambientLight intensity={0.1} color="#cfc7aa" />
 
-      <mesh geometry={shared.floorGeo} material={shared.floor} rotation={[-Math.PI / 2, 0, 0]} renderOrder={-1} />
+      {off("floor") ? null : <mesh geometry={shared.floorGeo} material={shared.floor} rotation={[-Math.PI / 2, 0, 0]} renderOrder={-1} />}
       <mesh geometry={shared.hubGeo} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0]}>
         <meshBasicMaterial color={C.khaki} toneMapped={false} />
       </mesh>
@@ -492,7 +496,7 @@ export default function JunctionScene() {
         const pc = portalCenter(i);
         return (
           <group key={i}>
-            <mesh geometry={p.shell} material={q2 ? shared.glass : shared.lowGlass} renderOrder={1} />
+            {off("glass") ? null : <mesh geometry={p.shell} material={q2 ? shared.glass : shared.lowGlass} renderOrder={1} />}
             <mesh geometry={p.core} material={p.coreMat} />
             {/* the reflection: the core mirrored under the glass floor */}
             <mesh geometry={p.core} material={p.coreMat} scale={[1, -1, 1]} />
@@ -505,8 +509,8 @@ export default function JunctionScene() {
               </group>
             ) : (
               <group ref={(g) => void (groups.current[i] = g)} position={pc} rotation={[0, -ANG[i]!, 0]}>
-                <mesh geometry={shared.plane} material={portals[i]!} />
-                <mesh geometry={shared.frame} material={shared.metal} />
+                {off("portal") ? null : <mesh geometry={shared.plane} material={portals[i]!} />}
+                {off("metal") ? null : <mesh geometry={shared.frame} material={shared.metal} />}
                 <mesh geometry={shared.frame} material={outlines[i]!} scale={[1.012, 1.008, 0.4]} position={[0, 0, 0.32]} />
                 {/* reflected below the floor */}
                 <mesh geometry={shared.plane} material={portals[i]!} position={[0, -pc.y * 2, 0]} scale={[1, -1, 1]} />
@@ -516,16 +520,18 @@ export default function JunctionScene() {
         );
       })}
 
-      <BulbString bulbs={lamps.bulbs} radius={0.42} mount={1} ignite={0} on facing="y" level={levels} />
+      {off("bulbs") ? null : <BulbString bulbs={lamps.bulbs} radius={0.42} mount={1} ignite={0} on facing="y" level={levels} />}
 
+      {off("post") ? null : (
       <EffectComposer multisampling={q2 ? 4 : 0} enableNormalPass={false}>
         {/* only the liquid, the filaments and a filling portal pass this threshold: the glass's highlights never bloom */}
-        <Bloom intensity={0.6} luminanceThreshold={1.02} luminanceSmoothing={0.08} mipmapBlur radius={0.62} resolutionScale={q2 ? 1 : 0.5} />
-        <ChromaticAberration ref={ca} offset={caOffset} radialModulation={false} modulationOffset={0} blendFunction={BlendFunction.NORMAL} />
+        <Bloom intensity={0.6} luminanceThreshold={1.02} luminanceSmoothing={0.08} mipmapBlur radius={0.62} levels={off("bloom8") ? 8 : 5} resolutionScale={q2 ? 1 : 0.5} />
+        {off("ca") ? <></> : <ChromaticAberration ref={ca} offset={caOffset} radialModulation={false} modulationOffset={0} blendFunction={BlendFunction.NORMAL} />}
         <ToneMapping mode={ToneMappingMode.NEUTRAL} />
-        <Vignette offset={0.3} darkness={0.5} />
-        {q2 ? <></> : <FXAA />}
+        {off("vig") ? <></> : <Vignette offset={0.3} darkness={0.5} />}
+        {q2 || off("fxaa") ? <></> : <FXAA />}
       </EffectComposer>
+      )}
     </>
   );
 }

@@ -297,13 +297,132 @@
   opacity: 1;
 }
 
+/* ------------------------------------------------------------- the minimap */
+.minimap {
+  position: absolute;
+  left: calc(var(--inset) + 14px);
+  bottom: calc(var(--inset) + 34px);
+  width: 76px;
+  height: 40px;
+  pointer-events: auto;
+}
+
+.fan {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+}
+
+.fan line {
+  stroke: var(--line);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.fan circle {
+  fill: var(--khaki);
+}
+
+.node {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: 12px;
+  height: 12px;
+  margin: -6px 0 0 -6px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.node::before {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border: 1px solid var(--muted);
+  background: var(--ground-deep);
+  transition:
+    background-color var(--dur-ui) linear,
+    border-color var(--dur-ui) linear;
+}
+
+.node[data-seen="1"]::before {
+  border-color: var(--khaki);
+  background: color-mix(in srgb, var(--khaki) 45%, var(--ground-deep));
+}
+
+.node[data-here="1"]::before {
+  inset: 2px;
+  border-color: var(--lumen);
+  background: var(--lumen);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--lumen) 60%, transparent);
+}
+
+.node:hover::before,
+.node:focus-visible::before {
+  border-color: var(--cream);
+}
+
+.nodeTip {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 6px);
+  translate: -50% 4px;
+  padding: 2px 6px;
+  background: var(--abyss);
+  border: var(--hair) solid var(--line);
+  color: var(--cream);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity var(--dur-feedback) linear,
+    translate var(--dur-feedback) var(--ease-glide);
+}
+
+.node:hover .nodeTip,
+.node:focus-visible .nodeTip {
+  opacity: 1;
+  translate: -50% 0;
+}
+
+/* ------------------------------------------------------------- the teaser */
+.tease {
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--inset) + 48px);
+  translate: -50% 8px;
+  display: flex;
+  gap: 14px;
+  padding: 6px 12px 5px;
+  background: color-mix(in srgb, var(--abyss) 82%, transparent);
+  border: var(--hair) solid var(--line);
+  color: var(--cream);
+  white-space: nowrap;
+  opacity: 0;
+  transition:
+    opacity var(--dur-panel) linear,
+    translate var(--dur-panel) var(--ease-glide);
+}
+
+.tease[data-on="1"]:not([data-junction="1"]) {
+  opacity: 1;
+  translate: -50% 0;
+}
+
+.teaseNext {
+  color: var(--lumen);
+}
+
 /* below 1100 px the gutter is too thin to hold rulers: a slim strip only */
 @media (max-width: 1100px), (pointer: coarse) {
   .edge[data-side="l"],
   .edge[data-side="r"],
   .corner,
   .ruler,
-  .readout {
+  .readout,
+  .minimap {
     display: none;
   }
   .frame {

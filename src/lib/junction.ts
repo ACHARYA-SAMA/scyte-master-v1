@@ -102,3 +102,13 @@ export const loadVisited = () => {
 if (typeof window !== "undefined" && process.env.NODE_ENV !== "production") {
   (window as unknown as { __scyte?: Record<string, unknown> }).__scyte = { ...(window as unknown as { __scyte?: Record<string, unknown> }).__scyte, junction };
 }
+
+/* ---------------------------------------------------------------- travel from anywhere */
+let travelImpl: ((slot: number) => void) | null = null;
+
+/** The Junction registers how it commits; the frame's minimap and the menu travel through it. */
+export const registerTravel = (fn: ((slot: number) => void) | null) => {
+  travelImpl = fn;
+};
+
+export const travelTo = (slot: number) => travelImpl?.(slot);

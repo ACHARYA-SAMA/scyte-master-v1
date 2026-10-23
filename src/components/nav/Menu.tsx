@@ -10,6 +10,7 @@ import { scroller } from "@/components/providers/SmoothScroll";
 import { TransitionLink } from "@/components/transition/navigation";
 import { CopyEmail } from "@/components/shell/CopyEmail";
 import { NAV, SITE } from "@/config/site";
+import { slotOf, travelTo } from "@/lib/junction";
 import { Clock } from "./Nav";
 import styles from "./Menu.module.css";
 
@@ -172,7 +173,13 @@ export function Menu({ returnFocus }: { returnFocus: RefObject<HTMLButtonElement
                 href={r.href}
                 className={styles.link}
                 aria-current={current ? "page" : undefined}
-                onClick={() => ui.set({ menuOpen: false })}
+                onClick={(e) => {
+                  ui.set({ menuOpen: false });
+                  // the menu is the Junction's quick mode: the same arrival ceremony, no walk to the end of the page
+                  if (current || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+                  e.preventDefault();
+                  travelTo(slotOf(r.href));
+                }}
                 data-cursor="open"
               >
                 <span className={styles.top}>

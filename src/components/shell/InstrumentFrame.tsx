@@ -6,6 +6,7 @@ import { rail, ui, useStore } from "@/lib/store";
 import { routeFor } from "@/config/site";
 import { scroller } from "@/components/providers/SmoothScroll";
 import { pageChapters } from "./chapters";
+import { SLOTS, junction, slotOf, storyNext, travelTo, visited } from "@/lib/junction";
 import styles from "./InstrumentFrame.module.css";
 
 const pad = (n: number, len: number) => String(Math.max(0, Math.round(n))).padStart(len, "0");
@@ -35,6 +36,11 @@ export function InstrumentFrame() {
   const frame = useRef<HTMLSpanElement>(null);
   const pct = useRef<HTMLSpanElement>(null);
   const [dense, setDense] = useState(false);
+  const seen = useStore(visited, (s) => s.hrefs);
+  const jphase = useStore(junction, (s) => s.phase);
+  const here = slotOf(pathname);
+  const next = SLOTS[storyNext(pathname)]!;
+  const tease = useRef<HTMLParagraphElement>(null);
 
   // scroll: the rulers' ticks travel, the right marker rides the page, the drop moves
   useEffect(() => {
@@ -52,6 +58,14 @@ export function InstrumentFrame() {
       const local = to > from ? Math.min(1, Math.max(0, (progress - from) / (to - from))) : 0;
       const pos = n > 1 ? Math.min(1, (a + (a < n - 1 ? local : 0)) / (n - 1)) : 0;
       el.style.setProperty("--drop", pos.toFixed(4));
+      // the last stretch of a page points at what is beyond it
+      const doc = document.documentElement;
+      const end = window.scrollY / Math.max(1, doc.scrollHeight - window.innerHeight);
+      const t = tease.current;
+      if (t) {
+        const on = end > 0.85 && junction.get().phase === "away" ? "1" : "0";
+        if (t.dataset.on !== on) t.dataset.on = on;
+      }
     };
     update();
     const stop = rail.subscribe(update);
@@ -156,6 +170,38 @@ export function InstrumentFrame() {
       <span className={`${styles.readout} ${styles.br} t-hud`} aria-hidden>
         <span ref={fps}>060</span> FPS<span className={styles.gap} />F <span ref={frame}>0000000</span>
       </span>
+
+      {/* the minimap: the six slots of the Junction, this page filled, pages seen on this device lit */}
+      <nav className={styles.minimap} aria-label="Map of the site">
+        <svg viewBox="0 0 76 40" className={styles.fan} aria-hidden>
+          {SLOTS.map((s) => {
+            const a = ((-38 + (76 / 5) * s.i) * Math.PI) / 180;
+            return <line key={s.href} x1={38} y1={36} x2={38 + Math.sin(a) * 30} y2={36 - Math.cos(a) * 30} />;
+          })}
+          <circle cx={38} cy={36} r={2} />
+        </svg>
+        {SLOTS.map((s) => {
+          const a = ((-38 + (76 / 5) * s.i) * Math.PI) / 180;
+          return (
+            <button
+              key={s.href}
+              type="button"
+              className={styles.node}
+              style={{ "--x": `${((38 + Math.sin(a) * 30) / 76) * 100}%`, "--y": `${((36 - Math.cos(a) * 30) / 40) * 100}%` } as CSSProperties}
+              data-here={s.i === here ? "1" : undefined}
+              data-seen={seen.includes(s.href) ? "1" : undefined}
+              onClick={() => (s.i === here ? undefined : travelTo(s.i))}
+              aria-label={s.i === here ? `${s.label}, you are here` : `Go to ${s.label}`}
+              aria-current={s.i === here ? "page" : undefined}
+            >
+              <span className={`${styles.nodeTip} t-hud`}>{s.label}</span>
+            </button>
+          );
+        })}
+      </nav>
+      <p ref={tease} className={`${styles.tease} t-hud`} data-on="0" data-junction={jphase === "away" ? undefined : "1"} aria-hidden>
+        Keep scrolling: 6 paths ahead <span className={styles.teaseNext}>Next, {next.label}</span>
+      </p>
 
       {n ? (
         <nav className={styles.strip} aria-label="Chapters on this page" style={{ "--n": n } as CSSProperties}>

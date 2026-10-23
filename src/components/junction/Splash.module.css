@@ -21,7 +21,48 @@
 }
 
 .chapter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px var(--s5);
   color: var(--khaki);
+}
+
+.route {
+  color: var(--lumen);
+}
+
+.path {
+  color: var(--muted);
+}
+
+.line {
+  max-width: 46ch;
+  color: var(--khaki-light);
+}
+
+/* viewfinder corners, the same marks as the frame */
+.corners {
+  position: absolute;
+  inset: clamp(20px, 4vw, 56px);
+  pointer-events: none;
+  background:
+    linear-gradient(var(--khaki), var(--khaki)) left top / 26px 1px no-repeat,
+    linear-gradient(var(--khaki), var(--khaki)) left top / 1px 26px no-repeat,
+    linear-gradient(var(--khaki), var(--khaki)) right top / 26px 1px no-repeat,
+    linear-gradient(var(--khaki), var(--khaki)) right top / 1px 26px no-repeat,
+    linear-gradient(var(--khaki), var(--khaki)) left bottom / 26px 1px no-repeat,
+    linear-gradient(var(--khaki), var(--khaki)) left bottom / 1px 26px no-repeat,
+    linear-gradient(var(--khaki), var(--khaki)) right bottom / 26px 1px no-repeat,
+    linear-gradient(var(--khaki), var(--khaki)) right bottom / 1px 26px no-repeat;
+  opacity: 0.6;
+  animation: frameIn 520ms var(--ease-snap) both;
+}
+
+@keyframes frameIn {
+  from {
+    inset: 30%;
+    opacity: 0;
+  }
 }
 
 /* the name gains weight as the work completes: Archivo's weight axis, driven by --w */
@@ -87,9 +128,11 @@
 
 /* home: the five letters slide together into the exact mark */
 .logo {
-  width: min(70vw, 900px);
+  position: absolute;
+  top: 12%;
+  width: min(30vw, 380px);
   overflow: visible;
-  opacity: 0.16;
+  opacity: 0.55;
 }
 
 .logo polygon {

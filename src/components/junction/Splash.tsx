@@ -182,12 +182,21 @@ export function Splash() {
       <div className={styles.motif}>
         <Motif kind={slot} />
       </div>
+      <span className={styles.corners} aria-hidden />
       <div className={styles.stack}>
         <p className={`${styles.chapter} t-hud`} data-meta>
-          {dest.chapter}
+          <span>Arriving</span>
+          <span className={styles.route}>
+            {String(slot + 1).padStart(2, "0")} / {String(SLOTS.length).padStart(2, "0")}
+          </span>
+          <span>{dest.chapter}</span>
+          <span className={styles.path}>{dest.href}</span>
         </p>
         <p ref={title} className={styles.title} aria-hidden>
           {dest.label}
+        </p>
+        <p className={`${styles.line} t-body`} data-meta>
+          {dest.line}.
         </p>
         <div className={styles.meta} data-meta>
           <dl className={styles.tasks}>
