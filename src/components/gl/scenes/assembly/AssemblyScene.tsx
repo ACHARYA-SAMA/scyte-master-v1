@@ -1,5 +1,4 @@
 "use client";
-/* eslint-disable react-hooks/immutability -- three.js objects are created once and mutated every frame inside useFrame. */
 
 import { useEffect, useMemo, useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";

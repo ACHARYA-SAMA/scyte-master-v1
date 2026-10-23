@@ -1,0 +1,462 @@
+/* ------------------------------------------------------------- the strip */
+.archive {
+  --pw: clamp(260px, min(36vw, (100svh - 400px) * 1.6), 640px);
+  --gap: clamp(16px, 2vw, 36px);
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto 1fr auto;
+  min-height: 100svh;
+  padding: calc(var(--nav-h) + 3vh) 0 var(--s6);
+}
+
+.head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 36ch);
+  grid-template-areas:
+    "hud hud"
+    "title lede";
+  align-items: end;
+  gap: var(--s3) var(--s7);
+  padding-inline: var(--margin);
+}
+
+.head > :first-child {
+  grid-area: hud;
+}
+
+.title {
+  grid-area: title;
+  font-size: clamp(3.25rem, 1rem + 7.2vw, 9rem);
+  line-height: 0.84;
+  font-weight: 820;
+  font-stretch: 70%;
+  letter-spacing: -0.035em;
+  color: var(--cream);
+}
+
+.lede {
+  grid-area: lede;
+  font-size: var(--t-body);
+  line-height: 1.5;
+  color: var(--khaki-light);
+  text-wrap: pretty;
+  padding-bottom: 0.4em;
+}
+
+.viewport {
+  position: relative;
+  align-self: center;
+  overflow: clip;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  padding-block: var(--s6) var(--s4);
+}
+
+.track {
+  display: flex;
+  gap: var(--gap);
+  width: max-content;
+  padding-inline: var(--margin);
+  will-change: transform;
+}
+
+.plate {
+  flex: 0 0 var(--pw);
+}
+
+.link {
+  display: grid;
+  gap: 14px;
+  color: inherit;
+  text-decoration: none;
+  -webkit-user-drag: none;
+}
+
+.viewport[data-dragging="1"] .link {
+  pointer-events: none;
+}
+
+.frame {
+  position: relative;
+  display: block;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: var(--ground-deep);
+  outline: var(--hair) solid var(--line);
+  container-type: inline-size;
+  transition: outline-color var(--dur-panel) linear;
+}
+
+.frame img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition:
+    opacity 500ms linear,
+    transform 700ms var(--ease-glide);
+}
+
+/* WebGL draws the frames; the HTML keeps the layout, the links and the captions */
+.viewport[data-gl="1"] .frame {
+  background: transparent;
+  outline-color: transparent;
+}
+
+.viewport[data-gl="1"] .frame img,
+.viewport[data-gl="1"] .slotArt {
+  opacity: 0;
+}
+
+.viewport:not([data-gl="1"]) .link:hover .frame img {
+  transform: scale(1.03);
+}
+
+.viewport:not([data-gl="1"]) .link:hover .frame {
+  outline-color: var(--khaki);
+}
+
+.link:focus-visible {
+  outline: none;
+}
+
+.viewport .link:focus-visible .frame {
+  outline: 2px solid var(--cream);
+  outline-offset: 4px;
+}
+
+.cap {
+  display: grid;
+  gap: 4px;
+  transition: opacity 250ms linear;
+}
+
+.capTitle {
+  font-size: clamp(1.15rem, 0.95rem + 0.7vw, 1.65rem);
+  line-height: 1.1;
+  font-weight: 680;
+  font-stretch: 84%;
+  letter-spacing: -0.015em;
+  color: var(--cream);
+}
+
+.viewport[data-expanding="1"] .cap,
+.viewport[data-expanding="1"] ~ .controls,
+.archive:has(.viewport[data-expanding="1"]) .head {
+  opacity: 0;
+  transition: opacity 250ms linear;
+}
+
+/* the open slot, in HTML; sizes track the frame so it matches the WebGL drawing */
+.slotArt {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  align-items: center;
+  padding: 5.6cqw;
+  background-color: var(--ground-deep);
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 3.125cqw 3.125cqw;
+  outline: 2px dashed var(--khaki);
+  outline-offset: -2.2cqw;
+  transition: opacity 500ms linear;
+}
+
+.slotArt > :first-child {
+  font-size: 2.35cqw;
+  color: var(--khaki);
+}
+
+.slotTitle {
+  font-size: 10cqw;
+  line-height: 1;
+  font-weight: 760;
+  font-stretch: 75%;
+  letter-spacing: -0.02em;
+  color: var(--cream);
+}
+
+.slotWhat {
+  font-size: 2.8cqw;
+  color: var(--khaki-light);
+}
+
+.end {
+  flex: 0 0 max(260px, calc(100vw - var(--pw) - 2 * var(--margin) - var(--gap)));
+  display: grid;
+  align-content: center;
+  justify-items: start;
+  gap: var(--s4);
+  padding-left: var(--s7);
+}
+
+.endTitle {
+  font-size: var(--t-h2);
+  line-height: 0.95;
+  font-weight: 760;
+  font-stretch: 80%;
+  letter-spacing: -0.03em;
+  color: var(--cream);
+}
+
+.endLink {
+  color: var(--khaki);
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+  text-decoration-thickness: 1px;
+}
+
+.endLink:hover {
+  color: var(--cream);
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: auto minmax(160px, 1fr) minmax(0, auto);
+  align-items: center;
+  gap: var(--s3) var(--s6);
+  padding-inline: var(--margin);
+}
+
+.count {
+  font-size: var(--t-h3);
+  line-height: 1;
+}
+
+.scrub input {
+  width: 100%;
+}
+
+.now {
+  justify-self: end;
+  text-align: right;
+  min-width: 18ch;
+}
+
+.nowTitle {
+  font-weight: 640;
+  color: var(--cream);
+}
+
+.hint {
+  grid-column: 1 / -1;
+}
+
+/* ------------------------------------------------------------- case 00 */
+.house {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: var(--s7) var(--gutter);
+  padding: clamp(80px, 12vh, 140px) var(--margin);
+  border-top: var(--hair) solid var(--line);
+  background: var(--ground);
+}
+
+.houseText {
+  display: grid;
+  align-content: start;
+  justify-items: start;
+  gap: var(--s5);
+}
+
+.h2 {
+  font-size: var(--t-h2);
+  line-height: 0.95;
+  font-weight: 760;
+  font-stretch: 82%;
+  letter-spacing: -0.03em;
+  color: var(--cream);
+}
+
+.houseLede {
+  font-size: var(--t-lead);
+  line-height: 1.38;
+  color: var(--khaki-light);
+  max-width: 40ch;
+  text-wrap: pretty;
+}
+
+.facts {
+  display: grid;
+  gap: var(--s4);
+  padding-top: var(--s5);
+  border-top: var(--hair) solid var(--line);
+  width: 100%;
+}
+
+.facts div {
+  display: grid;
+  gap: 6px;
+}
+
+.facts dd {
+  color: var(--cream);
+}
+
+.button {
+  display: inline-flex;
+  padding: 17px 26px 16px;
+  background: var(--khaki);
+  color: var(--ground);
+  font-weight: 720;
+  text-decoration: none;
+  transition: background-color var(--dur-feedback) linear;
+}
+
+.button:hover {
+  background: var(--cream);
+}
+
+.sheet {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--s5) var(--gutter);
+  align-content: start;
+}
+
+.sheetLink {
+  display: grid;
+  gap: 10px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.sheetLink img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  outline: var(--hair) solid var(--line);
+  transition:
+    outline-color var(--dur-feedback) linear,
+    filter var(--dur-panel) linear;
+}
+
+.sheetLink:hover img {
+  outline-color: var(--khaki);
+  filter: brightness(1.12);
+}
+
+.sheetLink:focus-visible {
+  outline: none;
+}
+
+.sheetLink:focus-visible img {
+  outline: 2px solid var(--cream);
+  outline-offset: 3px;
+}
+
+.sheetCap {
+  font-size: var(--t-small);
+  color: var(--cream);
+}
+
+/* ------------------------------------------------------------- case 01 */
+.open {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  grid-template-areas:
+    "title slots"
+    "lede slots";
+  align-content: start;
+  gap: var(--s5) var(--gutter);
+  padding: clamp(80px, 12vh, 140px) var(--margin);
+}
+
+.open .h2 {
+  grid-area: title;
+}
+
+.openLede {
+  grid-area: lede;
+  align-self: start;
+  max-width: 38ch;
+  color: var(--khaki-light);
+  text-wrap: pretty;
+}
+
+.slots {
+  grid-area: slots;
+  display: grid;
+  border-bottom: var(--hair) solid var(--line);
+}
+
+.slotRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 2fr) auto;
+  align-items: baseline;
+  gap: var(--s4);
+  padding: 24px 0;
+  border-top: var(--hair) solid var(--line);
+  color: var(--cream);
+  text-decoration: none;
+  transition:
+    background-color var(--dur-feedback) linear,
+    color var(--dur-feedback) linear,
+    padding var(--dur-panel) var(--ease-glide);
+}
+
+.slotRow:hover,
+.slotRow:focus-visible {
+  background: var(--ground);
+  color: var(--khaki);
+  padding-inline: var(--s5);
+  outline: none;
+}
+
+.slotName {
+  font-size: var(--t-h3);
+  line-height: 1;
+  font-weight: 720;
+  font-stretch: 84%;
+  letter-spacing: -0.02em;
+}
+
+.slotGo {
+  font-size: var(--t-small);
+  font-weight: 640;
+}
+
+@media (max-width: 820px) {
+  .archive {
+    --pw: 78vw;
+  }
+  .head {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "hud"
+      "title"
+      "lede";
+  }
+  .controls {
+    grid-template-columns: auto 1fr;
+  }
+  .now {
+    grid-column: 1 / -1;
+    justify-self: start;
+    text-align: left;
+  }
+  .house,
+  .open {
+    grid-template-columns: 1fr;
+    grid-template-areas: none;
+  }
+  .open .h2,
+  .openLede,
+  .slots {
+    grid-area: auto;
+  }
+  .sheet {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .slotRow {
+    grid-template-columns: 1fr;
+    gap: var(--s2);
+  }
+}

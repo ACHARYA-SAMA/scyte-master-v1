@@ -5,9 +5,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { forwardRef, useCallback, useEffect, useRef, type AnchorHTMLAttributes, type MouseEvent } from "react";
 import { ScrollTrigger } from "@/lib/motion";
 import { ui } from "@/lib/store";
-import { recordPage } from "@/lib/telemetry";
 import { track } from "@/lib/analytics";
-import { scrollToTop } from "@/components/providers/SmoothScroll";
+import { scroller, scrollToTop } from "@/components/providers/SmoothScroll";
 import { routeFor } from "@/config/site";
 import { curtain, expectRoute, routeCommitted } from "./curtainControl";
 
@@ -17,13 +16,28 @@ const labelFor = (href: string) => {
   return routeFor(path)?.chapter ?? "Somewhere new";
 };
 
+/** A page can bring its own cover and reveal, e.g. a shared element instead of the wipe. */
+export type TransitionHow = { cover: () => Promise<void>; reveal: () => Promise<void> };
+
+/** Land at the top, or on the #hash the link named. */
+const land = (href: string) => {
+  const hash = href.split("#")[1];
+  const el = hash ? document.getElementById(hash) : null;
+  if (!el) return scrollToTop();
+  if (scroller.lenis) {
+    // Lenis still holds the old page's height until its observer fires; measure now
+    scroller.lenis.resize();
+    scroller.lenis.scrollTo(el, { immediate: true, force: true });
+  } else el.scrollIntoView();
+};
+
 /** Navigate behind the liquid wipe. Falls back to a plain push if a transition is running. */
 export const useTransitionRouter = () => {
   const router = useRouter();
   const pathname = usePathname();
 
   return useCallback(
-    async (href: string, origin?: { x: number; y: number }) => {
+    async (href: string, origin?: { x: number; y: number }, how?: TransitionHow) => {
       const path = href.split(/[?#]/)[0] || "/";
       if (path === pathname) {
         const hash = href.split("#")[1];
@@ -38,17 +52,17 @@ export const useTransitionRouter = () => {
       track("navigate", { to: path });
       ui.set({ transition: "covering", menuOpen: false });
       const o = origin ?? { x: window.innerWidth / 2, y: window.innerHeight / 2 };
-      await curtain.cover(o, labelFor(href));
+      await (how ? how.cover() : curtain.cover(o, labelFor(href)));
       ui.set({ transition: "covered" });
       const committed = expectRoute(path);
       router.push(href, { scroll: false });
       await committed;
       // Let the new page lay out and its fonts settle before measuring triggers.
       await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
-      scrollToTop();
+      land(href);
       ScrollTrigger.refresh();
       ui.set({ transition: "revealing" });
-      await curtain.reveal();
+      await (how ? how.reveal() : curtain.reveal());
       ui.set({ transition: "idle" });
     },
     [pathname, router],
@@ -82,13 +96,14 @@ export const TransitionLink = forwardRef<HTMLAnchorElement, TransitionLinkProps>
   );
 });
 
-/** Resolves curtain navigations and records page views for the visit readout. */
+/** Resolves curtain navigations, and clears the old page's cursor verb. */
 export function RouteWatcher() {
   const pathname = usePathname();
   const first = useRef(true);
 
   useEffect(() => {
-    recordPage(pathname);
+    // the element that set the verb is gone; the next pointer move picks a new one
+    ui.set({ cursor: "default", cursorLabel: "", glCursor: null, glCursorLabel: "" });
     if (first.current) {
       first.current = false;
       return;

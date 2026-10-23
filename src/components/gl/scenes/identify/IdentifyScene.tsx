@@ -1,5 +1,4 @@
 "use client";
-/* eslint-disable react-hooks/immutability -- three.js and Rapier objects are created once and driven every frame; that is how R3F physics scenes run without re-rendering. */
 /* eslint-disable react-hooks/purity -- token labels and spawn jitter are random on purpose. */
 
 import { useEffect, useMemo, useRef, useState } from "react";

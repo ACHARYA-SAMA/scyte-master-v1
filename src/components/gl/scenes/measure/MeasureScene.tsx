@@ -1,5 +1,4 @@
 "use client";
-/* eslint-disable react-hooks/immutability -- three.js objects are created once and mutated every frame inside useFrame. */
 /* eslint-disable react-hooks/purity -- the drops' positions and fates are random on purpose. */
 
 import { useEffect, useMemo, useRef } from "react";

@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { SITE } from "@/config/site";
-import { WORK } from "@/data/work";
+import { THIS_SITE, WORK } from "@/data/work";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
@@ -12,6 +12,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly" as const,
       priority: r === "" ? 1 : r === "/product" ? 0.9 : 0.7,
     })),
-    ...WORK.map((w) => ({ url: `${SITE.url}/work/${w.slug}`, lastModified: now, priority: 0.6 })),
+    ...[...WORK.map((w) => w.slug), THIS_SITE.slug].map((slug) => ({ url: `${SITE.url}/work/${slug}`, lastModified: now, priority: 0.6 })),
   ];
 }

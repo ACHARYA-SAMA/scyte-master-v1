@@ -81,7 +81,7 @@ export function Cursor() {
         hit.state = g.glCursor;
         hit.label = g.glCursorLabel || LABELS[g.glCursor] || "";
       }
-      if (hit.state !== lastState || hit.label !== ui.get().cursorLabel) {
+      if (hit.state !== lastState || hit.state !== ui.get().cursor || hit.label !== ui.get().cursorLabel) {
         lastState = hit.state;
         ui.set({ cursor: hit.state, cursorLabel: hit.label });
       }

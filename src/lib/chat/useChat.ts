@@ -126,6 +126,8 @@ export const useChat = (flow: Flow, { onEvent, onOutcome, onField, pace = 1 }: O
       const hit = flow.router?.find((r) => r.match.test(text));
       enter(hit?.to ?? flow.fallback);
     },
+    // later() only schedules through refs
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [ended, enter, flow, node, say],
   );
 
@@ -140,7 +142,6 @@ export const useChat = (flow: Flow, { onEvent, onOutcome, onField, pace = 1 }: O
     setEnded(false);
     setStarted(true);
     enter(flow.start);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [enter, flow.start]);
 
   const answerSheet = useCallback(

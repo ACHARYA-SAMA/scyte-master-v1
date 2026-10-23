@@ -8,12 +8,13 @@ import { C } from "./materials";
  * The studio wall: a dark plane ruled on the logo's own 5-unit grid. Glass in front of
  * it bends the lines, which is what makes clear glass readable at all.
  */
-export function Backdrop({ z = -60, size = 900, cell = 5 }: { z?: number; size?: number; cell?: number }) {
+export function Backdrop({ z = -60, size = 900, cell = 5, lines = 1 }: { z?: number; size?: number; cell?: number; /** grid strength, 0..1 */ lines?: number }) {
   const material = useMemo(
     () =>
       new ShaderMaterial({
         uniforms: {
           uCell: { value: cell },
+          uLines: { value: lines },
           uLine: { value: C.line.clone() },
           uMajor: { value: C.khaki.clone() },
           uBase: { value: C.groundDeep.clone() },
@@ -30,6 +31,7 @@ export function Backdrop({ z = -60, size = 900, cell = 5 }: { z?: number; size?:
         `,
         fragmentShader: /* glsl */ `
           uniform float uCell;
+          uniform float uLines;
           uniform vec3 uLine;
           uniform vec3 uMajor;
           uniform vec3 uBase;
@@ -48,15 +50,17 @@ export function Backdrop({ z = -60, size = 900, cell = 5 }: { z?: number; size?:
             float minor = grid(vP, uCell, 0.05);
             float major = grid(vP, uCell * 5.0, 0.08);
             float fade = 1.0 - smoothstep(0.15, 0.9, r);
-            col = mix(col, uLine, minor * 0.55 * fade);
-            col = mix(col, uMajor * 0.55, major * 0.35 * fade);
+            col = mix(col, uLine, minor * 0.55 * fade * uLines);
+            col = mix(col, uMajor * 0.55, major * 0.35 * fade * uLines);
             gl_FragColor = vec4(col, 1.0);
+            // a no-op under the post chain (linear target); encodes when a scene draws straight to the screen
+            #include <colorspace_fragment>
           }
         `,
         toneMapped: false,
         fog: false,
       }),
-    [cell],
+    [cell, lines],
   );
   useEffect(() => () => material.dispose(), [material]);
   return (
