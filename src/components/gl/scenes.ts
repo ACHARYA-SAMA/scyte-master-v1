@@ -19,6 +19,7 @@ const LOADERS: Partial<Record<SceneKey, Loader>> = {
   team: () => import("./scenes/team/TeamScene"),
   assembly: () => import("./scenes/assembly/AssemblyScene"),
   work: () => import("./scenes/work/ArchiveScene"),
+  junction: () => import("./scenes/junction/JunctionScene"),
 };
 
 /** Built once at module scope, so React sees a stable component per scene. */

@@ -71,6 +71,11 @@ export const registerMotion = () => {
   gsap.defaults({ ease: "glide", duration: DUR.ui });
   ScrollTrigger.config({ ignoreMobileResize: true });
   registered = true;
+  // for the QA scripts and the browser console in development
+  if (process.env.NODE_ENV !== "production") {
+    const w = window as unknown as { __scyte?: Record<string, unknown> };
+    w.__scyte = { ...w.__scyte, ScrollTrigger, gsap };
+  }
 };
 
 registerMotion();

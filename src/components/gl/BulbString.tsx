@@ -48,6 +48,10 @@ type Props = {
   stagger?: number;
   /** a floor to reflect in, at this y; omit for none */
   floorY?: number;
+  /** which way the bulbs face: out of a sign (z) or up off a pipe on the floor (y) */
+  facing?: "z" | "y";
+  /** drive every lamp from outside instead of the ignition: the level for bulb i at time t */
+  level?: (i: number, t: number) => number;
 };
 
 type Lamp = { start: number; level: number; seed: number };
@@ -58,7 +62,7 @@ type Lamp = { start: number; level: number; seed: number };
  * then breathe. The filament is the only thing bright enough to bloom, so the halo
  * sits around a sharp bulb rather than smearing the sign.
  */
-export function BulbString({ bulbs, radius = 1.05, mount, ignite, on, stagger = 0.016, floorY }: Props) {
+export function BulbString({ bulbs, radius = 1.05, mount, ignite, on, stagger = 0.016, floorY, facing = "z", level }: Props) {
   const quality = useStore(gl, (s) => s.quality);
   const n = bulbs.length;
   const shells = useRef<InstancedMesh>(null);
@@ -70,9 +74,9 @@ export function BulbString({ bulbs, radius = 1.05, mount, ignite, on, stagger = 
     () => ({
       shell: new SphereGeometry(radius, 22, 16),
       core: new SphereGeometry(radius * 0.3, 10, 8),
-      cap: new CylinderGeometry(radius * 0.62, radius * 0.7, radius * 0.75, 14).rotateX(Math.PI / 2),
+      cap: facing === "z" ? new CylinderGeometry(radius * 0.62, radius * 0.7, radius * 0.75, 14).rotateX(Math.PI / 2) : new CylinderGeometry(radius * 0.62, radius * 0.7, radius * 0.75, 14),
     }),
-    [radius],
+    [radius, facing],
   );
   const mat = useMemo(() => {
     const shell =
@@ -131,7 +135,8 @@ export function BulbString({ bulbs, radius = 1.05, mount, ignite, on, stagger = 
       const pop = m <= 0 ? 0 : 1 + 2.70158 * (m - 1) ** 3 + 1.70158 * (m - 1) ** 2;
       // the level this lamp wants: off, flickering into life, or lit and breathing
       let want = 0.03;
-      if (on) {
+      if (level) want = level(i, t);
+      else if (on) {
         const since = t - f.at - b.order * (reduced ? 0 : stagger);
         if (since > 0) {
           if (!reduced && since < 0.26) {
@@ -143,12 +148,13 @@ export function BulbString({ bulbs, radius = 1.05, mount, ignite, on, stagger = 
       L.level += (want - L.level) * (want > L.level ? 0.6 : 0.12);
 
       const z = b.z;
-      tmp.o.position.set(b.x, b.y, z + radius * 0.2);
+      const out = (d: number) => (facing === "z" ? tmp.o.position.set(b.x, b.y, z + d) : tmp.o.position.set(b.x, b.y + d, z));
+      out(radius * 0.2);
       tmp.o.rotation.set(0, 0, 0);
       tmp.o.scale.setScalar(pop);
       tmp.o.updateMatrix();
       k.setMatrixAt(i, tmp.o.matrix);
-      tmp.o.position.set(b.x, b.y, z + radius * 1.05);
+      out(radius * 1.05);
       tmp.o.updateMatrix();
       s.setMatrixAt(i, tmp.o.matrix);
       tmp.o.scale.setScalar(pop * (0.75 + L.level * 0.35));

@@ -23,6 +23,31 @@ export const scrollToTop = () => {
  * Lenis feeds ScrollTrigger. Reduced motion keeps native scrolling.
  */
 export function SmoothScroll({ children }: { children: ReactNode }) {
+  // triggers measure positions once; lazy sections, fonts and images change them after.
+  // When the page's height settles somewhere new, measure everything again, once
+  useEffect(() => {
+    const main = document.getElementById("main");
+    if (!main) return;
+    let timer = 0;
+    let last = main.offsetHeight;
+    const ro = new ResizeObserver(() => {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => {
+        const h = main.offsetHeight;
+        if (Math.abs(h - last) < 2) return;
+        last = h;
+        scroller.lenis?.resize();
+        ScrollTrigger.refresh();
+      }, 220);
+    });
+    ro.observe(main);
+    document.fonts?.ready.then(() => ScrollTrigger.refresh());
+    return () => {
+      ro.disconnect();
+      window.clearTimeout(timer);
+    };
+  }, []);
+
   useEffect(() => {
     registerMotion();
     if (prefersReducedMotion()) return;

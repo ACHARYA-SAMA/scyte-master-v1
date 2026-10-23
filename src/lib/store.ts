@@ -34,7 +34,7 @@ export const useStore = <T extends object, S>(store: Store<T>, select: (s: T) =>
   );
 
 /** The verbs the cursor can show. Elements opt in with data-cursor. */
-export type CursorState = "default" | "link" | "view" | "drag" | "tap" | "scrub" | "open" | "hold" | "turn" | "pull" | "lock" | "hidden";
+export type CursorState = "default" | "link" | "view" | "drag" | "tap" | "scrub" | "open" | "hold" | "turn" | "pull" | "lock" | "hidden" | "steer";
 export type TransitionPhase = "idle" | "covering" | "covered" | "revealing";
 export type MotionChoice = "auto" | "full" | "reduced";
 export type PerfChoice = "auto" | "low";
@@ -96,7 +96,8 @@ export type SceneKey =
   | "measure"
   | "assembly"
   | "team"
-  | "work";
+  | "work"
+  | "junction";
 
 export const gl = createStore({
   scene: "none" as SceneKey,

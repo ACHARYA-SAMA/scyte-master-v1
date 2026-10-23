@@ -16,7 +16,9 @@ import { loadSoundPreference } from "@/lib/sound";
 import { loadPrefs } from "@/lib/prefs";
 import { loadSession, ui } from "@/lib/store";
 import { loadStamps } from "@/lib/stamps";
-import { Footer } from "./Footer";
+import { Junction } from "@/components/junction/Junction";
+import { Splash } from "@/components/junction/Splash";
+import { loadVisited } from "@/lib/junction";
 import { Rail } from "./Rail";
 import { AuditButton } from "./AuditButton";
 import { CommandPalette } from "./CommandPalette";
@@ -92,6 +94,7 @@ export function Shell({ children }: { children: ReactNode }) {
     loadPrefs();
     loadSoundPreference();
     loadStamps();
+    loadVisited();
     return loadSession();
   }, []);
 
@@ -106,7 +109,7 @@ export function Shell({ children }: { children: ReactNode }) {
       <main id="main" tabIndex={-1}>
         {children}
       </main>
-      <Footer />
+      <Junction />
       <InstrumentFrame />
       <Rail />
       <AuditButton />
@@ -118,6 +121,7 @@ export function Shell({ children }: { children: ReactNode }) {
       <Cursor />
       <Handoff />
       <LiquidWipe />
+      <Splash />
       <Preloader />
       <RouteWatcher />
       <Reveal />

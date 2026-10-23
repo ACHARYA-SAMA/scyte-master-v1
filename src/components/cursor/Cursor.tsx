@@ -22,9 +22,10 @@ const LABELS: Partial<Record<CursorState, string>> = {
   turn: "Turn",
   pull: "Pull",
   lock: "Lock on",
+  steer: "Steer",
 };
 
-const VERBS = new Set<CursorState>(["drag", "tap", "scrub", "open", "hold", "view", "turn", "pull", "lock", "hidden", "link"]);
+const VERBS = new Set<CursorState>(["drag", "tap", "scrub", "open", "hold", "view", "turn", "pull", "lock", "steer", "hidden", "link"]);
 
 const resolve = (el: Element | null): { state: CursorState; label: string; magnet: HTMLElement | null } => {
   if (!el) return { state: "default", label: "", magnet: null };
@@ -78,7 +79,7 @@ export function Cursor() {
         f.y = p.y;
         root.current?.setAttribute("data-shown", "1");
       }
-      const hit = resolve(e.target as Element);
+      const hit = resolve(e.target instanceof Element ? e.target : null);
       const g = ui.get();
       if (hit.state === "default" && g.glCursor) {
         hit.state = g.glCursor;

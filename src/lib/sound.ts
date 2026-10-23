@@ -132,6 +132,16 @@ export const sfx = {
   },
   /** A soft key on a keyboard. */
   key: () => noise(0.012, 0.16, 3600),
+  /** the Junction's charge: a ratchet whose pitch climbs with how full the pipe is */
+  ratchet: (p: number) => {
+    blip(320 + p * 900, 0.018, "square", undefined, 0.18 + p * 0.12);
+    noise(0.01, 0.08, 3000 + p * 2000);
+  },
+  /** the dive down the pipe */
+  whoosh: () => {
+    noise(0.55, 0.22, 900);
+    blip(180, 0.6, "sine", 1400, 0.3);
+  },
 };
 
 /**

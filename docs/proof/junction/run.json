@@ -1,0 +1,23 @@
+{
+  "from": "/product",
+  "viewport": [
+    1440,
+    900
+  ],
+  "keyboard": false,
+  "steerLatencyMs": 39,
+  "charge": {
+    "steps": 12
+  },
+  "dive": {
+    "fps": 29,
+    "worstFrameMs": 59,
+    "longTasks": [],
+    "path": "/team"
+  },
+  "splashToPageMs": 352,
+  "errors": [
+    "TypeError: el.closest is not a function",
+    "TypeError: e.target?.closest is not a function"
+  ]
+}

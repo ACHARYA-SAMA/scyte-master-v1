@@ -1,0 +1,426 @@
+/* J1, the Junction: pinned for the charge; the chamber is the canvas behind */
+.section {
+  position: relative;
+  border-top: var(--hair) solid var(--line);
+}
+
+.stage {
+  --charge: 0;
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: clip;
+  isolation: isolate;
+  color: var(--khaki-light);
+}
+
+/* the opaque arrival: covers the screen until the chamber has drawn */
+.cover {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(ellipse 70% 55% at 50% 70%, rgb(43 58 47 / 0.5), transparent 70%),
+    var(--ground-deep);
+  transition: opacity 700ms var(--ease-drift);
+}
+
+.coverWord {
+  font-size: clamp(4rem, 1rem + 13vw, 15rem);
+  line-height: 0.8;
+  font-weight: 880;
+  font-stretch: 62%;
+  letter-spacing: -0.04em;
+  color: transparent;
+  -webkit-text-stroke: 1px color-mix(in srgb, var(--khaki) 40%, transparent);
+  white-space: nowrap;
+}
+
+.stage[data-live="1"] .cover {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ------------------------------------------------------------- the head */
+/* bottom left, so the top of the screen belongs to the signs */
+.head {
+  position: absolute;
+  z-index: 3;
+  bottom: 104px;
+  left: var(--margin);
+  display: grid;
+  gap: 6px;
+  max-width: 34rem;
+}
+
+.kicker {
+  color: var(--khaki);
+}
+
+.title {
+  font-size: clamp(1.8rem, 0.9rem + 2.2vw, 3.4rem);
+  line-height: 0.9;
+  font-weight: 860;
+  font-stretch: 64%;
+  letter-spacing: -0.035em;
+  color: var(--cream);
+}
+
+.readout {
+  color: var(--khaki-light);
+}
+
+.readoutHow {
+  color: var(--muted);
+}
+
+/* ------------------------------------------------------------- the signs */
+.signs {
+  position: relative;
+  z-index: 2;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.slot {
+  display: contents;
+}
+
+.sign {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  text-align: center;
+  color: var(--khaki);
+  text-decoration: none;
+  outline: none;
+  transition:
+    color var(--dur-ui) linear,
+    opacity var(--dur-ui) linear;
+}
+
+.signTop {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.key {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 4px;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font: inherit;
+  font-size: var(--t-hud);
+  font-variant-numeric: tabular-nums;
+}
+
+.glyph {
+  color: var(--muted);
+}
+
+.flag {
+  padding: 2px 6px 1px;
+  border: 1px solid var(--lumen);
+  color: var(--lumen);
+}
+
+.flag[data-here] {
+  border-color: var(--cream);
+  color: var(--cream);
+}
+
+/* the page name: Archivo's weight and width open up when the path is chosen */
+.signName {
+  font-size: clamp(1.9rem, 0.9rem + 2.9vw, 4.4rem);
+  line-height: 0.9;
+  font-weight: 520;
+  font-stretch: 70%;
+  letter-spacing: -0.03em;
+  color: var(--khaki-light);
+  transition:
+    font-weight 360ms var(--ease-glide),
+    font-stretch 360ms var(--ease-glide),
+    color var(--dur-ui) linear;
+}
+
+.signLine {
+  color: var(--muted);
+}
+
+.signMore {
+  max-width: 22ch;
+  color: var(--muted);
+  opacity: 0;
+  transition: opacity var(--dur-ui) linear;
+}
+
+.sign[data-on="1"] .signName,
+.sign:focus-visible .signName {
+  font-weight: 880;
+  font-stretch: 84%;
+  color: var(--lumen);
+}
+
+.sign[data-on="1"] .signMore,
+.sign:focus-visible .signMore {
+  opacity: 1;
+}
+
+.sign[data-on="1"] .key {
+  border-color: var(--lumen);
+  color: var(--lumen);
+}
+
+.sign:focus-visible {
+  outline: 2px solid var(--lumen);
+  outline-offset: 6px;
+}
+
+/* the pad you stand on is a marker, not a destination: smaller and quieter */
+.sign[data-here="1"] .signName {
+  font-size: clamp(1.1rem, 0.7rem + 1vw, 1.6rem);
+  color: var(--cream);
+}
+
+.sign[data-here="1"] .signMore {
+  display: none;
+}
+
+.sign[data-next="1"]:not([data-on="1"]) .signName {
+  animation: beckon 2.4s var(--ease-drift) infinite;
+}
+
+@keyframes beckon {
+  50% {
+    color: var(--cream);
+  }
+}
+
+/* live: each sign rides its portal, set by the scene's anchors */
+.stage[data-live="1"] .signs {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+
+.stage[data-live="1"] .sign {
+  position: absolute;
+  left: 0;
+  top: 0;
+  translate: -50% -100%;
+  pointer-events: auto;
+  will-change: transform;
+}
+
+.stage[data-live="1"] .sign[data-screen="0"] {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* not live yet, or no WebGL: six cards in a staggered row */
+.stage:not([data-live="1"]) .signs {
+  position: absolute;
+  left: var(--margin);
+  right: calc(var(--margin) + 64px);
+  top: 50%;
+  translate: 0 -50%;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: var(--gutter);
+}
+
+.stage:not([data-live="1"]) .sign {
+  align-content: start;
+  min-height: 210px;
+  padding: var(--s5) var(--s4);
+  border: var(--hair) solid var(--line);
+  background: color-mix(in srgb, var(--ground) 80%, transparent);
+  translate: 0 calc((2.5 - var(--slot)) * (var(--slot) - 2.5) * -4px);
+}
+
+.stage:not([data-live="1"]) .sign[data-on="1"] {
+  border-color: var(--lumen);
+}
+
+.stage:not([data-live="1"]) .signMore {
+  opacity: 1;
+}
+
+/* ------------------------------------------------------------- the controls */
+.controls {
+  position: absolute;
+  z-index: 3;
+  right: calc(var(--margin) + 64px);
+  bottom: 104px;
+  display: flex;
+  align-items: center;
+  gap: var(--s6);
+  padding: 10px 18px;
+  background: color-mix(in srgb, var(--abyss) 72%, transparent);
+  border: var(--hair) solid var(--line);
+  transition: opacity var(--dur-panel) linear;
+}
+
+.stage:not([data-live="1"]) .controls {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.compass {
+  display: grid;
+  place-items: center;
+}
+
+.meter {
+  display: grid;
+  gap: 8px;
+  width: clamp(200px, 22vw, 320px);
+}
+
+.meter p {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s4);
+  color: var(--cream);
+}
+
+.meterPct {
+  color: var(--lumen);
+}
+
+.bar {
+  position: relative;
+  height: 4px;
+  background: var(--line);
+  overflow: hidden;
+}
+
+.bar span {
+  position: absolute;
+  inset: 0;
+  background: var(--lumen);
+  transform: scaleX(var(--charge));
+  transform-origin: 0 50%;
+  box-shadow: 0 0 12px color-mix(in srgb, var(--lumen) 60%, transparent);
+}
+
+.hint {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 14px);
+  translate: 0 6px;
+  white-space: nowrap;
+  color: var(--cream);
+  opacity: 0;
+  transition:
+    opacity var(--dur-panel) linear,
+    translate var(--dur-panel) var(--ease-glide);
+}
+
+.hint[data-on="1"] {
+  opacity: 1;
+  translate: 0 0;
+}
+
+.stage[data-phase="charging"] .hint {
+  opacity: 0;
+}
+
+/* ------------------------------------------------------------- the footer strip */
+.strip {
+  position: absolute;
+  z-index: 3;
+  left: var(--margin);
+  right: calc(var(--margin) + 64px);
+  bottom: 52px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px var(--s5);
+  padding-top: 10px;
+  border-top: var(--hair) solid var(--line);
+  color: var(--muted);
+  font-size: var(--t-hud);
+}
+
+.strip a {
+  color: var(--khaki-light);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.strip a:hover,
+.strip a:focus-visible {
+  color: var(--cream);
+}
+
+/* ------------------------------------------------------------- fallback */
+.stage[data-fallback="1"] {
+  position: relative;
+  height: auto;
+  min-height: 100svh;
+}
+
+.stage[data-fallback="1"] .cover {
+  display: none;
+}
+
+@media (max-width: 1100px) {
+  .stage:not([data-live="1"]) .signs {
+    right: var(--margin);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .strip {
+    right: var(--margin);
+  }
+}
+
+@media (max-width: 720px) {
+  .head {
+    right: var(--margin);
+    bottom: 230px;
+  }
+  .stage:not([data-live="1"]) .signs {
+    top: calc(var(--nav-h) + 160px);
+    translate: none;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .stage:not([data-live="1"]) .sign {
+    min-height: 0;
+    translate: none;
+  }
+  .stage[data-live="1"] .sign:not([data-on="1"]) {
+    opacity: 0.55;
+  }
+  .stage[data-live="1"] .sign:not([data-on="1"]) .signName {
+    font-size: 1.2rem;
+  }
+  .controls {
+    left: var(--margin);
+    right: var(--margin);
+    bottom: 120px;
+    translate: none;
+    justify-content: space-between;
+    gap: var(--s4);
+  }
+  .strip {
+    bottom: 16px;
+    gap: 4px var(--s4);
+  }
+  .strip > span:last-child {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sign[data-next="1"] .signName {
+    animation: none;
+  }
+}

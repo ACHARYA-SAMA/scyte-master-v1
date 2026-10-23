@@ -1,0 +1,328 @@
+/* J2, the arrival splash: the loader's grammar, the destination's own beat */
+.splash {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-wipe);
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 46%, rgb(43 58 47 / 0.55), transparent 70%),
+    var(--abyss);
+  pointer-events: auto;
+  opacity: 0;
+}
+
+.stack {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: var(--s4);
+  width: min(86vw, 1240px);
+}
+
+.chapter {
+  color: var(--khaki);
+}
+
+/* the name gains weight as the work completes: Archivo's weight axis, driven by --w */
+.title {
+  --w: 260;
+  font-size: clamp(4.5rem, 1rem + 15vw, 17rem);
+  line-height: 0.82;
+  font-weight: 260;
+  font-variation-settings: "wght" var(--w);
+  font-stretch: 62%;
+  letter-spacing: -0.04em;
+  color: var(--cream);
+  transform-origin: 50% 50%;
+  white-space: nowrap;
+}
+
+.meta {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  gap: var(--s5);
+  padding-top: var(--s4);
+  border-top: var(--hair) solid var(--line);
+}
+
+.tasks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s3) var(--s6);
+}
+
+.tasks > div {
+  display: flex;
+  gap: 8px;
+  color: var(--muted);
+}
+
+.tasks dt {
+  color: var(--khaki-light);
+}
+
+.tasks > div[data-state="ready"] dd {
+  color: var(--lumen);
+}
+
+.pct {
+  font-size: clamp(2.5rem, 1.5rem + 3vw, 4.5rem);
+  line-height: 0.8;
+  font-weight: 860;
+  font-stretch: 62%;
+  letter-spacing: -0.03em;
+  color: var(--cream);
+}
+
+/* ------------------------------------------------------------- the beats */
+.motif {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+/* home: the five letters slide together into the exact mark */
+.logo {
+  width: min(70vw, 900px);
+  overflow: visible;
+  opacity: 0.16;
+}
+
+.logo polygon {
+  fill: var(--khaki);
+  animation: assemble 900ms var(--ease-snap) both;
+  animation-delay: calc(var(--i) * 70ms);
+}
+
+@keyframes assemble {
+  from {
+    transform: translateY(calc((var(--i) - 2) * 14px)) translateX(calc((var(--i) - 2) * -22px));
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+/* product: six station lamps come on, one by one */
+.lamps {
+  position: absolute;
+  top: 18%;
+  display: flex;
+  gap: clamp(16px, 3vw, 48px);
+}
+
+.lamps span {
+  width: clamp(14px, 1.4vw, 22px);
+  aspect-ratio: 1;
+  background: var(--line);
+  animation: lamp 240ms linear both;
+  animation-delay: calc(120ms + var(--i) * 110ms);
+}
+
+@keyframes lamp {
+  to {
+    background: var(--lumen);
+    box-shadow: 0 0 22px 4px color-mix(in srgb, var(--lumen) 55%, transparent);
+  }
+}
+
+/* studio: five layers drop and stack */
+.layers {
+  position: absolute;
+  top: 14%;
+  display: grid;
+  gap: 6px;
+  width: clamp(180px, 22vw, 320px);
+}
+
+.layers span {
+  height: 10px;
+  background: var(--khaki);
+  opacity: 0.4;
+  animation: stack 520ms var(--ease-snap) both;
+  animation-delay: calc(var(--i) * 90ms);
+}
+
+.layers span:nth-child(3) {
+  background: var(--lumen);
+  opacity: 0.8;
+}
+
+@keyframes stack {
+  from {
+    transform: translateY(-60px) scaleX(0.6);
+    opacity: 0;
+  }
+}
+
+/* work: a film leader counting down */
+.leader {
+  position: absolute;
+  top: 10%;
+  width: clamp(120px, 12vw, 180px);
+  aspect-ratio: 1;
+  border: 1px solid var(--khaki);
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.sweep {
+  position: absolute;
+  inset: 0;
+  background: conic-gradient(color-mix(in srgb, var(--lumen) 50%, transparent) 0 var(--a, 0deg), transparent 0);
+  animation: sweep 330ms linear 3 both;
+}
+
+@property --a {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes sweep {
+  from {
+    --a: 0deg;
+  }
+  to {
+    --a: 360deg;
+  }
+}
+
+.count {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: clamp(3rem, 5vw, 5rem);
+  font-weight: 860;
+  font-stretch: 62%;
+  color: var(--cream);
+}
+
+.count b {
+  grid-area: 1 / 1;
+  opacity: 0;
+  animation: flash 330ms steps(1) both;
+}
+
+.count b:nth-child(2) {
+  animation-delay: 330ms;
+}
+
+.count b:nth-child(3) {
+  animation-delay: 660ms;
+}
+
+@keyframes flash {
+  0% {
+    opacity: 1;
+  }
+  99% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* team: a scan sweeps the screen */
+.scan {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 0%, color-mix(in srgb, var(--lumen) 16%, transparent) 49.6%, var(--lumen) 50%, transparent 50.4%);
+  background-size: 100% 220%;
+  animation: scan 1100ms var(--ease-drift) both;
+}
+
+@keyframes scan {
+  from {
+    background-position: 0 100%;
+  }
+  to {
+    background-position: 0 0%;
+  }
+}
+
+/* contact: someone is typing, then the message arrives */
+.chat {
+  position: absolute;
+  top: 16%;
+  display: grid;
+  justify-items: start;
+}
+
+.typing {
+  grid-area: 1 / 1;
+  display: flex;
+  gap: 6px;
+  padding: 14px 16px;
+  background: var(--surface);
+  border-radius: 16px 16px 16px 4px;
+  animation: out 200ms linear 700ms both;
+}
+
+.typing i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--khaki);
+  animation: dot 600ms var(--ease-drift) infinite alternate;
+}
+
+.typing i:nth-child(2) {
+  animation-delay: 120ms;
+}
+
+.typing i:nth-child(3) {
+  animation-delay: 240ms;
+}
+
+.bubble {
+  grid-area: 1 / 1;
+  padding: 12px 18px;
+  background: var(--surface);
+  border-radius: 16px 16px 16px 4px;
+  color: var(--cream);
+  font-weight: 650;
+  animation: pop 360ms var(--ease-snap) 760ms both;
+}
+
+@keyframes dot {
+  to {
+    transform: translateY(-5px);
+    background: var(--lumen);
+  }
+}
+
+@keyframes out {
+  to {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.7) translateY(8px);
+  }
+}
+
+/* warm arrivals: the same beats, faster */
+.splash[data-warm="1"] * {
+  animation-duration: 260ms !important;
+  animation-delay: 0ms !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .splash *,
+  .splash *::before {
+    animation: none !important;
+  }
+}
