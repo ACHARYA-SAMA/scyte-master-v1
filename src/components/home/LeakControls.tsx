@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { REASONS, leak, sealCrack } from "@/components/gl/scenes/home/leak";
 import { ui, useStore } from "@/lib/store";
+import { SplitFlapBoard } from "@/components/kit/SplitFlapBoard";
 import { sfx } from "@/lib/sound";
 import { haptic } from "@/lib/prefs";
 import styles from "./LeakControls.module.css";
@@ -51,6 +52,17 @@ export function LeakControls() {
   const arrived = useStore(leak, (s) => s.arrived);
   const leaked = useStore(leak, (s) => s.leaked);
   const rescued = useStore(leak, (s) => s.rescued);
+  const share = useStore(leak, (s) => s.failShare);
+  const leakedBy = useStore(leak, (s) => s.leakedBy);
+  // the board changes in steps, so it flips like a station board rather than buzzing
+  const [postmortem, setPostmortem] = useState<string[]>(() => REASONS.map((r) => `${r.code.padEnd(19)}000 OPEN`));
+  useEffect(() => {
+    const t = window.setTimeout(
+      () => setPostmortem(REASONS.map((r, i) => `${r.code.padEnd(19)}${String(Math.min(999, leakedBy[i] ?? 0)).padStart(3, "0")} ${sealed[i] ? "SHUT" : "OPEN"}`)),
+      450,
+    );
+    return () => window.clearTimeout(t);
+  }, [leakedBy, sealed]);
   useEffect(() => () => stopHold(), []);
 
   const count = sealed.filter(Boolean).length;
@@ -98,24 +110,14 @@ export function LeakControls() {
           );
         })}
       </ul>
+      {/* H1, the postmortem: every failed payment by its reason, flipping as it happens */}
       <div className={styles.counters} aria-live="polite">
-        <p className={`${styles.note} t-hud`}>Simulation</p>
-        <dl className={styles.stats}>
-          <div>
-            <dt className="t-hud">Orders</dt>
-            <dd className="t-fig">{arrived}</dd>
-          </div>
-          <div>
-            <dt className="t-hud">Leaked</dt>
-            <dd className="t-fig">{leaked}</dd>
-          </div>
-          <div>
-            <dt className="t-hud">Back via a fix</dt>
-            <dd className="t-fig">{rescued}</dd>
-          </div>
-        </dl>
+        <p className={`${styles.note} t-hud`}>
+          Postmortem, this visit. Simulation: {arrived} orders, {leaked} leaked, {rescued} back via a fix
+        </p>
+        <SplitFlapBoard label="Failed payments by reason code, simulated" rows={postmortem} columns={27} size="s" rowStagger={90} />
         <p className={`${styles.caption} t-small`}>
-          One payment in three fails here so the leak is easy to see. {count === 4 ? "All four clamped." : `${count} of 4 clamped.`}
+          {Math.round(share * 100)} % of payments fail at the fork, a simulation setting: turn the valve on the pipe. {count === 4 ? "All four clamped." : `${count} of 4 clamped.`}
         </p>
       </div>
     </div>

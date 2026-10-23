@@ -9,7 +9,6 @@ import { useChapters } from "@/components/shell/chapters";
 import { Clock } from "@/components/nav/Nav";
 import { PAYMENT_FAILED } from "@/lib/chat/flows";
 import { recordRecovery, session, toast, ui, useStore } from "@/lib/store";
-import { gsap, prefersReducedMotion } from "@/lib/motion";
 import { sfx } from "@/lib/sound";
 import { useMedia } from "@/lib/useMedia";
 import { productName } from "@/config/site";
@@ -17,6 +16,10 @@ import { HeroLogo } from "./HeroLogo";
 import { HudLabels, type HudLabel } from "./HudLabels";
 import { LeakControls } from "./LeakControls";
 import { ToggleSwitch } from "@/components/kit/ToggleSwitch";
+import { AnchorDock } from "@/components/kit/AnchorDock";
+import { RotaryKnob } from "@/components/kit/RotaryKnob";
+import { LeverSwitch } from "@/components/kit/LeverSwitch";
+import { Odometer } from "@/components/kit/Odometer";
 import styles from "./HomeLeak.module.css";
 
 const CH = HOME_CHAPTERS;
@@ -55,8 +58,6 @@ const FIGURES = [
   { value: 54400, prefix: "₹", suffix: "", label: "net of software fee and message costs" },
 ];
 
-const inr = new Intl.NumberFormat("en-IN");
-
 /** Keep labels off the copy: the left column on wide screens, the bottom half on narrow ones. */
 const avoidCopy = (x: number, y: number, w: number, h: number) => (w > 820 ? x < Math.min(w * 0.47, 760) : y > h * 0.5 || y < 90);
 
@@ -68,45 +69,24 @@ const chapterOf = (p: number) => {
   return c;
 };
 
+/** H2, the ledger: the four illustrative figures on odometers. They roll in when Relit arrives and again on every release. */
 function Figures({ on }: { on: boolean }) {
-  const refs = useRef<(HTMLSpanElement | null)[]>([]);
-  const ran = useRef(false);
+  const surge = useStore(leak, (s) => s.surge);
+  const [zero, setZero] = useState(true);
   useEffect(() => {
-    if (!on || ran.current) return;
-    ran.current = true;
-    FIGURES.forEach((f, i) => {
-      const el = refs.current[i];
-      if (!el) return;
-      if (prefersReducedMotion()) {
-        el.textContent = inr.format(f.value);
-        return;
-      }
-      const s = { v: 0 };
-      gsap.to(s, {
-        v: f.value,
-        duration: 1.6,
-        delay: i * 0.12,
-        ease: "drift",
-        onUpdate: () => {
-          el.textContent = inr.format(Math.round(s.v));
-        },
-      });
-    });
-  }, [on]);
+    if (!on) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- the wheels start at zero and roll to the figure
+    setZero(true);
+    const t = window.setTimeout(() => setZero(false), 90);
+    return () => window.clearTimeout(t);
+  }, [on, surge]);
   return (
     <dl className={styles.figures}>
       {FIGURES.map((f, i) => (
         <div key={f.label}>
           <dt className="t-small">{f.label}</dt>
           <dd className="t-fig">
-            {f.prefix}
-            <span
-              ref={(el) => {
-                refs.current[i] = el;
-              }}
-            >
-              {inr.format(f.value)}
-            </span>
+            <Odometer value={zero ? 0 : f.value} prefix={f.prefix} duration={1.4 + i * 0.15} sound={i === 0} />
           </dd>
         </div>
       ))}
@@ -158,6 +138,8 @@ export function HomeLeak() {
   const lastChapter = useRef(0);
   const closing = useRef<HTMLElement>(null);
   const ignition = useStore(leak, (s) => s.ignition);
+  const failShare = useStore(leak, (s) => s.failShare);
+
 
   // the finale's logo frame ends where the closing copy begins; the camera solves to it
   useEffect(() => {
@@ -300,6 +282,12 @@ export function HomeLeak() {
           </div>
         ))}
 
+        {/* H6, the pressure valve on the fork: how many payments fail here, turned by hand */}
+        {chapter === 2 ? (
+          <AnchorDock at="fork" scene="home" center className={styles.valve} label="Failure rate valve">
+            <RotaryKnob label="Failure rate" value={Math.round(failShare * 100)} min={0} max={60} step={5} onChange={(v) => leak.set({ failShare: v / 100 })} format={(v) => `${v} %`} hint="Simulation" size="s" />
+          </AnchorDock>
+        ) : null}
         {/* 1 the flow */}
         <article className={`${styles.panel} ${styles.left}`} data-on={panel === 1 ? "1" : "0"} aria-hidden={panel !== 1}>
           <p className={`${styles.kicker} t-hud`}><span>01</span>The flow</p>
@@ -361,6 +349,11 @@ export function HomeLeak() {
           </p>
           <Figures on={panel === 4} />
           <p className={`${styles.aside} t-small`}>Illustrative, from our business model. Not a client result.</p>
+          {/* H6, the release lever: flush the clamped drops through the main line */}
+          <div className={styles.release}>
+            <LeverSwitch label="Release" positions={["Hold", "Release"]} mode="pull" orientation="horizontal" onPull={() => leak.set({ surge: performance.now() })} size="m" />
+            <p className="t-small">Pull to flush what the fixes caught back through the line. The ledger rolls again.</p>
+          </div>
         </article>
 
         {/* 5 the builders: the logo gets the frame above, the copy the band below */}

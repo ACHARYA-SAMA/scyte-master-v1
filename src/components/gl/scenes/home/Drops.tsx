@@ -1,6 +1,4 @@
 "use client";
-/* eslint-disable react-hooks/immutability -- three.js objects are created once and mutated every frame inside useFrame; that is how R3F scenes animate without re-rendering. */
-/* eslint-disable react-hooks/purity -- the stream's starting spread and speeds are random on purpose, computed once per mount. */
 
 import { useEffect, useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
@@ -33,7 +31,6 @@ type Drop = {
   wait: number;
 };
 
-const FAIL_SHARE = 1 / 3;
 const NEXT: Partial<Record<PathId, PathId>> = {
   feed: "S",
   S: "SC",
@@ -106,12 +103,16 @@ export function Drops({ count }: { count: number }) {
     // the stream runs from the moment the glass is under the hero, not from the first scroll
     const started = p > 0.008 || leak.get().glass;
     const inLeaks = p > HOME_CHAPTERS.leaks[0] && p < HOME_CHAPTERS.leaks[1];
-    const slow = inLeaks ? 0.3 : 1;
-    const dt = Math.min(rawDt, 1 / 20) * slow;
     const L = leak.get();
+    // the release lever: for a moment the whole line runs three times faster, rescued drops first
+    const since = (performance.now() - L.surge) / 1000;
+    const surge = L.surge && since < 1.8 ? 1 + 2.2 * Math.sin((Math.min(1, since / 1.8)) * Math.PI) : 1;
+    const slow = inLeaks ? 0.3 : 1;
+    const dt = Math.min(rawDt, 1 / 20) * slow * surge;
     let arrived = 0;
     let leaked = 0;
     let rescued = 0;
+    const lost = [0, 0, 0, 0];
 
     for (let i = 0; i < drops.length; i++) {
       const d = drops[i];
@@ -167,6 +168,7 @@ export function Drops({ count }: { count: number }) {
             d.life = 0;
             d.vel.set((Math.random() - 0.5) * 5, -3 - Math.random() * 3, 7 + Math.random() * 4);
             leaked++;
+            lost[d.reason]!++;
             if (inLeaks && ui.get().soundOn && performance.now() - lastDrip.current > 260) {
               lastDrip.current = performance.now();
               sfx.drip();
@@ -185,7 +187,7 @@ export function Drops({ count }: { count: number }) {
         }
       } else if (d.s >= path.len) {
         const over = d.s - path.len;
-        if (d.path === "Ystem") d.path = Math.random() < FAIL_SHARE ? "Yfail" : "Ypaid";
+        if (d.path === "Ystem") d.path = Math.random() < L.failShare ? "Yfail" : "Ypaid";
         else if (OUTLETS.includes(d.path)) {
           arrived++;
           if (d.rescued) rescued++;
@@ -214,7 +216,12 @@ export function Drops({ count }: { count: number }) {
     m.instanceMatrix.needsUpdate = true;
     if (m.instanceColor) m.instanceColor.needsUpdate = true;
     if (arrived || leaked || rescued)
-      leak.set((s) => ({ arrived: s.arrived + arrived, leaked: s.leaked + leaked, rescued: s.rescued + rescued }));
+      leak.set((s) => ({
+        arrived: s.arrived + arrived,
+        leaked: s.leaked + leaked,
+        rescued: s.rescued + rescued,
+        leakedBy: leaked ? s.leakedBy.map((n, k) => n + lost[k]!) : s.leakedBy,
+      }));
   });
 
   return <instancedMesh ref={mesh} args={[geometry, material, count]} frustumCulled={false} />;

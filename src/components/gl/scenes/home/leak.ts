@@ -27,6 +27,12 @@ export const leak = createStore({
   hold: 0,
   /** the glass scene has drawn under the hero, so the DOM logo can step aside */
   glass: false,
+  /** the pressure valve: the share of payments that fail at the fork, 0..0.6 (a simulation setting) */
+  failShare: 1 / 3,
+  /** drops lost at each reason's crack, in REASONS order */
+  leakedBy: [0, 0, 0, 0] as number[],
+  /** when the release lever was last pulled (performance.now), for the surge */
+  surge: 0,
   /** the finale's marquee: the ignition switch, and a counter bumped to light it again */
   ignition: true,
   ignite: 0,
@@ -42,7 +48,8 @@ export const sealCrack = (i: number) =>
 
 export const sealAll = () => leak.set({ sealed: [true, true, true, true] });
 
-export const resetLeak = () => leak.set({ sealed: [false, false, false, false], arrived: 0, leaked: 0, rescued: 0, holding: -1, hold: 0 });
+export const resetLeak = () =>
+  leak.set({ sealed: [false, false, false, false], arrived: 0, leaked: 0, rescued: 0, holding: -1, hold: 0, failShare: 1 / 3, leakedBy: [0, 0, 0, 0], surge: 0 });
 
 /** Chapter boundaries as fractions of the home section's scroll. Shared by DOM and 3D. */
 export const HOME_CHAPTERS = {
