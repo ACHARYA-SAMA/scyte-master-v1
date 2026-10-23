@@ -1,0 +1,190 @@
+/* the identity merge: chips on the left, the profile card on the right */
+.merge {
+  position: relative;
+  height: clamp(260px, 34vh, 340px);
+  border: var(--hair) solid var(--line);
+  background:
+    repeating-linear-gradient(0deg, transparent 0 23px, rgb(51 70 56 / 0.3) 23px 24px),
+    rgb(9 18 11 / 0.93);
+  overflow: hidden;
+}
+
+.zip {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.zip path {
+  fill: none;
+  stroke: var(--lumen);
+  stroke-width: 0.5;
+  vector-effect: non-scaling-stroke;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  opacity: 0.7;
+  transition: stroke-dashoffset 640ms var(--ease-pour) var(--d);
+}
+
+.merge[data-merged="1"] .zip path {
+  stroke-dashoffset: 0;
+}
+
+.chips {
+  position: absolute;
+  inset: 10px 10px 34px;
+}
+
+/* each chip floats at its place in the cloud; merged, it slides into the stack under the card */
+.chip {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 4px 8px;
+  background: var(--surface);
+  border: 1px dashed var(--line);
+  white-space: nowrap;
+  font-size: 12px;
+  transition:
+    left 720ms var(--ease-snap) var(--d),
+    top 720ms var(--ease-snap) var(--d),
+    background-color 300ms linear var(--d),
+    border-color 300ms linear var(--d);
+  animation: float 5.5s var(--ease-drift) infinite alternate;
+  animation-delay: calc(var(--d) * -7);
+}
+
+@keyframes float {
+  to {
+    translate: 4px -5px;
+  }
+}
+
+.merge[data-merged="1"] .chip {
+  left: 22%;
+  top: var(--ty);
+  background: color-mix(in srgb, var(--lumen) 16%, var(--ground));
+  border: 1px solid color-mix(in srgb, var(--lumen) 55%, transparent);
+  animation: none;
+}
+
+.chipName {
+  color: var(--cream);
+  font-weight: 620;
+  font-stretch: 84%;
+}
+
+.chipId {
+  color: var(--muted);
+  font-size: 9.5px;
+}
+
+.merge[data-merged="1"] .chipId {
+  color: var(--lumen);
+}
+
+.card {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  width: 39%;
+  display: grid;
+  gap: 6px;
+  padding: 12px 14px;
+  border: 1px dashed var(--line);
+  background: var(--ground-deep);
+  transition:
+    border-color var(--dur-panel) linear,
+    box-shadow var(--dur-panel) linear;
+}
+
+.merge[data-merged="1"] .card {
+  border: 1px solid var(--lumen);
+  box-shadow: 0 0 30px -10px color-mix(in srgb, var(--lumen) 60%, transparent);
+}
+
+.cardLabel {
+  color: var(--muted);
+}
+
+.merge[data-merged="1"] .cardLabel {
+  color: var(--lumen);
+}
+
+.phone {
+  font-size: 1.15rem;
+  color: var(--cream);
+}
+
+.facts {
+  display: grid;
+  gap: 4px;
+}
+
+.facts div {
+  display: grid;
+  gap: 1px;
+}
+
+.facts dt {
+  color: var(--muted);
+  font-size: 9.5px;
+}
+
+.facts dd {
+  font-size: 12px;
+  color: var(--khaki-light);
+}
+
+/* a padlock, drawn: shackle and body */
+.lock {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  width: 14px;
+  height: 11px;
+  border-radius: 2px;
+  background: var(--khaki);
+  transition: opacity var(--dur-ui) linear;
+}
+
+.lock::before {
+  content: "";
+  position: absolute;
+  left: 2.5px;
+  bottom: 9px;
+  width: 9px;
+  height: 8px;
+  border: 1.5px solid var(--khaki);
+  border-bottom: 0;
+  border-radius: 5px 5px 0 0;
+  transition: translate var(--dur-panel) var(--ease-snap);
+}
+
+.merge[data-merged="1"] .lock {
+  background: var(--lumen);
+}
+
+.merge[data-merged="1"] .lock::before {
+  border-color: var(--lumen);
+  translate: 0 -3px;
+}
+
+.note {
+  position: absolute;
+  left: 12px;
+  bottom: 8px;
+  color: var(--muted);
+  font-size: 11.5px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chip {
+    animation: none;
+  }
+}

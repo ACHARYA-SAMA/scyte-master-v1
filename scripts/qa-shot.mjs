@@ -50,10 +50,12 @@ page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
 await page.goto(url, { waitUntil: "networkidle", timeout: 90000 }).catch(() => {});
 await page.waitForTimeout(wait);
 if (y !== "0") {
+  // an absolute jump: smooth scrolling would swallow scrollIntoView
   await page.evaluate((target) => {
     const n = Number(target);
-    if (Number.isFinite(n)) window.scrollTo(0, n);
-    else document.querySelector(target)?.scrollIntoView({ block: "start" });
+    const el = Number.isFinite(n) ? null : document.querySelector(target);
+    const top = el ? el.getBoundingClientRect().top + window.scrollY + 2 : n;
+    window.scrollTo(0, top);
   }, y);
   await page.waitForTimeout(1200);
 }

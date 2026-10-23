@@ -6,6 +6,9 @@ import { identity, refuse, setConsent, stopNow } from "@/components/gl/scenes/id
 import { toast, ui, useStore } from "@/lib/store";
 import { sfx } from "@/lib/sound";
 import { haptic } from "@/lib/prefs";
+import { visit } from "@/lib/visit";
+import { HoldToConfirm } from "@/components/kit/HoldToConfirm";
+import { Merge } from "./Merge";
 import styles from "./stations.module.css";
 
 const WORDING = "Send me order updates and offers on WhatsApp";
@@ -71,6 +74,7 @@ export function Identify() {
   const consent = useStore(identity, (s) => s.consent);
   const merged = useStore(identity, (s) => s.merged);
   const stopped = useStore(identity, (s) => s.stopped);
+  const verified = useStore(visit, (s) => s.verified);
   const [record, setRecord] = useState<string | null>(null);
 
   return (
@@ -83,6 +87,11 @@ export function Identify() {
       moment="Checkout: a phone number, then a separate box"
       title="No consent, no message. The gate is physical."
       height="300svh"
+      stage={
+        <div className={styles.mergeDock}>
+          <Merge when={record} />
+        </div>
+      }
       lede={
         <p>
           An anonymous visitor becomes a person only when they agree to it. Aarav types his phone number, then ticks a second box,
@@ -91,6 +100,17 @@ export function Identify() {
         </p>
       }
     >
+      <div className={styles.otp}>
+        <span className="t-hud c-muted">Step 1. The number</span>
+        {verified ? (
+          <span className={styles.verified}>+91 98••• ••210, verified</span>
+        ) : (
+          <HoldToConfirm onConfirm={() => visit.set({ verified: true })} doneLabel="Verified">
+            Hold to verify the OTP
+          </HoldToConfirm>
+        )}
+      </div>
+      <span className="t-hud c-muted">Step 2. A separate box, unticked</span>
       <label className={styles.consent} htmlFor={id} data-on={consent ? "1" : undefined}>
         <input
           id={id}
@@ -107,28 +127,7 @@ export function Identify() {
         <span className={styles.box} aria-hidden />
         <span>{WORDING}</span>
       </label>
-      {consent && record ? (
-        <dl className={styles.record} aria-label="Consent record">
-          <div>
-            <dt className="t-hud">Who</dt>
-            <dd>+91 98••• ••210</dd>
-          </div>
-          <div>
-            <dt className="t-hud">When</dt>
-            <dd className="t-num">{record} IST</dd>
-          </div>
-          <div>
-            <dt className="t-hud">Wording</dt>
-            <dd>“{WORDING}”</dd>
-          </div>
-          <div>
-            <dt className="t-hud">Channel</dt>
-            <dd>Checkout, WhatsApp</dd>
-          </div>
-        </dl>
-      ) : (
-        <p className={`${styles.hint} t-small`}>{stopped ? "STOP received. Consent withdrawn, the gate locked at once." : "The gate is locked. Tick the box to open it."}</p>
-      )}
+      {stopped ? <p className={`${styles.hint} t-small`}>STOP received. Consent withdrawn, the gate locked at once.</p> : null}
       <div className={styles.row}>
         {consent ? (
           <button

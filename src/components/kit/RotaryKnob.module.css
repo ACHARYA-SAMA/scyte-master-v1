@@ -153,6 +153,7 @@
   color: var(--muted);
   max-width: 18ch;
   line-height: 1.3;
+  white-space: nowrap;
 }
 
 .knob[data-active="1"] .arc,

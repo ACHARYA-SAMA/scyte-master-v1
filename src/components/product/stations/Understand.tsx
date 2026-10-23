@@ -1,10 +1,13 @@
 "use client";
 
-import { useId } from "react";
+import { useEffect, useId, useRef } from "react";
 import { Station } from "../Station";
 import { HudLabels, type HudLabel } from "@/components/home/HudLabels";
 import { AARAV, SIGNALS, THRESHOLD, contributions, intent, score, type IntentInputs } from "@/lib/intent";
 import { useStore } from "@/lib/store";
+import { useAttract } from "@/lib/idle";
+import { RotaryKnob } from "@/components/kit/RotaryKnob";
+import { terrain } from "@/components/gl/scenes/understand/terrain";
 import styles from "./stations.module.css";
 
 const avoidCopy = (x: number, y: number, w: number, h: number) => (w > 960 ? x < Math.min(w * 0.44, 720) : y > h * 0.42);
@@ -27,32 +30,49 @@ function Toggle({ k, label, points }: { k: keyof IntentInputs; label: string; po
   );
 }
 
-function Range({ k, label, min, max, unit }: { k: "engagedSeconds" | "hoursSince"; label: string; min: number; max: number; unit: string }) {
-  const id = useId();
+function Knob({ k, label, max, step, unit, hint }: { k: "engagedSeconds" | "hoursSince"; label: string; max: number; step: number; unit: string; hint: string }) {
   const v = useStore(intent, (s) => s[k]);
+  return <RotaryKnob label={label} value={v} min={0} max={max} step={step} onChange={(n) => intent.set({ [k]: n } as Partial<IntentInputs>)} format={(n) => `${n} ${unit}`} hint={hint} size="s" />;
+}
+
+/** Under the pointer: the score of the ground the pointer is over, read from the 3D terrain. */
+function Probe() {
+  const points = useStore(terrain, (s) => s.probe);
   return (
-    <div className={styles.range}>
-      <label htmlFor={id} className={styles.rangeLabel}>
-        <span>{label}</span>
-        <output htmlFor={id} className="t-fig">
-          {v} {unit}
-        </output>
-      </label>
-      <input
-        id={id}
-        type="range"
-        min={min}
-        max={max}
-        value={v}
-        onChange={(e) => intent.set({ [k]: Number(e.target.value) } as Partial<IntentInputs>)}
-        style={{ "--p": `${((v - min) / (max - min)) * 100}%` } as React.CSSProperties}
-        data-cursor="drag"
-      />
-    </div>
+    <p className={`${styles.probe} t-hud`} aria-hidden>
+      <span className="c-muted">Under the pointer</span>
+      <span className="t-fig">{points === null ? "—" : `${Math.round(points)} pts`}</span>
+    </p>
   );
 }
 
+/**
+ * While the visitor is still, time passes on the terrain: Aarav goes quiet and his
+ * score erodes, then a new signal (he comes back and starts checkout) lifts it again,
+ * and the station settles back to Aarav at 1:30. Their own settings come back the
+ * moment they move.
+ */
+const ERODE = [6, 12, 20, 30, 40, 48, 48, 0, 0, 0];
+
 export function Understand() {
+  const area = useRef<HTMLDivElement>(null);
+  const saved = useRef<IntentInputs | null>(null);
+  const attracting = useAttract(
+    area,
+    (n) => {
+      if (!saved.current) saved.current = { ...intent.get() };
+      const i = n % (ERODE.length + 2);
+      if (i < ERODE.length) intent.set({ ...saved.current, hoursSince: ERODE[i]!, checkout: i >= 7 ? true : saved.current.checkout });
+      else intent.set({ ...saved.current });
+    },
+    900,
+  );
+  // the visitor is back: their own settings return
+  useEffect(() => {
+    if (attracting || !saved.current) return;
+    intent.set({ ...saved.current });
+    saved.current = null;
+  }, [attracting]);
   const inputs = useStore(intent, (s) => s);
   const total = score(inputs);
   const c = contributions(inputs);
@@ -67,28 +87,33 @@ export function Understand() {
       moment="Intent, scored in the open"
       title="Intent is a number you can read, not a guess."
       height="300svh"
+      stage={<Probe />}
       lede={
         <p>
-          Each signal raises a hill; together they lift the summit. Points fade when the shopper goes quiet, and engaged time only counts
-          on a visible tab with real scrolling. When the summit breaks the glass, the shopper is worth a message. Not before.
+          Each signal raises a hill; together they lift the summit. Points fade when the shopper goes quiet. When the summit breaks the
+          glass at 60, the shopper is worth a message. Not before.
         </p>
       }
     >
       <HudLabels labels={LABELS} chapter={0} scene="understand" avoid={avoidCopy} />
-      <div className={styles.score} data-over={over ? "1" : undefined} aria-live="polite">
+      <div className={styles.scoreRow}>
+        <div className={styles.score} data-over={over ? "1" : undefined} aria-live="polite">
         <span className={`${styles.scoreValue} t-fig`}>{Math.round(total)}</span>
         <span className={styles.scoreText}>
           <span className="t-hud">Intent score, threshold {THRESHOLD}</span>
           <b>{over ? "Worth a message" : "Not yet. Wait and watch."}</b>
         </span>
+        </div>
+        <div className={styles.knobs} ref={area}>
+        <Knob k="engagedSeconds" label="Engaged time" max={120} step={5} unit="s" hint="Counts over 30 s" />
+        <Knob k="hoursSince" label="Quiet for" max={72} step={3} unit="h" hint="Halves in 24 h" />
+        </div>
       </div>
-      <Range k="engagedSeconds" label="Engaged time" min={0} max={120} unit="s" />
       <div className={styles.toggles}>
         {SIGNALS.filter((s) => s.key !== "engaged").map((s) => (
           <Toggle key={s.key} k={s.key} label={s.label} points={s.points} />
         ))}
       </div>
-      <Range k="hoursSince" label="Quiet since the last signal" min={0} max={72} unit="h" />
       <p className={`${styles.hint} t-small`}>
         Example weights and threshold. Real ones are tuned per brand from pilot data. Engaged time adds {c.engaged} now.{" "}
         <button type="button" className={styles.link} onClick={() => intent.set({ ...AARAV })}>

@@ -17,9 +17,9 @@
   height: 100svh;
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
-  grid-template-rows: auto 1fr;
+  grid-template-rows: auto minmax(0, 1fr);
   column-gap: var(--gutter);
-  padding: calc(var(--nav-h) + 2vh) var(--margin) clamp(84px, 10vh, 104px);
+  padding: calc(var(--nav-h) + 2vh) calc(var(--margin) + 64px) clamp(84px, 10vh, 104px) var(--margin);
   overflow: hidden;
   pointer-events: none;
 }
@@ -77,14 +77,22 @@
 .copy {
   position: relative;
   grid-column: 1 / span 5;
-  align-self: center;
+  align-self: start;
+  padding-top: var(--s5);
   display: grid;
-  gap: var(--s5);
+  gap: var(--s4);
   pointer-events: auto;
   max-width: 36rem;
+  min-height: 0;
 }
 
+/* condensed display type, so a station's headline takes two or three lines, not five */
 .title {
+  font-size: clamp(2.2rem, 1.1rem + 2.7vw, 4.1rem);
+  line-height: 0.92;
+  font-weight: 820;
+  font-stretch: 72%;
+  letter-spacing: -0.03em;
   color: var(--cream);
   text-wrap: balance;
 }
@@ -93,6 +101,8 @@
   color: var(--khaki-light);
   display: grid;
   gap: var(--s3);
+  font-size: var(--t-small);
+  line-height: 1.55;
   text-wrap: pretty;
 }
 

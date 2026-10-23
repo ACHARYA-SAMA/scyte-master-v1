@@ -12,6 +12,7 @@ import { Post } from "../../Post";
 import { C } from "../../materials";
 import { drift } from "../../idle";
 import { projectAnchors } from "../../anchors";
+import { terrain } from "./terrain";
 
 const SIZE = 110;
 const SEG = 150;
@@ -197,7 +198,18 @@ export default function UnderstandScene() {
       <color attach="background" args={["#09120b"]} />
       <fog attach="fog" args={["#09120b", 90, 260]} />
       <Studio intensity={0.9} />
-      <mesh ref={mesh} geometry={geometry} material={material} />
+      <mesh
+        ref={mesh}
+        geometry={geometry}
+        material={material}
+        onPointerMove={(e) => {
+          // the height of the ground under the pointer, in score points
+          const pts = Math.max(0, e.point.y / K);
+          const prev = terrain.get().probe;
+          if (prev === null || Math.abs(prev - pts) > 0.5) terrain.set({ probe: pts });
+        }}
+        onPointerOut={() => terrain.set({ probe: null })}
+      />
       {/* the threshold: a sheet of glass at the score worth a message */}
       <mesh position={[0, THRESHOLD * K, 0]} rotation={[-Math.PI / 2, 0, 0]} material={glass} renderOrder={3}>
         <circleGeometry args={[SIZE * 0.42, 96]} />

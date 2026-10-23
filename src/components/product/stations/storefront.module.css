@@ -1,0 +1,521 @@
+/* P2, The Storefront: a browser on the left, the script's log on the right */
+.station {
+  position: relative;
+  height: 210svh;
+  background:
+    radial-gradient(ellipse 60% 50% at 30% 55%, rgb(43 58 47 / 0.55), transparent 70%),
+    var(--ground-deep);
+}
+
+.sticky {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-areas:
+    "head head"
+    "browser side";
+  gap: var(--s5) clamp(24px, 3vw, 56px);
+  padding: calc(var(--nav-h) + 2vh) calc(var(--margin) + 64px) calc(var(--s8) + 4px) calc(var(--margin) + 10px);
+}
+
+.head {
+  grid-area: head;
+  display: flex;
+  align-items: baseline;
+  gap: var(--s5);
+}
+
+.index {
+  font-size: clamp(2.4rem, 1.6rem + 2.6vw, 4.4rem);
+  line-height: 0.8;
+  font-weight: 860;
+  font-stretch: 66%;
+  color: var(--khaki);
+}
+
+.where {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2) var(--s4);
+  color: var(--cream);
+}
+
+.clock {
+  color: var(--lumen);
+}
+
+/* ------------------------------------------------------------- the browser */
+.browser {
+  grid-area: browser;
+  position: relative;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  min-height: 0;
+  border: var(--hair) solid var(--line);
+  background: var(--ground);
+  box-shadow: 0 40px 90px -40px rgb(0 0 0 / 0.9);
+  overflow: hidden;
+}
+
+.chrome {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 14px;
+  background: var(--surface);
+  border-bottom: var(--hair) solid var(--line);
+}
+
+.dots {
+  display: flex;
+  gap: 6px;
+}
+
+.dots i {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--line);
+}
+
+.url {
+  flex: 1;
+  padding: 5px 12px;
+  background: var(--ground-deep);
+  color: var(--khaki-light);
+  font-size: 12.5px;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sdk {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--lumen);
+}
+
+.rec {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--lumen);
+  box-shadow: 0 0 8px var(--lumen);
+  animation: rec 1.6s steps(2, jump-none) infinite;
+}
+
+@keyframes rec {
+  50% {
+    opacity: 0.25;
+  }
+}
+
+/* the store itself: cream paper, ground ink, in the site's own palette */
+.page {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--cream);
+  color: var(--ground);
+  scrollbar-width: thin;
+  scrollbar-color: var(--khaki) var(--cream);
+}
+
+.page:focus-visible {
+  outline-offset: -3px;
+}
+
+.storeHead {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding: 12px 22px;
+  background: var(--cream);
+  border-bottom: 1px solid rgb(27 38 29 / 0.14);
+}
+
+.storeHead b {
+  margin-right: auto;
+  font-weight: 800;
+  font-stretch: 76%;
+  letter-spacing: -0.01em;
+}
+
+.cartBtn {
+  padding: 4px 10px;
+  border: 1px solid var(--ground);
+  font-weight: 640;
+}
+
+.pdp {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: 22px;
+  padding: 22px;
+}
+
+.gallery {
+  display: grid;
+  gap: 10px;
+}
+
+.shot {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  transition: background-color var(--dur-panel) linear;
+}
+
+.hoodie {
+  width: 74%;
+  height: auto;
+  filter: drop-shadow(0 14px 18px rgb(0 0 0 / 0.25));
+  transition: fill var(--dur-panel) linear;
+}
+
+.thumbs {
+  display: flex;
+  gap: 8px;
+}
+
+.thumb {
+  width: 38px;
+  height: 38px;
+  outline: 1px solid rgb(27 38 29 / 0.25);
+  outline-offset: 2px;
+}
+
+.thumb[aria-pressed="true"] {
+  outline: 2px solid var(--ground);
+}
+
+.info {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+}
+
+.pname {
+  font-size: clamp(1.4rem, 1rem + 1vw, 2rem);
+  line-height: 1;
+  font-weight: 800;
+  font-stretch: 76%;
+  letter-spacing: -0.02em;
+}
+
+.price {
+  font-size: 1.2rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.sizes {
+  display: flex;
+  gap: 6px;
+}
+
+.size {
+  min-width: 42px;
+  padding: 8px 0;
+  border: 1px solid rgb(27 38 29 / 0.4);
+  font-weight: 640;
+  font-size: 14px;
+}
+
+.size[aria-pressed="true"] {
+  background: var(--ground);
+  color: var(--cream);
+  border-color: var(--ground);
+}
+
+.chartLink {
+  justify-self: start;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.add {
+  padding: 13px 16px;
+  background: var(--ground);
+  color: var(--cream);
+  font-weight: 700;
+  font-size: 14px;
+  transition: background-color var(--dur-feedback) linear;
+}
+
+.add:hover {
+  background: var(--raised);
+}
+
+.reviews {
+  padding: 0 22px 18px;
+}
+
+.reviewsBtn {
+  width: 100%;
+  padding: 12px 0;
+  border-top: 1px solid rgb(27 38 29 / 0.18);
+  border-bottom: 1px solid rgb(27 38 29 / 0.18);
+  text-align: left;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.reviewLines {
+  display: grid;
+  gap: 14px;
+  padding-top: 14px;
+}
+
+.reviewLines li {
+  display: grid;
+  gap: 6px;
+}
+
+.stars {
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: var(--ground);
+}
+
+.bar {
+  display: block;
+  height: 7px;
+  background: rgb(27 38 29 / 0.16);
+}
+
+.more {
+  padding: 4px 22px 30px;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.card {
+  aspect-ratio: 3 / 4;
+  background: rgb(27 38 29 / 0.1);
+}
+
+/* the size chart and the cart slide over the page */
+.sheet,
+.drawer {
+  position: absolute;
+  z-index: 3;
+  right: 14px;
+  bottom: 14px;
+  width: min(360px, 80%);
+  display: grid;
+  gap: 12px;
+  padding: 16px 18px;
+  background: var(--cream);
+  color: var(--ground);
+  box-shadow: 0 30px 60px -20px rgb(0 0 0 / 0.6);
+  animation: rise 360ms var(--ease-glide);
+}
+
+@keyframes rise {
+  from {
+    translate: 0 24px;
+    opacity: 0;
+  }
+}
+
+.sheetHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.chart {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.chart th,
+.chart td {
+  padding: 6px 4px;
+  border-bottom: 1px solid rgb(27 38 29 / 0.15);
+  text-align: left;
+}
+
+.ghost {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 4;
+  width: 22px;
+  height: 22px;
+  margin: -11px 0 0 -11px;
+  border: 1.5px solid var(--lumen);
+  border-radius: 50%;
+  box-shadow: 0 0 14px color-mix(in srgb, var(--lumen) 60%, transparent);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ------------------------------------------------------------- the script's side */
+.side {
+  grid-area: side;
+  display: grid;
+  grid-template-rows: auto auto auto minmax(0, 1fr) auto;
+  gap: var(--s4);
+  min-height: 0;
+}
+
+.title {
+  font-size: clamp(1.8rem, 1rem + 2.2vw, 3.3rem);
+  line-height: 0.95;
+  font-weight: 800;
+  font-stretch: 74%;
+  letter-spacing: -0.03em;
+  color: var(--cream);
+}
+
+.lede {
+  font-size: var(--t-small);
+  line-height: 1.5;
+  color: var(--khaki-light);
+  max-width: 44ch;
+}
+
+.meters {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: var(--hair) solid var(--line);
+  border-bottom: var(--hair) solid var(--line);
+}
+
+.meters div {
+  display: grid;
+  gap: 3px;
+  padding: 10px 12px 10px 0;
+}
+
+.meters div + div {
+  padding-left: 12px;
+  border-left: var(--hair) solid var(--line);
+}
+
+.meter {
+  font-size: 1.3rem;
+  line-height: 1;
+  color: var(--cream);
+}
+
+.meter[data-on="1"] {
+  color: var(--lumen);
+}
+
+.log {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 2px;
+  min-height: 0;
+  overflow: hidden;
+  mask-image: linear-gradient(180deg, transparent, #000 22%);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 4.2em auto minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 10px;
+  padding: 6px 0;
+  border-bottom: var(--hair) solid var(--line);
+  font-size: 12.5px;
+}
+
+.t {
+  color: var(--muted);
+}
+
+.name {
+  font-family: inherit;
+  font-weight: 640;
+  font-stretch: 84%;
+  color: var(--lumen);
+}
+
+.payload {
+  font-family: inherit;
+  color: var(--khaki-light);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.src {
+  color: var(--muted);
+}
+
+.row[data-demo="1"] .name {
+  color: var(--khaki);
+}
+
+.empty {
+  padding: 8px 0;
+  color: var(--muted);
+  font-size: var(--t-small);
+}
+
+.note {
+  color: var(--muted);
+}
+
+/* the token in flight, on top of everything */
+.token {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 9200;
+  padding: 4px 9px;
+  background: var(--lumen);
+  color: var(--ground);
+  font-size: 12px;
+  font-weight: 720;
+  font-stretch: 80%;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 0 22px color-mix(in srgb, var(--lumen) 60%, transparent);
+}
+
+@media (max-width: 900px) {
+  .station {
+    height: auto;
+  }
+  .sticky {
+    position: relative;
+    height: auto;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "head"
+      "side"
+      "browser";
+    padding-right: var(--margin);
+  }
+  .browser {
+    height: 78svh;
+  }
+  .log {
+    max-height: 200px;
+  }
+  .pdp {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

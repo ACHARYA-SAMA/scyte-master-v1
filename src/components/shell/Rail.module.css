@@ -109,8 +109,16 @@
   margin-right: 0;
 }
 
+/* the time marks only for the chapter you are in, or when the tape is pointed at */
 .mark {
   color: var(--khaki);
+  opacity: 0;
+  transition: opacity var(--dur-ui) linear;
+}
+
+.rail:hover .mark,
+li[data-active="1"] .mark {
+  opacity: 1;
 }
 
 .chapterLabel {

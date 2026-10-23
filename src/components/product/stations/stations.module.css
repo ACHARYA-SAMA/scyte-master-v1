@@ -54,6 +54,46 @@
 }
 
 /* ------------------------------------------------------------- identify */
+/* the merge sits in the stage's lower right, over the physics, clear of the gate */
+.mergeDock {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: min(560px, 100%);
+}
+
+@media (max-width: 960px) {
+  .mergeDock {
+    position: relative;
+    width: 100%;
+  }
+}
+
+.otp {
+  display: grid;
+  gap: var(--s2);
+  justify-items: start;
+}
+
+.verified {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border: 1px solid var(--lumen);
+  color: var(--cream);
+  font-size: var(--t-small);
+}
+
+.verified::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--lumen);
+  box-shadow: 0 0 8px var(--lumen);
+}
+
 .consent {
   display: grid;
   grid-template-columns: auto 1fr;
@@ -208,6 +248,42 @@
   color: var(--cream);
 }
 
+/* the score, the two time knobs and the probe share one instrument row */
+.scoreRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s5);
+}
+
+.knobs {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s4);
+}
+
+/* a readout in the scene's corner: the ground under the pointer */
+.probe {
+  position: absolute;
+  right: 0;
+  top: var(--s5);
+  display: grid;
+  gap: 6px;
+  justify-items: end;
+  min-width: 9ch;
+  padding: 10px 14px;
+  background: rgb(9 18 11 / 0.7);
+  border-right: 1px solid var(--lumen);
+}
+
+.probe .t-fig,
+.probe :global(.t-fig) {
+  font-size: 1.6rem;
+  line-height: 1;
+  color: var(--lumen);
+  letter-spacing: -0.01em;
+}
+
 .toggles {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -344,7 +420,43 @@
   .feed {
     max-height: 22svh;
   }
-  .toggles {
+  /* the score, the two time knobs and the probe share one instrument row */
+.scoreRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s5);
+}
+
+.knobs {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s4);
+}
+
+/* a readout in the scene's corner: the ground under the pointer */
+.probe {
+  position: absolute;
+  right: 0;
+  top: var(--s5);
+  display: grid;
+  gap: 6px;
+  justify-items: end;
+  min-width: 9ch;
+  padding: 10px 14px;
+  background: rgb(9 18 11 / 0.7);
+  border-right: 1px solid var(--lumen);
+}
+
+.probe .t-fig,
+.probe :global(.t-fig) {
+  font-size: 1.6rem;
+  line-height: 1;
+  color: var(--lumen);
+  letter-spacing: -0.01em;
+}
+
+.toggles {
     grid-template-columns: 1fr;
   }
   .record {

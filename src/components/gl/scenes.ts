@@ -12,7 +12,7 @@ type Loader = () => Promise<{ default: ComponentType }>;
 
 const LOADERS: Partial<Record<SceneKey, Loader>> = {
   home: () => import("./scenes/home/HomeScene"),
-  collect: () => import("./scenes/collect/CollectScene"),
+  line: () => import("./scenes/line/LineScene"),
   identify: () => import("./scenes/identify/IdentifyScene"),
   understand: () => import("./scenes/understand/UnderstandScene"),
   measure: () => import("./scenes/measure/MeasureScene"),

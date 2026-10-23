@@ -88,6 +88,7 @@ export const rail = createStore({
 export type SceneKey =
   | "none"
   | "home"
+  | "line"
   | "collect"
   | "identify"
   | "understand"

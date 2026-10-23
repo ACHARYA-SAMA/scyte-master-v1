@@ -141,7 +141,8 @@ export function Rail() {
 
   return (
     <>
-      <nav className={styles.rail} aria-label="Timeline" data-hidden={menuOpen ? "1" : undefined} data-scrub={scrub ? "1" : undefined}>
+      {/* the page's opening chapter carries its own timeline; the tape joins at the first station */}
+      <nav className={styles.rail} aria-label="Timeline" data-hidden={menuOpen || active === 0 ? "1" : undefined} data-scrub={scrub ? "1" : undefined}>
         <div
           ref={track}
           className={styles.track}
