@@ -22,6 +22,8 @@
   height: 100svh;
   overflow: hidden;
   pointer-events: none;
+  /* its own stack, so the scrims can sit under the copy */
+  isolation: isolate;
 }
 
 /* a scrim behind the copy column, so text never sits on a bright pipe */
@@ -391,11 +393,26 @@
   opacity: 0.55;
 }
 
-.sticky[data-chapter="5"]::before {
+/* the finale's scrim runs along the bottom under the copy band. It is its own layer
+   that only fades: resizing the side scrim into it counted as a layout shift */
+.sticky::after {
+  content: "";
+  position: absolute;
   inset: auto 0 0 0;
-  width: 100%;
+  z-index: -1;
   height: 40%;
   background: linear-gradient(0deg, color-mix(in srgb, var(--abyss) 92%, transparent) 0%, color-mix(in srgb, var(--abyss) 60%, transparent) 55%, transparent 100%);
+  opacity: 0;
+  transition: opacity var(--dur-panel) linear;
+  pointer-events: none;
+}
+
+.sticky[data-chapter="5"]::after {
+  opacity: 1;
+}
+
+.sticky[data-chapter="5"]::before {
+  opacity: 0;
 }
 
 .ctas {

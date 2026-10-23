@@ -30,7 +30,24 @@ const HUD_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 /** the longest a batch of arrivals cascades, in seconds */
 const MAX_CASCADE = 1.1;
 
-const usable = (el: Element) => !el.closest(SKIP) && (el as HTMLElement).offsetParent !== null;
+/**
+ * Server HTML inside a Suspense boundary hydrates after this runs. Styling such a node
+ * first makes React see attributes it did not render, so it refuses to patch the
+ * tree: anything React has not claimed yet is left alone.
+ */
+const hydrated = (el: Element) => Object.keys(el).some((k) => k.startsWith("__reactFiber$"));
+
+const usable = (el: Element) => !el.closest(SKIP) && (el as HTMLElement).offsetParent !== null && hydrated(el);
+
+/** Wait, briefly, for streamed boundaries to hydrate, so they can arrive with the rest. */
+const settled = async (main: HTMLElement) => {
+  const start = performance.now();
+  while (performance.now() - start < 2500) {
+    const pending = [...main.querySelectorAll("h1, h2, h3, p, li, figure, img, .t-hud")].some((el) => !el.closest(SKIP) && !hydrated(el));
+    if (!pending) return;
+    await new Promise((r) => setTimeout(r, 120));
+  }
+};
 
 const inDocumentOrder = (a: Element, b: Element) => (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1);
 
@@ -125,6 +142,7 @@ export function Reveal() {
 
     const setup = async () => {
       await document.fonts.ready;
+      await settled(main);
       if (!alive) return;
       const kinds = pick(main);
       const of = (k: Kind) => [...kinds].filter(([, s]) => s.has(k)).map(([el]) => el);
