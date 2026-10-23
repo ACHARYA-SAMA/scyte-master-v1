@@ -107,8 +107,20 @@ function ActiveScene() {
   );
 }
 
+/** How long the canvas runs before frame rate is allowed to change its quality. */
+const SETTLE_MS = 3500;
+
 export function Stage() {
   const unsupported = useStore(ui, (s) => s.webgl === "unsupported");
+  const ready = useStore(ui, (s) => s.webgl === "ready");
+  // warm-up frames are slow on every device; judging quality on them would downgrade
+  // a fast machine and recompile the post chain a few seconds after load
+  const [judging, setJudging] = useState(false);
+  useEffect(() => {
+    if (!ready) return;
+    const t = window.setTimeout(() => setJudging(true), SETTLE_MS);
+    return () => window.clearTimeout(t);
+  }, [ready]);
   const perf = useStore(ui, (s) => s.perf);
   const visible = useStore(glStore, (s) => s.visible && s.scene !== "none");
   // client-only (loaded with ssr: false), so initial state may read the device
@@ -154,21 +166,23 @@ export function Stage() {
         <color attach="background" args={["#09120b"]} />
         <Driver />
         <Pointer />
-        <PerformanceMonitor
-          flipflops={3}
-          onDecline={() => {
-            setQuality((q) => (q > 0 ? ((q - 1) as 0 | 1) : 0));
-            setDpr((d) => Math.max(1, d - 0.25));
-          }}
-          onIncline={() => {
-            if (ui.get().perf === "low") return;
-            setQuality((q) => (q < 2 ? ((q + 1) as 1 | 2) : 2));
-          }}
-          onFallback={() => {
-            setQuality(0);
-            setDpr(1);
-          }}
-        />
+        {judging ? (
+          <PerformanceMonitor
+            flipflops={3}
+            onDecline={() => {
+              setQuality((q) => (q > 0 ? ((q - 1) as 0 | 1) : 0));
+              setDpr((d) => Math.max(1, d - 0.25));
+            }}
+            onIncline={() => {
+              if (ui.get().perf === "low") return;
+              setQuality((q) => (q < 2 ? ((q + 1) as 1 | 2) : 2));
+            }}
+            onFallback={() => {
+              setQuality(0);
+              setDpr(1);
+            }}
+          />
+        ) : null}
         <ActiveScene />
       </Canvas>
     </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { Suspense, useMemo, type ReactNode } from "react";
 import { useChapters } from "@/components/shell/chapters";
 import { ProductHero } from "./ProductHero";
 import { Collect } from "./stations/Collect";
@@ -13,6 +13,12 @@ import { Playbooks } from "./Playbooks";
 import { Economics } from "./Economics";
 import { Dashboard } from "./Dashboard";
 import { Pilot } from "./Pilot";
+
+/**
+ * Each section is its own Suspense boundary, so hydration commits it in its own task
+ * instead of the whole page in one: the long task after load is split into short ones.
+ */
+const Part = ({ children }: { children: ReactNode }) => <Suspense fallback={null}>{children}</Suspense>;
 
 /**
  * The Machine. The rail on the right is Aarav's 20 minutes, from the ad click to the
@@ -42,21 +48,41 @@ export function ProductMachine() {
   return (
     <>
       <ProductHero />
-      <Collect />
-      <Identify />
-      <Understand />
-      <Decide />
-      <Send />
-      <Measure />
-      <Playbooks />
+      <Part>
+        <Collect />
+      </Part>
+      <Part>
+        <Identify />
+      </Part>
+      <Part>
+        <Understand />
+      </Part>
+      <Part>
+        <Decide />
+      </Part>
+      <Part>
+        <Send />
+      </Part>
+      <Part>
+        <Measure />
+      </Part>
+      <Part>
+        <Playbooks />
+      </Part>
       <div id="economics">
-        <Economics />
+        <Part>
+          <Economics />
+        </Part>
       </div>
       <div id="dashboard">
-        <Dashboard />
+        <Part>
+          <Dashboard />
+        </Part>
       </div>
       <div id="pilot">
-        <Pilot />
+        <Part>
+          <Pilot />
+        </Part>
       </div>
     </>
   );

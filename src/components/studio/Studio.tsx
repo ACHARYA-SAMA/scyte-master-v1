@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef } from "react";
+import { Suspense, useMemo, useRef } from "react";
 import { useChapters } from "@/components/shell/chapters";
 import { TransitionLink } from "@/components/transition/navigation";
 import { PhoneFrame } from "@/components/devices/PhoneFrame";
@@ -58,7 +58,9 @@ export function Studio() {
         </ol>
       </header>
 
-      <Assembly />
+      <Suspense fallback={null}>
+        <Assembly />
+      </Suspense>
 
       <section className={styles.benches} aria-labelledby="benches-title">
         <header className={styles.benchesHead}>
@@ -77,7 +79,8 @@ export function Studio() {
               </h3>
               <p className={styles.benchLine}>{BENCH_COPY[id].line}</p>
             </header>
-            {id === "website" ? <WebsiteBench /> : null}
+            {/* each bench hydrates and commits on its own */}
+            <Suspense fallback={null}>{id === "website" ? <WebsiteBench /> : null}</Suspense>
             {id === "apps" ? (
               <div className={bench.bench} id="apps">
                 <div className={bench.appNotes}>
@@ -91,18 +94,22 @@ export function Studio() {
                   <p className="t-small c-muted">Prototype, not client work. Built the way we build: one codebase for iPhone and Android.</p>
                 </div>
                 <div className={bench.phoneCol}>
-                  <PhoneFrame label="App prototype">
-                    <AppPrototype />
-                  </PhoneFrame>
+                  <Suspense fallback={null}>
+                    <PhoneFrame label="App prototype">
+                      <AppPrototype />
+                    </PhoneFrame>
+                  </Suspense>
                 </div>
               </div>
             ) : null}
-            {id === "social" ? <SocialBench /> : null}
+            <Suspense fallback={null}>{id === "social" ? <SocialBench /> : null}</Suspense>
           </article>
         ))}
       </section>
 
-      <HowWeWork />
+      <Suspense fallback={null}>
+        <HowWeWork />
+      </Suspense>
 
       <section className={`band ${styles.deliverables}`} id="deliverables" aria-labelledby="deliverables-title">
         <h2 id="deliverables-title" className={styles.dTitle}>
