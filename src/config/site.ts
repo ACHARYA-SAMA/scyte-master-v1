@@ -11,6 +11,13 @@ export const PRODUCT_LABEL = "WhatsApp recovery for online stores";
 export const productName = (fallback = "a WhatsApp recovery platform") => (PRODUCT_NAME_FINAL ? PRODUCT_NAME : fallback);
 
 /**
+ * Plan prices are proposals still being validated with pilot partners. They print only
+ * when this is true and a price is set; otherwise the page says "Pricing with your pilot".
+ */
+export const SHOW_PRICING = false;
+export const PLAN_PRICES: Record<string, string | null> = { launch: null, growth: null, scale: null };
+
+/**
  * Information architecture switch. "studio" keeps Scyte as the umbrella brand with the
  * WhatsApp platform as its flagship product (current). "product" turns the home page
  * into the product page and moves studio services to /services only.

@@ -1,0 +1,22 @@
+{
+  "from": "/studio",
+  "viewport": [
+    1440,
+    900
+  ],
+  "keyboard": false,
+  "steerLatencyMs": 70,
+  "charge": {
+    "steps": 12
+  },
+  "dive": {
+    "fps": 50,
+    "worstFrameMs": 41,
+    "longTasks": [],
+    "path": "/team"
+  },
+  "splashToPageMs": 110,
+  "errors": [
+    "TypeError: t.target?.closest is not a function"
+  ]
+}
