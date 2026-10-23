@@ -25,6 +25,8 @@ export const leak = createStore({
   /** the crack the pointer or keyboard is pressing, and how far the hold has got */
   holding: -1,
   hold: 0,
+  /** the glass scene has drawn under the hero, so the DOM logo can step aside */
+  glass: false,
 });
 
 export const sealCrack = (i: number) =>

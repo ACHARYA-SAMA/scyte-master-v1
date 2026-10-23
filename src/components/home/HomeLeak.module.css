@@ -68,6 +68,13 @@
   width: 100%;
   max-width: 1760px;
   margin-inline: auto;
+  transition: opacity 1100ms linear;
+}
+
+/* the exact mark lands first (the preloader pours into it), then thins so the drops
+   running through the glass letters beneath show through it */
+.hero[data-glass="1"] .heroLogo {
+  opacity: 0.7;
 }
 
 .heroCopy {

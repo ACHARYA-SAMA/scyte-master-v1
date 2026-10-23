@@ -9,6 +9,7 @@ import { LOGO_WIDTH } from "@/lib/logo/geometry";
 import { prefersReducedMotion } from "@/lib/motion";
 import { projectAnchors } from "../../anchors";
 import { PATHS, crackPoint, pointAt } from "./paths";
+import { leak } from "./leak";
 
 type Key = { at: number; pos: [number, number, number]; look: [number, number, number]; fov?: number };
 
@@ -77,6 +78,8 @@ export function Rig({ focus }: { focus: Vector3 }) {
   const keys = useMemo(() => KEYS.map((k) => ({ ...k, pos: [...k.pos] as Key["pos"], look: [...k.look] as Key["look"] })), []);
   const want = useRef({ pos: new Vector3(0, 0, 165), look: new Vector3() });
   const cur = useRef({ pos: new Vector3(0, 0, 165), look: new Vector3(), ready: false });
+  const frames = useRef(0);
+  useEffect(() => () => leak.set({ glass: false }), []);
 
   // solve key 0 so the glass logo matches the DOM logo's size and position
   useEffect(() => {
@@ -107,7 +110,7 @@ export function Rig({ focus }: { focus: Vector3 }) {
       const k = 1 + (pull - 1) * 1;
       want.current.pos.sub(want.current.look).multiplyScalar(Math.max(1, k)).add(want.current.look);
     }
-    // a breath of pointer parallax, never in the hero (it must sit under the DOM logo)
+    // a breath of pointer parallax, never in the hero (the drops run under the DOM logo there)
     if (s.progress > 0.04 && !prefersReducedMotion()) {
       want.current.pos.x += s.px * 2.2;
       want.current.pos.y += s.py * 1.4;
@@ -126,6 +129,8 @@ export function Rig({ focus }: { focus: Vector3 }) {
     camera.lookAt(c.look);
     focus.copy(c.look);
     projectAnchors(camera, ANCHORS, size.width, size.height);
+    // a few frames in, the glass is lit and compiled: hand the hero over to it
+    if (++frames.current === 4) leak.set({ glass: true });
   });
 
   return null;

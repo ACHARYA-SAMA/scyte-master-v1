@@ -40,7 +40,7 @@ export const ROUTES = [
   { href: "/", label: "Home", chapter: "The Leak", blurb: "Where a store loses shoppers it never knew it had, and one recovery, start to finish." },
   { href: "/product", label: "Product", chapter: "The Machine", blurb: "Six stations from a page view to proof: collect, identify, understand, decide, send, measure." },
   { href: "/studio", label: "Studio", chapter: "The Assembly", blurb: "Websites, mobile apps and social media, designed and built in Hyderabad." },
-  { href: "/work", label: "Work", chapter: "The Archive", blurb: "Case studies, added as they can be verified." },
+  { href: "/work", label: "Work", chapter: "The Archive", blurb: "Case 00 is this site, scene by scene. Client cases go up as they are signed off." },
   { href: "/team", label: "Team", chapter: "The Scan", blurb: "The people who build the machine." },
   { href: "/contact", label: "Contact", chapter: "The Conversation", blurb: "Talk to us the way your customers will talk to you." },
 ] as const;

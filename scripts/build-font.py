@@ -6,19 +6,29 @@ the layout features the site never uses. Run when the character set needs to gro
 
     python scripts/build-font.py
 
+It also writes two static instances to assets/og/ for the share images, because the
+image renderer cannot read variable fonts or WOFF2. `--og` rebuilds only those, from
+the WOFF2 already in the repo, with no network.
+
 Needs fontTools and brotli (pip install fonttools brotli).
 """
 
 import io
 import pathlib
 import re
+import sys
 import urllib.parse
 import urllib.request
 
 from fontTools import subset
 from fontTools.ttLib import TTFont
+from fontTools.varLib import instancer
 
-OUT = pathlib.Path(__file__).resolve().parent.parent / "src" / "app" / "fonts" / "archivo-var.woff2"
+ROOT = pathlib.Path(__file__).resolve().parent.parent
+OUT = ROOT / "src" / "app" / "fonts" / "archivo-var.woff2"
+OG = ROOT / "assets" / "og"
+# the share images' two voices: the condensed display cut and the body cut
+OG_CUTS = {"archivo-display.ttf": {"wght": 820, "wdth": 70}, "archivo-text.ttf": {"wght": 460, "wdth": 100}}
 
 # Basic Latin, the Latin-1 symbols we print, typographic punctuation, rupee, arrows, maths.
 CHARS = (
@@ -59,5 +69,17 @@ def main() -> None:
     print(f"{OUT.name}: {OUT.stat().st_size // 1024} KB, {len(font.getGlyphOrder())} glyphs, axes {axes}")
 
 
+def og() -> None:
+    OG.mkdir(parents=True, exist_ok=True)
+    for name, axes in OG_CUTS.items():
+        font = TTFont(OUT)
+        static = instancer.instantiateVariableFont(font, axes)
+        static.flavor = None
+        static.save(OG / name)
+        print(f"{name}: {(OG / name).stat().st_size // 1024} KB at {axes}")
+
+
 if __name__ == "__main__":
-    main()
+    if "--og" not in sys.argv:
+        main()
+    og()

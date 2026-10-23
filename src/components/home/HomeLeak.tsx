@@ -146,6 +146,7 @@ export function HomeLeak() {
   const [recovered, setRecovered] = useState(false);
   const [phoneOn, setPhoneOn] = useState(false);
   const webgl = useStore(ui, (s) => s.webgl);
+  const glass = useStore(leak, (s) => s.glass);
   const total = useStore(session, (s) => s.recovered);
   const small = useMedia("(max-width: 640px)");
   const root = useRef<HTMLDivElement>(null);
@@ -228,7 +229,7 @@ export function HomeLeak() {
         <HudLabels labels={LABELS} chapter={chapter} avoid={chapter === 3 ? undefined : avoidCopy} />
 
         {/* hero */}
-        <div ref={hero} className={styles.hero} data-on={chapter === 0 ? "1" : "0"}>
+        <div ref={hero} className={styles.hero} data-on={chapter === 0 ? "1" : "0"} data-glass={glass ? "1" : undefined}>
           <div className={styles.heroLogo}>
             <HeroLogo />
           </div>

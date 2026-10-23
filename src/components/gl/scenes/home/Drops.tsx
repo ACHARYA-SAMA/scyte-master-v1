@@ -103,7 +103,8 @@ export function Drops({ count }: { count: number }) {
     const m = mesh.current;
     if (!m) return;
     const p = gl.get().progress;
-    const started = p > 0.008;
+    // the stream runs from the moment the glass is under the hero, not from the first scroll
+    const started = p > 0.008 || leak.get().glass;
     const inLeaks = p > HOME_CHAPTERS.leaks[0] && p < HOME_CHAPTERS.leaks[1];
     const slow = inLeaks ? 0.3 : 1;
     const dt = Math.min(rawDt, 1 / 20) * slow;

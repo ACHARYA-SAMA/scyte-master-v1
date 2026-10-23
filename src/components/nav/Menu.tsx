@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, type RefObject } from "react";
+import { useEffect, useRef, useState, type RefObject } from "react";
 import { usePathname } from "next/navigation";
 import { gsap, prefersReducedMotion } from "@/lib/motion";
 import { useStore, ui, type MotionChoice, type PerfChoice } from "@/lib/store";
@@ -68,6 +68,12 @@ export function Menu({ returnFocus }: { returnFocus: RefObject<HTMLButtonElement
   const pathname = usePathname();
   const root = useRef<HTMLDivElement>(null);
   const tl = useRef<gsap.core.Timeline | null>(null);
+  // previews are fetched the first time the menu opens, not with the page
+  const [seen, setSeen] = useState(false);
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-way latch on first open
+    if (open) setSeen(true);
+  }, [open]);
 
   useEffect(() => {
     const el = root.current;
@@ -174,6 +180,11 @@ export function Menu({ returnFocus }: { returnFocus: RefObject<HTMLButtonElement
                   <span className={`${styles.chapterName} t-hud`}>{r.chapter}</span>
                 </span>
                 <span className={styles.blurb}>
+                  {seen ? (
+                    // a real screenshot of the page, 480 x 300
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img className={styles.preview} src={`/shots${r.href}.webp`} alt="" width={480} height={300} decoding="async" />
+                  ) : null}
                   <span className="t-small">{r.blurb}</span>
                 </span>
                 <span className={styles.mask}>

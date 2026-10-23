@@ -45,7 +45,7 @@
 }
 
 .col:hover,
-.col:focus-within {
+.col:has(:focus-visible) {
   flex-grow: 1.9;
 }
 
@@ -58,7 +58,7 @@
 }
 
 .col:hover .fill,
-.col:focus-within .fill {
+.col:has(:focus-visible) .fill {
   background: var(--surface);
 }
 
@@ -98,6 +98,8 @@
 
 .blurb {
   align-self: end;
+  display: grid;
+  gap: var(--s3);
   max-width: 32ch;
   color: var(--khaki-light);
   opacity: 0;
@@ -108,9 +110,27 @@
 }
 
 .col:hover .blurb,
-.col:focus-within .blurb {
+.col:has(:focus-visible) .blurb {
   opacity: 1;
   transform: none;
+}
+
+/* the page itself, poured in from the bottom like the column's light */
+.preview {
+  display: block;
+  width: 100%;
+  min-width: min(260px, 100%);
+  height: auto;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  outline: var(--hair) solid var(--line);
+  clip-path: inset(100% 0 0 0);
+  transition: clip-path var(--dur-panel) var(--ease-pour);
+}
+
+.col:hover .preview,
+.col:has(:focus-visible) .preview {
+  clip-path: inset(0 0 0 0);
 }
 
 .mask {
@@ -131,7 +151,7 @@
 }
 
 .col:hover .label,
-.col:focus-within .label {
+.col:has(:focus-visible) .label {
   font-stretch: 78%;
 }
 
@@ -218,7 +238,7 @@
     display: none;
   }
   .col:hover,
-  .col:focus-within {
+  .col:has(:focus-visible) {
     flex-grow: 1;
   }
   .link {
