@@ -483,7 +483,7 @@
   position: fixed;
   left: 0;
   top: 0;
-  z-index: 9200;
+  z-index: var(--z-palette);
   padding: 4px 9px;
   background: var(--lumen);
   color: var(--ground);

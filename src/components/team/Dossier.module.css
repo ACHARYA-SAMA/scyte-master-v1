@@ -1,7 +1,7 @@
 .dossier {
   position: fixed;
   inset: 0;
-  z-index: 8000;
+  z-index: var(--z-dossier);
   display: grid;
   grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
   background: var(--abyss);

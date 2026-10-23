@@ -1,7 +1,7 @@
 .wrap {
   position: fixed;
   inset: 0;
-  z-index: 9000;
+  z-index: var(--z-toast);
   display: grid;
   place-items: center;
   pointer-events: none;

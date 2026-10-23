@@ -64,6 +64,22 @@
   --dur-hud: 720ms;
   --dur-route: 900ms;
 
+  /* the fixed-UI stack, bottom to top; nothing fixed uses a bare number */
+  --z-frame: 5800;
+  --z-rail: 6000;
+  --z-pill: 6500;
+  --z-menu: 6900;
+  --z-nav: 7000;
+  --z-rail-open: 7100;
+  --z-dossier: 8000;
+  --z-wipe: 8500;
+  --z-toast: 9000;
+  --z-palette: 9200;
+  --z-tip: 9400;
+  --z-cursor: 9500;
+  --z-loader: 9800;
+  --z-skip: 10000;
+
   color-scheme: dark;
 }
 
@@ -400,7 +416,7 @@ html.lenis body {
   position: fixed;
   left: var(--margin);
   top: 10px;
-  z-index: 10000;
+  z-index: var(--z-skip);
   padding: 10px 14px;
   background: var(--khaki);
   color: var(--ground);
@@ -625,7 +641,7 @@ input[type="range"]:focus-visible::-webkit-slider-thumb {
 .grain {
   position: fixed;
   inset: -50%;
-  z-index: 9400;
+  z-index: var(--z-tip);
   pointer-events: none;
   opacity: 0.05;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");

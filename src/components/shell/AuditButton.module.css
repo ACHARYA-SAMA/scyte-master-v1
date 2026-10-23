@@ -3,7 +3,7 @@
   right: var(--margin);
   /* above the instrument frame's chapter strip */
   bottom: 64px;
-  z-index: 6500;
+  z-index: var(--z-pill);
   display: inline-flex;
   align-items: center;
   gap: 12px;

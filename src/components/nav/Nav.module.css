@@ -1,7 +1,7 @@
 .nav {
   position: fixed;
   inset: 0 0 auto 0;
-  z-index: 7000;
+  z-index: var(--z-nav);
   height: var(--nav-h);
   display: grid;
   grid-template-columns: auto 1fr auto;
@@ -25,8 +25,10 @@
   transition: opacity var(--dur-ui) linear;
 }
 
+/* once anything scrolls beneath it, the header is solid forest with a hairline: no
+   copy ever shows through it */
 .nav[data-solid="1"] {
-  background: color-mix(in srgb, var(--ground) 92%, transparent);
+  background: var(--ground);
 }
 
 .nav[data-solid="1"]::after {

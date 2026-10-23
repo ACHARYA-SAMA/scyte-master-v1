@@ -3,7 +3,7 @@
   right: calc(var(--margin) * 0.5 - 6px);
   top: calc(var(--nav-h) + 40px);
   bottom: 96px;
-  z-index: 6000;
+  z-index: var(--z-rail);
   width: 28px;
   transition: opacity var(--dur-ui) linear;
 }
@@ -156,10 +156,14 @@ li[data-active="1"] .chapter::after {
   display: none;
 }
 
-@media (max-width: 820px) {
+/* the rail needs the reserved gutter; below 1100 px the frame's strip carries progress */
+@media (max-width: 1100px) {
   .rail {
     display: none;
   }
+}
+
+@media (max-width: 820px) {
   .mobile {
     display: block;
     position: fixed;
@@ -167,7 +171,7 @@ li[data-active="1"] .chapter::after {
     right: 0;
     top: 0;
     height: 2px;
-    z-index: 7100;
+    z-index: var(--z-rail-open);
     pointer-events: none;
   }
   .mobileBar {

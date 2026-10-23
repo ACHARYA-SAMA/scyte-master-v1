@@ -10,7 +10,7 @@
   --drop: 0;
   position: fixed;
   inset: 0;
-  z-index: 5800;
+  z-index: var(--z-frame);
   pointer-events: none;
   color: var(--muted);
   transition: opacity var(--dur-ui) linear;
@@ -297,8 +297,8 @@
   opacity: 1;
 }
 
-/* phones: a slim top and bottom strip only */
-@media (max-width: 900px), (pointer: coarse) {
+/* below 1100 px the gutter is too thin to hold rulers: a slim strip only */
+@media (max-width: 1100px), (pointer: coarse) {
   .edge[data-side="l"],
   .edge[data-side="r"],
   .corner,

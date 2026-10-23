@@ -2,7 +2,7 @@
   position: fixed;
   left: var(--margin);
   bottom: clamp(16px, 2.4vw, 32px);
-  z-index: 9000;
+  z-index: var(--z-toast);
   display: grid;
   gap: 8px;
   pointer-events: none;
