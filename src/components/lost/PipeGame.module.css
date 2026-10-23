@@ -1,0 +1,173 @@
+.game {
+  --port: clamp(40px, 5vw, 84px);
+  --tile: min(78px, calc((100vw - 2 * var(--margin) - 2 * var(--port)) / var(--cols)));
+  display: grid;
+  justify-items: start;
+  gap: var(--s5);
+}
+
+.board {
+  display: grid;
+  grid-template-columns: var(--port) auto var(--port);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(var(--cols), var(--tile));
+  grid-auto-rows: var(--tile);
+  outline: var(--hair) solid var(--line);
+  background-color: var(--ground-deep);
+}
+
+.tile {
+  position: relative;
+  width: var(--tile);
+  height: var(--tile);
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: inset 0 0 0 0.5px var(--line);
+  touch-action: manipulation;
+}
+
+.tile svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transition: transform 280ms var(--ease-snap);
+}
+
+.wall,
+.bore,
+.liquid {
+  fill: none;
+  stroke-linecap: butt;
+}
+
+/* solid pipes at the logo's own stroke weight; the liquid is a lit core inside */
+.wall {
+  stroke: var(--khaki);
+  stroke-width: 30;
+  transition: stroke var(--dur-feedback) linear;
+}
+
+.bore {
+  stroke: #9e9578;
+  stroke-width: 12;
+}
+
+.liquid {
+  stroke: var(--lumen);
+  stroke-width: 12;
+  opacity: 0;
+  transition: opacity 200ms linear;
+}
+
+.tile:hover .wall {
+  stroke: var(--cream);
+}
+
+.tile:focus-visible {
+  outline: 2px solid var(--cream);
+  outline-offset: -2px;
+  z-index: 1;
+}
+
+/* the liquid runs on from tile to tile, in the order it reaches them */
+.tile[data-wet="1"] .liquid,
+.stub[data-wet="1"] .liquid {
+  opacity: 1;
+  transition-delay: calc(var(--d, 0) * 55ms);
+}
+
+.game[data-solved="1"] .tile[data-wet="1"] .wall,
+.game[data-solved="1"] .stub .wall {
+  stroke: var(--lumen);
+  transition-delay: calc(var(--d, 0) * 55ms);
+}
+
+.game[data-solved="1"] .liquid {
+  filter: drop-shadow(0 0 5px rgb(249 220 125 / 0.65));
+}
+
+.port {
+  position: relative;
+}
+
+.port > .t-hud,
+.port > :first-child {
+  position: absolute;
+  top: calc(var(--row) * var(--tile) - 1.9em);
+  color: var(--khaki);
+}
+
+.inlet > :first-child {
+  left: 0;
+}
+
+.outlet > :first-child {
+  right: 0;
+}
+
+.stub {
+  position: absolute;
+  left: 0;
+  top: calc(var(--row) * var(--tile));
+  width: 100%;
+  height: var(--tile);
+}
+
+.readout {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s3) var(--s6);
+  padding-left: var(--port);
+}
+
+.readout p {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  font-size: var(--t-h3);
+  line-height: 1;
+  color: var(--cream);
+}
+
+.again {
+  padding: 12px 18px 11px;
+  border: var(--hair) solid var(--khaki);
+  color: var(--cream);
+  font-weight: 640;
+  transition:
+    background-color var(--dur-feedback) linear,
+    color var(--dur-feedback) linear;
+}
+
+.again:hover:not(:disabled) {
+  background: var(--khaki);
+  color: var(--ground);
+}
+
+.again:disabled {
+  border-color: var(--line);
+  color: var(--muted);
+}
+
+.home {
+  margin-left: var(--port);
+  padding: 18px 30px 17px;
+  background: var(--lumen);
+  color: var(--ground);
+  font-size: var(--t-lead);
+  font-weight: 760;
+  text-decoration: none;
+  animation: rise 500ms var(--ease-snap) both;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    translate: 0 12px;
+  }
+}

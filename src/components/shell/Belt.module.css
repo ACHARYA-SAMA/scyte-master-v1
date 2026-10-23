@@ -1,0 +1,68 @@
+.belt {
+  overflow: clip;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  border-block: var(--hair) solid var(--line);
+  padding-block: clamp(18px, 2.4vw, 34px);
+}
+
+.belt[data-still="1"] {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+}
+
+.run {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: inline-flex;
+  align-items: center;
+  gap: clamp(20px, 2.4vw, 40px);
+  padding-left: clamp(20px, 2.4vw, 40px);
+  font-size: clamp(2rem, 1rem + 3.4vw, 4.75rem);
+  line-height: 1;
+  font-weight: 760;
+  font-stretch: 72%;
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+  color: var(--khaki);
+  text-decoration: none;
+  -webkit-user-drag: none;
+  transition: color var(--dur-feedback) linear;
+}
+
+/* the logo's square, between ways in */
+.item::after {
+  content: "";
+  width: 0.2em;
+  height: 0.2em;
+  background: var(--line);
+  transition: background-color var(--dur-feedback) linear;
+}
+
+.item:hover,
+.item:focus-visible {
+  color: var(--cream);
+}
+
+.item:hover::after,
+.item:focus-visible::after {
+  background: var(--lumen);
+}
+
+.item:focus-visible {
+  outline: 2px solid var(--cream);
+  outline-offset: 4px;
+}

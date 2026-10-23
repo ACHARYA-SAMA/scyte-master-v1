@@ -1,66 +1,61 @@
 .page {
-  position: relative;
-  z-index: 1;
-  min-height: 100svh;
   display: grid;
-  align-content: end;
-  padding: calc(var(--nav-h) + 4vh) var(--gutter) clamp(32px, 8vh, 80px);
-  overflow: clip;
-}
-
-/* The only other place the stencil cut appears: the gaps read as a broken signal. */
-.code {
-  position: absolute;
-  left: 50%;
-  top: 46%;
-  transform: translate(-50%, -50%);
-  font-family: var(--font-stencil), var(--font-display);
-  font-weight: 900;
-  font-size: clamp(10rem, 38vw, 44rem);
-  line-height: 0.8;
-  color: var(--forest);
-  -webkit-text-stroke: 1px var(--moss-hi);
-  pointer-events: none;
-  user-select: none;
-  white-space: nowrap;
+  grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+  align-items: center;
+  gap: var(--s7) var(--gutter);
+  min-height: 100svh;
+  padding: calc(var(--nav-h) + 6vh) var(--margin) clamp(80px, 10vh, 120px);
+  background: var(--ground);
 }
 
 .copy {
-  position: relative;
   display: grid;
-  gap: 18px;
-  max-width: 40rem;
+  justify-items: start;
+  gap: var(--s5);
 }
 
 .title {
-  font-family: var(--font-display);
-  font-weight: 880;
-  font-variation-settings: "opsz" 72;
-  text-transform: uppercase;
-  font-size: var(--step-5);
-  line-height: 0.84;
-  color: var(--bone);
+  font-size: clamp(3rem, 1rem + 5.6vw, 7rem);
+  line-height: 0.88;
+  font-weight: 800;
+  font-stretch: 72%;
+  letter-spacing: -0.035em;
+  color: var(--cream);
 }
 
 .lede {
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-size: var(--step-1);
-  line-height: 1.4;
-  color: var(--paper);
+  font-size: var(--t-body);
+  line-height: 1.55;
+  color: var(--khaki-light);
+  max-width: 40ch;
+  text-wrap: pretty;
 }
 
-.links {
+.ways {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px 28px;
-  font-family: var(--font-mono);
-  font-variation-settings: "wdth" 84;
-  font-size: var(--step--1);
+  gap: 8px;
+  padding-top: var(--s3);
 }
 
-.links a {
-  border-bottom: 1px solid var(--signal);
-  padding-bottom: 3px;
-  color: var(--bone);
+.ways a {
+  display: inline-flex;
+  padding: 11px 16px 10px;
+  border: var(--hair) solid var(--line);
+  color: var(--cream);
+  font-size: var(--t-small);
+  font-weight: 600;
+  text-decoration: none;
+  transition: border-color var(--dur-feedback) linear;
+}
+
+.ways a:hover {
+  border-color: var(--khaki);
+}
+
+@media (max-width: 1000px) {
+  .page {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
 }

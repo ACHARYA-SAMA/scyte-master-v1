@@ -1,37 +1,44 @@
 import type { Metadata } from "next";
-import { StageScene, StageWindow } from "@/components/stage/StageControls";
 import { TransitionLink } from "@/components/transition/navigation";
-import { LostSignal } from "@/components/brand/LostSignal";
+import { PipeGame } from "@/components/lost/PipeGame";
 import styles from "./not-found.module.css";
 
 export const metadata: Metadata = {
-  title: "Lost signal",
+  title: "This page leaked",
   robots: { index: false },
 };
 
+const WAYS = [
+  { href: "/", label: "Home" },
+  { href: "/product", label: "The product" },
+  { href: "/studio", label: "The studio" },
+  { href: "/work", label: "Work" },
+  { href: "/contact", label: "Contact" },
+];
+
 export default function NotFound() {
   return (
-    <>
-      <StageScene scene="lost" />
-      <StageWindow as="section" className={styles.page} aria-labelledby="nf-title">
-        <p className={styles.code} aria-hidden>
-          404
+    <section className={styles.page} aria-labelledby="nf-title">
+      <div className={styles.copy}>
+        <p className="t-hud c-khaki">404</p>
+        <h1 id="nf-title" className={styles.title}>
+          This page leaked.
+        </h1>
+        <p className={styles.lede}>
+          Nothing lives at this address. It may have moved, or it never existed. Turn the pipes until the liquid reaches home, or skip the
+          puzzle and take a way back.
         </p>
-        <div className={styles.copy}>
-          <h1 id="nf-title" className={styles.title}>
-            Lost signal.
-          </h1>
-          <p className={styles.lede}>
-            This page doesn&rsquo;t exist, or it moved. Unlike an abandoned cart, we won&rsquo;t message you about it.
-          </p>
-          <LostSignal />
-          <nav className={styles.links} aria-label="Ways back">
-            <TransitionLink href="/">Home</TransitionLink>
-            <TransitionLink href="/product">The product</TransitionLink>
-            <TransitionLink href="/contact">Contact</TransitionLink>
-          </nav>
-        </div>
-      </StageWindow>
-    </>
+        <nav aria-label="Ways back">
+          <ul className={styles.ways}>
+            {WAYS.map((w) => (
+              <li key={w.href}>
+                <TransitionLink href={w.href}>{w.label}</TransitionLink>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </div>
+      <PipeGame />
+    </section>
   );
 }

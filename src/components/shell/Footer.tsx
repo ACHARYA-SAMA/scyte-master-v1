@@ -9,6 +9,7 @@ import { gsap, ScrollTrigger, prefersReducedMotion } from "@/lib/motion";
 import { session, useStore } from "@/lib/store";
 import { ROUTES, SITE } from "@/config/site";
 import { CopyEmail } from "./CopyEmail";
+import { Belt } from "./Belt";
 import styles from "./Footer.module.css";
 
 /** The closing band: the offer, the ways in, and the exact wordmark rising from below. */
@@ -108,6 +109,8 @@ export function Footer() {
           </div>
         </nav>
       </div>
+
+      <Belt />
 
       <div className={styles.markWrap} aria-hidden>
         <div ref={mark} className={styles.mark}>

@@ -92,8 +92,7 @@ export type SceneKey =
   | "measure"
   | "assembly"
   | "team"
-  | "work"
-  | "lost";
+  | "work";
 
 export const gl = createStore({
   scene: "none" as SceneKey,
@@ -132,6 +131,3 @@ export const recordRecovery = (playbook: string) =>
     recovered: s.recovered + 1,
     playbooksRun: s.playbooksRun.includes(playbook) ? s.playbooksRun : [...s.playbooksRun, playbook],
   }));
-
-// v1 compatibility: the old stage store, still read by pages not yet rebuilt.
-export const stage = createStore({ scene: "quiet" as string, pipeline: 0, member: -1, visible: true, consent: true });
