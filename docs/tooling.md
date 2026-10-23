@@ -98,3 +98,47 @@ Recorded at the end of the build, so it can be checked against the plan above.
 | git | Staged commits, one per page or concern |
 
 Not used in the end: subagents (art direction stayed in one place, as planned), Figma (no AI credits were spent; every image on the site is a real screenshot of the site or drawn in code), Context7 (never connected; the installed type definitions and Next's bundled docs were the reference) and the depth model for team photos (its download still needs a yes).
+
+## Round 3 additions (23 October 2026)
+
+The round-3 brief asks for every relevant tool to be used, and a reason for any that is skipped. This is what changed since the round-2 inventory above.
+
+### New in the repo
+
+| Script | What it does |
+|---|---|
+| `scripts/qa-baseline.mjs` | Steps down every route one viewport at a time at any widths, and takes two frames per step so motion can be told from stillness. With `--settle=4000` it shows attract mode. |
+| `scripts/qa-density.py` | The brief's density audit: a 12 × 8 grid per frame, with an "any content" reading and a strict one. It writes contact sheets with empty cells hatched. It runs on every set piece in Round C. |
+| `scripts/qa-record.mjs` | Interaction recordings: scrolls each route and uses whatever each screen offers (hold, drag, scrub, tap). Frames come from Chrome's screencast. |
+| `scripts/qa-frames-to-video.py` | Turns the screencast frames into WebM (VP8) on a real-time timeline. OpenCV's bundled FFmpeg writes VP8 and VP9 WebM, so the gallery loops in W1 can be produced the same way, from the real scenes. |
+
+**Why not Playwright's own video recording:** Playwright 1.64 wants ffmpeg build 1013, and only build 1011 is cached. Downloading it is a download, so the recorder uses the screencast instead, with no new download.
+
+### Available and planned for this round
+
+| Tool | Use in round 3 |
+|---|---|
+| `frontend-design` skill | The per-page world plan in `docs/set-pieces.md`, reviewed against templated defaults |
+| `dataviz` skill and validator | P8, P9 and P10 (split world, control room, instrument cluster), with every new series validated against Ground and Surface |
+| `gsap-*`, `css-animations`, `ui-motion`, `ui-interactions` skills (hzblj) | Timelines, ScrollTrigger pinning, interruptible springs, press feedback in the component library |
+| `accessibility-review`, `design-critique` (design plugin) | The ten-flaw critique per set piece, and the WCAG pass in Round E |
+| `unslop`, `ux-copy` | Every new string: cartridge labels, receipt lines, dossier states |
+| `modern-web-guidance` | View Transitions (T5, W8), scroll-driven animation, `content-visibility` for the long Product page |
+| `hzblj-skills:animation-specialist` agent | A second opinion when a pinned sequence janks and the cause is not obvious |
+| `hzblj-skills:clean-code-reviewer` agent | A read-only review of each stage's diff before commit |
+| Playwright, the CDP screencast, Lighthouse, Pillow, OpenCV, NumPy | Proof for every set piece: screenshots, recordings, density, performance |
+| Built-in browser | Looking at every set piece by eye, and checking keyboard paths |
+| Rapier (`@react-three/rapier`, installed) | P3, W4, T6 and the playable footer logo, loaded only on the routes that need it |
+| Figma MCP (`generate_image`, `create_shader`, `export_video`, Weave models) | Can generate textures, HDRIs and loops. **Every call spends the team's Figma AI credits, so nothing is generated without a yes.** All set pieces have procedural fallbacks, and the plan needs no generated imagery |
+| Figma `get_design_context`, `use_figma` | Only if the client wants the component library mirrored into a Figma file |
+
+### Skipped, and why
+
+| Tool | Why |
+|---|---|
+| `21st:21st-ui` (component marketplace) | Stock components are what the brief calls slop |
+| Context7 | Still not connected; the installed `.d.ts` files and `node_modules/next/dist/docs` remain the reference |
+| Claude in Chrome, computer use | The built-in browser and headless Playwright cover every check, without touching the user's own browser |
+| `deep-research`, `docs`, `pptx`, `docx`, `xlsx`, analytics and marketing skills | No job on this build |
+| Building subagents (`web-developer`, `fast-worker` and others) for pages | Art direction stays in one head. The round-1 complaint was incoherence, and handing pages to separate agents would bring it back |
+| The depth model for team portraits | Its 25 to 100 MB download still needs a yes. The luminance height-field fallback covers T1 and T5 meanwhile |
