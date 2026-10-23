@@ -1,0 +1,344 @@
+.app {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: var(--cream);
+  color: var(--ground);
+  font-size: 1em;
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.page,
+.detail {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  background: var(--cream);
+  transition: transform var(--dur-panel) var(--ease-snap);
+}
+
+.page[data-under="1"] {
+  transform: translateX(-24%);
+}
+
+.detail {
+  grid-template-rows: auto auto 1fr;
+  transform: translateX(102%);
+  box-shadow: -14px 0 30px -18px rgba(9, 18, 11, 0.6);
+}
+
+.detail[data-open="1"] {
+  transform: none;
+}
+
+.bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.7em 1em;
+  border-bottom: 1px solid color-mix(in srgb, var(--ground) 15%, transparent);
+}
+
+.bar b {
+  font-weight: 800;
+  font-size: 1.05em;
+}
+
+.bar span {
+  color: color-mix(in srgb, var(--ground) 60%, transparent);
+  font-size: 0.65em;
+}
+
+.body {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+}
+
+.pull {
+  display: grid;
+  place-items: end center;
+  overflow: hidden;
+  font-size: 0.7em;
+  color: var(--surface);
+}
+
+.pull span {
+  padding-bottom: 0.5em;
+}
+
+.pull span[data-ready="1"] {
+  font-weight: 700;
+}
+
+.updated {
+  padding: 0.5em 1em 0;
+  font-size: 0.6em;
+  color: var(--surface);
+}
+
+.section {
+  padding: 0.8em 1em 0.4em;
+  font-weight: 750;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6em;
+  padding: 0 1em 1em;
+}
+
+.item {
+  display: grid;
+  gap: 0.3em;
+  text-align: left;
+  color: var(--ground);
+}
+
+.thumb {
+  aspect-ratio: 4 / 5;
+  display: block;
+}
+
+.item:active .thumb {
+  transform: scale(0.97);
+}
+
+.itemName {
+  font-size: 0.8em;
+  font-weight: 650;
+}
+
+.itemPrice {
+  font-size: 0.75em;
+  color: var(--surface);
+}
+
+.tabs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  padding: 0.4em 0 0.8em;
+  border-top: 1px solid color-mix(in srgb, var(--ground) 15%, transparent);
+}
+
+.tabs button {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 0.2em;
+  font-size: 0.62em;
+  color: color-mix(in srgb, var(--ground) 55%, transparent);
+}
+
+.tabs button[aria-current="page"] {
+  color: var(--ground);
+  font-weight: 750;
+}
+
+.tabIcon {
+  width: 1.6em;
+  height: 1.6em;
+  border: 1.5px solid currentColor;
+}
+
+.tabIcon[data-tab="search"] {
+  border-radius: 50%;
+}
+
+.tabIcon[data-tab="cart"] {
+  border-radius: 0 0 0.4em 0.4em;
+}
+
+.tabIcon[data-tab="you"] {
+  border-radius: 50% 50% 0.2em 0.2em;
+}
+
+.badge {
+  position: absolute;
+  top: -0.3em;
+  right: 22%;
+  min-width: 1.5em;
+  height: 1.5em;
+  display: grid;
+  place-items: center;
+  font-style: normal;
+  font-size: 0.9em;
+  background: var(--ground);
+  color: var(--cream);
+  animation: pop var(--dur-panel) var(--ease-snap) both;
+}
+
+@keyframes pop {
+  from {
+    transform: scale(0.4);
+  }
+}
+
+.empty {
+  display: grid;
+  gap: 0.8em;
+  padding: 1.4em 1em;
+  font-size: 0.85em;
+  color: var(--surface);
+}
+
+.field {
+  padding: 0.7em 0.9em;
+  border: 1px solid color-mix(in srgb, var(--ground) 25%, transparent);
+  color: color-mix(in srgb, var(--ground) 55%, transparent);
+}
+
+.primary {
+  padding: 0.8em 1em;
+  background: var(--ground);
+  color: var(--cream);
+  font-weight: 750;
+  font-size: 0.85em;
+}
+
+.primary:active {
+  transform: scale(0.98);
+}
+
+.cartList {
+  display: grid;
+  gap: 0.7em;
+  padding: 1em;
+}
+
+.cartRow {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.7em;
+  font-size: 0.82em;
+}
+
+.thumbSm {
+  width: 2.6em;
+  height: 3.2em;
+}
+
+.qty {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+}
+
+.qty button {
+  width: 1.8em;
+  height: 1.8em;
+  border: 1px solid color-mix(in srgb, var(--ground) 30%, transparent);
+}
+
+.total {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 0.6em;
+  border-top: 1px solid color-mix(in srgb, var(--ground) 15%, transparent);
+}
+
+.back {
+  font-weight: 700;
+  font-size: 0.85em;
+}
+
+.gallery {
+  position: relative;
+  overflow: hidden;
+  touch-action: pan-y;
+}
+
+.slides {
+  display: flex;
+  transition: transform var(--dur-panel) var(--ease-snap);
+}
+
+.slide {
+  flex: 0 0 100%;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+}
+
+.slide i {
+  width: 46%;
+  height: 56%;
+  background: color-mix(in srgb, var(--ground) 18%, transparent);
+  clip-path: polygon(30% 0, 70% 0, 100% 22%, 88% 36%, 78% 28%, 78% 100%, 22% 100%, 22% 28%, 12% 36%, 0 22%);
+}
+
+.dots {
+  position: absolute;
+  bottom: 0.6em;
+  left: 50%;
+  translate: -50% 0;
+  display: flex;
+  gap: 0.35em;
+}
+
+.dots i {
+  width: 0.45em;
+  height: 0.45em;
+  background: color-mix(in srgb, var(--ground) 30%, transparent);
+}
+
+.dots i[data-on="1"] {
+  background: var(--ground);
+}
+
+.info {
+  display: grid;
+  align-content: start;
+  gap: 0.6em;
+  padding: 1em;
+}
+
+.dName {
+  font-weight: 800;
+  font-size: 1.1em;
+}
+
+.dPrice {
+  color: var(--surface);
+}
+
+.sizes {
+  display: flex;
+  gap: 0.4em;
+}
+
+.sizes button {
+  width: 2.6em;
+  height: 2.2em;
+  border: 1.5px solid var(--ground);
+  font-weight: 700;
+  font-size: 0.8em;
+}
+
+.sizes button[aria-checked="true"] {
+  background: var(--ground);
+  color: var(--cream);
+}
+
+.toast {
+  position: absolute;
+  left: 1em;
+  right: 1em;
+  bottom: 4.4em;
+  padding: 0.7em 0.9em;
+  background: var(--ground);
+  color: var(--cream);
+  font-size: 0.75em;
+  animation: rise var(--dur-panel) var(--ease-glide) both;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(0.6em);
+  }
+}

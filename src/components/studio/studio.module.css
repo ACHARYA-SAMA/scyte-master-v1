@@ -1,0 +1,208 @@
+.hero {
+  display: grid;
+  align-content: end;
+  gap: var(--s6);
+  min-height: 100svh;
+  padding: calc(var(--nav-h) + 6vh) var(--margin) clamp(84px, 11vh, 112px);
+  background: var(--ground);
+}
+
+.title {
+  font-size: clamp(2.6rem, 1.2rem + 4.4vw, 6.4rem);
+  line-height: 0.95;
+  font-weight: 760;
+  font-stretch: 84%;
+  letter-spacing: -0.035em;
+  color: var(--cream);
+  max-width: 18ch;
+  text-wrap: balance;
+}
+
+.services {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: var(--hair) solid var(--line);
+}
+
+.service {
+  display: grid;
+  gap: 6px;
+  padding: var(--s5) var(--s5) var(--s5) 0;
+  transition: background-color var(--dur-feedback) linear;
+}
+
+.service:hover,
+.service:focus-visible {
+  background: var(--ground-deep);
+}
+
+.sn {
+  color: var(--khaki);
+}
+
+.sName {
+  font-size: var(--t-h3);
+  font-weight: 760;
+  font-stretch: 80%;
+  color: var(--cream);
+}
+
+.sLine {
+  color: var(--khaki-light);
+}
+
+.benches {
+  display: grid;
+  gap: clamp(96px, 14vh, 160px);
+  padding: clamp(96px, 14vh, 160px) var(--margin);
+  background: var(--ground);
+  border-top: var(--hair) solid var(--line);
+}
+
+.benchesHead {
+  display: grid;
+  gap: var(--s4);
+}
+
+.h2 {
+  font-size: var(--t-h1);
+  line-height: 0.92;
+  font-weight: 760;
+  font-stretch: 84%;
+  letter-spacing: -0.035em;
+  color: var(--cream);
+}
+
+.lede {
+  font-size: var(--t-lead);
+  color: var(--khaki-light);
+  max-width: 46ch;
+}
+
+.benchBlock {
+  display: grid;
+  gap: var(--s6);
+  scroll-margin-top: var(--nav-h);
+}
+
+.benchHead {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) minmax(0, 1.4fr);
+  align-items: end;
+  gap: var(--s5);
+  padding-bottom: var(--s5);
+  border-bottom: var(--hair) solid var(--line);
+}
+
+.bn {
+  font-size: clamp(3rem, 1.8rem + 3.4vw, 5.5rem);
+  line-height: 0.78;
+  font-weight: 900;
+  font-stretch: 62%;
+  color: var(--khaki);
+}
+
+.h3 {
+  font-size: var(--t-h2);
+  line-height: 0.95;
+  font-weight: 760;
+  font-stretch: 84%;
+  letter-spacing: -0.03em;
+  color: var(--cream);
+}
+
+.benchLine {
+  color: var(--khaki-light);
+  max-width: 48ch;
+}
+
+.deliverables {
+  display: grid;
+  gap: var(--s7);
+  padding: clamp(96px, 14vh, 160px) var(--margin);
+}
+
+.dTitle {
+  font-size: var(--t-h1);
+  line-height: 0.9;
+  font-weight: 860;
+  font-stretch: 66%;
+  letter-spacing: -0.035em;
+  color: var(--ground);
+}
+
+.dGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--gutter);
+  border-top: 2px solid var(--ground);
+}
+
+.dCol {
+  display: grid;
+  align-content: start;
+  gap: var(--s4);
+  padding: var(--s5) var(--s4) 0 0;
+}
+
+.dName {
+  font-size: var(--t-h3);
+  font-weight: 780;
+  font-stretch: 80%;
+  color: var(--ground);
+}
+
+.dCol ul {
+  display: grid;
+}
+
+.dCol li {
+  padding: 10px 0;
+  border-top: var(--hair) solid var(--line);
+  font-size: var(--t-small);
+  color: var(--ground-deep);
+}
+
+.terms {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s4);
+  padding-top: var(--s3);
+}
+
+.terms div {
+  display: grid;
+  gap: 4px;
+}
+
+.terms dt {
+  color: var(--surface);
+}
+
+.start {
+  justify-self: start;
+  margin-top: var(--s3);
+  padding: 14px 18px 13px;
+  background: var(--ground);
+  /* inside the band, --cream is remapped to ground: khaki keeps the label legible */
+  color: var(--khaki);
+  font-weight: 680;
+  font-size: var(--t-small);
+}
+
+.start:hover {
+  background: var(--surface);
+}
+
+@media (max-width: 900px) {
+  .services,
+  .dGrid {
+    grid-template-columns: 1fr;
+  }
+  .benchHead {
+    grid-template-columns: auto 1fr;
+  }
+  .benchLine {
+    grid-column: 1 / -1;
+  }
+}

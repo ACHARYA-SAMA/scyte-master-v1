@@ -156,7 +156,7 @@
   display: inline-flex;
   padding: 18px 24px 17px;
   background: var(--ground);
-  color: var(--cream);
+  color: var(--khaki);
   font-weight: 680;
   font-size: var(--t-body);
   transition: background-color var(--dur-feedback) linear;

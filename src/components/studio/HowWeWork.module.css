@@ -1,0 +1,144 @@
+.section {
+  display: grid;
+  gap: var(--s7);
+  padding: clamp(96px, 14vh, 160px) var(--margin);
+  background: var(--ground);
+}
+
+.head {
+  display: grid;
+  gap: var(--s3);
+}
+
+.title {
+  font-size: var(--t-h1);
+  line-height: 0.92;
+  font-weight: 760;
+  font-stretch: 84%;
+  letter-spacing: -0.035em;
+  color: var(--cream);
+}
+
+.track {
+  position: relative;
+  display: flex;
+  height: 132px;
+  border-top: 2px solid var(--khaki);
+  border-bottom: var(--hair) solid var(--line);
+  touch-action: none;
+  user-select: none;
+}
+
+.track:focus-visible {
+  outline-offset: 6px;
+}
+
+.phase {
+  flex-basis: 0;
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  padding: 16px 12px;
+  border-left: var(--hair) solid var(--line);
+  transition: background-color var(--dur-ui) linear;
+}
+
+.phase:first-child {
+  border-left: 0;
+}
+
+.phase[data-past="1"] {
+  background: var(--ground-deep);
+}
+
+.phase[data-active="1"] {
+  background: var(--surface);
+}
+
+.phaseName {
+  font-size: var(--t-h3);
+  font-weight: 760;
+  font-stretch: 80%;
+  color: var(--khaki-light);
+}
+
+.phase[data-active="1"] .phaseName {
+  color: var(--cream);
+}
+
+.phaseSpan {
+  color: var(--muted);
+}
+
+.playhead {
+  position: absolute;
+  top: -10px;
+  bottom: -10px;
+  width: 0;
+  pointer-events: none;
+}
+
+.playhead i {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -1px;
+  border-left: 2px solid var(--lumen);
+}
+
+.playhead i::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -7px;
+  width: 12px;
+  height: 12px;
+  background: var(--lumen);
+}
+
+.playhead b {
+  position: absolute;
+  bottom: -26px;
+  left: 0;
+  translate: -50% 0;
+  white-space: nowrap;
+  color: var(--lumen);
+}
+
+.detail {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--gutter);
+  padding-top: var(--s5);
+}
+
+.detail div {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+}
+
+.detail p:last-child {
+  font-size: var(--t-lead);
+  line-height: 1.4;
+  color: var(--cream);
+  max-width: 34ch;
+}
+
+@media (max-width: 900px) {
+  .track {
+    height: 160px;
+  }
+  .phase {
+    padding: 12px 6px;
+  }
+  .phaseName {
+    font-size: var(--t-small);
+  }
+  .phaseSpan {
+    display: none;
+  }
+  .detail {
+    grid-template-columns: 1fr;
+  }
+}
