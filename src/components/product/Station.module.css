@@ -19,7 +19,7 @@
   grid-template-columns: repeat(12, minmax(0, 1fr));
   grid-template-rows: auto minmax(0, 1fr);
   column-gap: var(--gutter);
-  padding: calc(var(--nav-h) + 2vh) calc(var(--margin) + 64px) clamp(84px, 10vh, 104px) var(--margin);
+  padding: calc(var(--nav-h) + 2vh) calc(var(--margin) + 64px) 118px var(--margin);
   overflow: hidden;
   pointer-events: none;
 }

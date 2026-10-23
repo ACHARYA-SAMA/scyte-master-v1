@@ -8,6 +8,7 @@ import { Identify } from "./stations/Identify";
 import { Understand } from "./stations/Understand";
 import { Decide } from "./stations/Decide";
 import { Send } from "./stations/Send";
+import { Anatomy } from "./stations/Anatomy";
 import { Measure } from "./stations/Measure";
 import { Playbooks } from "./Playbooks";
 import { Economics } from "./Economics";
@@ -28,6 +29,7 @@ export function ProductMachine() {
         { id: "understand", label: "Understand", mark: "2:40", target: "understand" },
         { id: "decide", label: "Decide", mark: "3:00", target: "decide" },
         { id: "send", label: "Send", mark: "3:05", target: "send" },
+        { id: "anatomy", label: "Anatomy", target: "anatomy" },
         { id: "measure", label: "Measure", mark: "Wk 4", target: "measure" },
         { id: "playbooks", label: "Playbooks", target: "playbooks" },
         { id: "economics", label: "The money", target: "economics" },
@@ -47,6 +49,7 @@ export function ProductMachine() {
       <Understand />
       <Decide />
       <Send />
+      <Anatomy />
       <Measure />
       <Playbooks />
       <div id="economics">

@@ -1,79 +1,109 @@
-.bank {
+/* P6, Send: the copy in the corner, the curved wall of phones across the stage */
+.station {
   position: relative;
-  height: 100%;
-  perspective: 2200px;
-  transform-style: preserve-3d;
+  height: 220svh;
+  background:
+    radial-gradient(ellipse 55% 45% at 55% 62%, rgb(249 220 125 / 0.06), transparent 70%),
+    var(--abyss);
+  border-top: var(--hair) solid var(--line);
 }
 
-/* phones on an arc: the focused one front and centre, the rest turning away */
-.slot {
-  --o: 0;
-  --a: 0;
-  --pw: min(300px, 19vw, 40svh);
-  position: absolute;
-  left: 50%;
-  top: 50%;
+.sticky {
+  position: sticky;
+  top: 0;
+  height: 100svh;
   display: grid;
-  gap: 10px;
-  justify-items: center;
-  transform: translate(-50%, -50%) translateX(calc(var(--o) * var(--pw) * 0.62)) translateZ(calc(var(--a) * -160px)) rotateY(calc(var(--o) * -18deg));
-  transition: transform var(--dur-hud) var(--ease-snap);
-  z-index: calc(10 - var(--a));
+  grid-template-columns: minmax(0, 3.2fr) minmax(0, 8.8fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-areas:
+    "head head"
+    "copy wall";
+  gap: var(--s5) var(--gutter);
+  padding: calc(var(--nav-h) + 2vh) calc(var(--margin) + 64px) 118px calc(var(--margin) + 10px);
+  overflow: hidden;
 }
 
-.slot:not([data-focus]) {
-  cursor: pointer;
+.head {
+  grid-area: head;
+  display: flex;
+  align-items: baseline;
+  gap: var(--s5);
 }
 
-/* the phones turning away dim; their labels stay readable */
-.slot > div {
-  --pw: inherit;
-  opacity: calc(1 - var(--a) * 0.16);
-  transition:
-    opacity var(--dur-panel) linear,
-    filter var(--dur-panel) linear;
+.index {
+  font-size: clamp(2.4rem, 1.6rem + 2.6vw, 4.4rem);
+  line-height: 0.8;
+  font-weight: 860;
+  font-stretch: 66%;
+  color: var(--khaki);
 }
 
-.slot:not([data-focus]) > div {
-  filter: brightness(0.72);
+.where {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2) var(--s4);
+  color: var(--cream);
 }
 
-.tag {
-  display: grid;
-  justify-items: center;
-  gap: 2px;
-  text-align: center;
-  white-space: nowrap;
-}
-
-.slot[data-focus] .tag span:first-child {
+.clock {
   color: var(--lumen);
 }
 
+.copy {
+  grid-area: copy;
+  position: relative;
+  z-index: 200;
+  display: grid;
+  align-content: start;
+  gap: var(--s4);
+}
+
+/* a shade of the void behind the copy, over the far end of the wall */
+.copy::before {
+  content: "";
+  position: absolute;
+  inset: 0 -60px -80px calc(-1 * var(--margin));
+  z-index: -1;
+  background: linear-gradient(90deg, rgb(9 18 11 / 0.92) 60%, transparent);
+  pointer-events: none;
+}
+
+.title {
+  font-size: clamp(1.9rem, 1rem + 2.3vw, 3.4rem);
+  line-height: 0.94;
+  font-weight: 820;
+  font-stretch: 72%;
+  letter-spacing: -0.03em;
+  color: var(--cream);
+  text-wrap: balance;
+}
+
+.lede {
+  font-size: var(--t-small);
+  line-height: 1.55;
+  color: var(--khaki-light);
+  max-width: 40ch;
+}
+
+.wallArea {
+  grid-area: wall;
+  min-height: 0;
+}
+
 @media (max-width: 960px) {
-  .bank {
-    perspective: none;
-    display: flex;
-    gap: var(--s4);
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    padding-bottom: var(--s2);
-    scrollbar-width: none;
+  .station {
+    height: auto;
   }
-  .slot {
+  .sticky {
     position: relative;
-    left: auto;
-    top: auto;
-    flex: 0 0 auto;
-    transform: none;
-    scroll-snap-align: center;
-  }
-  .slot > div,
-  .slot:not([data-focus]) > div {
-    opacity: 1;
-    filter: none;
-  }
-  .slot {
-    --pw: min(260px, 66vw, 46svh);
+    height: auto;
+    min-height: 100svh;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto minmax(560px, 1fr);
+    grid-template-areas:
+      "head"
+      "copy"
+      "wall";
+    padding-right: var(--margin);
   }
 }

@@ -1,0 +1,143 @@
+.wrap {
+  position: relative;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: var(--s4);
+  height: 100%;
+  min-height: 0;
+}
+
+/* a curved wall: perspective from the visitor's seat, phones turned to face it */
+.wall {
+  position: relative;
+  min-height: 0;
+  perspective: 1700px;
+  perspective-origin: 50% 40%;
+  transform-style: preserve-3d;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  outline: none;
+}
+
+.slot {
+  --pw: min(280px, 18vw, calc((100svh - 360px) * 0.43));
+  --dim: 0;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+  width: var(--pw);
+  will-change: transform;
+}
+
+.slot > div {
+  --pw: inherit;
+  width: 100%;
+  filter: brightness(calc(1 - var(--dim) * 0.38)) saturate(calc(1 - var(--dim) * 0.3));
+  transition: filter var(--dur-panel) linear;
+}
+
+.slot:not([data-front]) {
+  cursor: pointer;
+}
+
+.tag {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  text-align: center;
+  white-space: nowrap;
+  opacity: calc(1 - var(--dim) * 0.45);
+}
+
+.slot[data-front] .tag span:first-child {
+  color: var(--lumen);
+}
+
+/* a reflection of light on the floor under the phone in front */
+.slot[data-front]::after {
+  content: "";
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  bottom: -34px;
+  height: 30px;
+  background: radial-gradient(ellipse at 50% 0%, color-mix(in srgb, var(--lumen) 22%, transparent), transparent 70%);
+  pointer-events: none;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s5);
+}
+
+.arrow {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border: var(--hair) solid var(--line);
+  color: var(--cream);
+  transition: border-color var(--dur-ui) linear;
+}
+
+.arrow:hover:not(:disabled) {
+  border-color: var(--khaki);
+}
+
+.arrow:disabled {
+  opacity: 0.35;
+}
+
+.dots {
+  display: flex;
+  gap: 6px;
+}
+
+.dot {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 4px 2px;
+  color: var(--muted);
+}
+
+.dot::before {
+  content: "";
+  width: 28px;
+  height: 2px;
+  background: var(--line);
+  transition: background-color var(--dur-ui) linear;
+}
+
+.dot[aria-current="true"] {
+  color: var(--cream);
+}
+
+.dot[aria-current="true"]::before {
+  background: var(--lumen);
+  box-shadow: 0 0 8px var(--lumen);
+}
+
+.current {
+  min-width: 18ch;
+  text-align: center;
+  color: var(--cream);
+}
+
+@media (max-width: 960px) {
+  .wall {
+    perspective: 900px;
+  }
+  .slot {
+    --pw: min(250px, 62vw, 50svh);
+  }
+  .current {
+    min-width: 0;
+  }
+}

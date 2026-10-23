@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { Station } from "../Station";
+import { useRef, useState } from "react";
 import { InteractivePhone } from "@/components/devices/InteractivePhone";
 import { BACK_IN_STOCK, CART_RECOVERY, COD_CONFIRM, PAYMENT_FAILED, REVIEW } from "@/lib/chat/flows";
 import { recordRecovery, toast } from "@/lib/store";
-import { useMedia } from "@/lib/useMedia";
+import { useAttract } from "@/lib/idle";
+import { PhoneWall, type WallItem } from "./PhoneWall";
 import styles from "./send.module.css";
 
 const BANK = [
@@ -17,64 +17,59 @@ const BANK = [
 ];
 
 /**
- * Five working phones on an arc, each receiving a different playbook as the station
- * plays. Pick any one up: it comes to the front and is fully usable.
+ * P6, Send: the phone wall. Five working phones on a curved wall, each running a
+ * different playbook on the same chat engine. Turn the wall, pick one up, answer it.
+ * While the visitor is still, the wall turns to each phone as its message arrives.
  */
 export function Send() {
-  const [p, setP] = useState(0);
+  const root = useRef<HTMLDivElement>(null);
   const [focus, setFocus] = useState(1);
-  const small = useMedia("(max-width: 960px)");
-  const live = (i: number) => p > 0.06 + i * 0.09 || i === focus;
+  useAttract(root, () => setFocus((f) => (f + 1) % BANK.length), 4200);
+
+  const items: WallItem[] = BANK.map((b) => ({
+    id: b.flow.id,
+    name: b.name,
+    when: b.when,
+    render: (active, front) => (
+      <InteractivePhone
+        flow={b.flow}
+        active={active}
+        tilt={front}
+        label={`Demo chat: ${b.name}`}
+        onOutcome={(o) => {
+          if (o === "recovered") {
+            recordRecovery(b.flow.id);
+            toast(`${b.name}: recovered. One more order on this visit.`, "ok");
+          }
+        }}
+      />
+    ),
+  }));
+
   return (
-    <Station
-      id="send"
-      index="05"
-      name="Send"
-      mark="3:05"
-      moment="Five seconds later"
-      title="The right message, on the phone they already hold."
-      height="260svh"
-      onProgress={setP}
-      lede={
-        <p>
-          Pre-approved templates go out through the official WhatsApp Business API. Order and payment updates are utility messages;
-          offers and reminders are marketing, and only with consent. Every phone here runs a real flow. Pick one up and answer it.
-        </p>
-      }
-      stage={
-        <div className={styles.bank} data-small={small ? "1" : undefined}>
-          {BANK.map((b, i) => {
-            const offset = i - focus;
-            return (
-              <div
-                key={b.flow.id}
-                className={styles.slot}
-                data-focus={i === focus ? "1" : undefined}
-                style={{ "--o": offset, "--a": Math.abs(offset) } as React.CSSProperties}
-                onPointerDown={() => i !== focus && setFocus(i)}
-                onFocusCapture={() => i !== focus && setFocus(i)}
-              >
-                <p className={styles.tag}>
-                  <span className="t-hud">{b.name}</span>
-                  <span className="t-hud c-muted">{b.when}</span>
-                </p>
-                <InteractivePhone
-                  flow={b.flow}
-                  active={live(i)}
-                  tilt={i === focus}
-                  label={`Demo chat: ${b.name}`}
-                  onOutcome={(o) => {
-                    if (o === "recovered") {
-                      recordRecovery(b.flow.id);
-                      toast(`${b.name}: recovered. One more order on this visit.`, "ok");
-                    }
-                  }}
-                />
-              </div>
-            );
-          })}
+    <section id="send" className={styles.station} aria-label="05 Send">
+      <div ref={root} className={styles.sticky} data-motion-own>
+        <header className={styles.head}>
+          <span className={styles.index} aria-hidden>
+            05
+          </span>
+          <span className={`${styles.where} t-hud`}>
+            <span>Send</span>
+            <span className={styles.clock}>3:05</span>
+            <span className="c-muted">Five seconds later</span>
+          </span>
+        </header>
+        <div className={styles.copy}>
+          <h2 className={styles.title}>The right message, on the phone they already hold.</h2>
+          <p className={styles.lede}>
+            Pre-approved templates go out through the official WhatsApp Business API. Order and payment updates are utility messages; offers
+            and reminders are marketing, and only with consent. Every phone runs a real flow. Turn the wall, pick one up and answer it.
+          </p>
         </div>
-      }
-    />
+        <div className={styles.wallArea}>
+          <PhoneWall items={items} focus={focus} onFocus={setFocus} label="Five playbooks, each on a working phone" />
+        </div>
+      </div>
+    </section>
   );
 }

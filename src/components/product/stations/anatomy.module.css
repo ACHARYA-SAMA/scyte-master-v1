@@ -1,0 +1,298 @@
+/* P7, The Anatomy: one message at the centre, its parts flying out to their notes */
+.station {
+  position: relative;
+  height: 240svh;
+  background:
+    radial-gradient(ellipse 40% 45% at 55% 55%, rgb(43 58 47 / 0.6), transparent 75%),
+    var(--ground-deep);
+  border-top: var(--hair) solid var(--line);
+}
+
+.sticky {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  display: grid;
+  grid-template-columns: minmax(0, 3.2fr) minmax(0, 8.8fr);
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-areas:
+    "head head"
+    "copy stage"
+    "foot stage";
+  gap: var(--s5) var(--gutter);
+  padding: calc(var(--nav-h) + 2vh) calc(var(--margin) + 64px) 118px calc(var(--margin) + 10px);
+  overflow: hidden;
+}
+
+.head {
+  grid-area: head;
+  display: flex;
+  align-items: baseline;
+  gap: var(--s5);
+}
+
+.index {
+  font-size: clamp(2.4rem, 1.6rem + 2.6vw, 4.4rem);
+  line-height: 0.8;
+  font-weight: 860;
+  font-stretch: 66%;
+  color: var(--khaki);
+}
+
+.where {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2) var(--s4);
+  color: var(--cream);
+}
+
+.copy {
+  grid-area: copy;
+  position: relative;
+  z-index: 3;
+  display: grid;
+  align-content: start;
+  justify-items: start;
+  gap: var(--s5);
+}
+
+.title {
+  font-size: clamp(1.9rem, 1rem + 2.3vw, 3.4rem);
+  line-height: 0.94;
+  font-weight: 820;
+  font-stretch: 72%;
+  letter-spacing: -0.03em;
+  color: var(--cream);
+  text-wrap: balance;
+}
+
+.lede {
+  font-size: var(--t-small);
+  line-height: 1.55;
+  color: var(--khaki-light);
+  max-width: 36ch;
+}
+
+.foot {
+  grid-area: foot;
+  color: var(--muted);
+  max-width: 36ch;
+}
+
+/* ------------------------------------------------------------- the stage */
+.stage {
+  grid-area: stage;
+  position: relative;
+  min-height: 0;
+}
+
+.leaders {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1000px;
+  height: 600px;
+  margin: -300px 0 0 -500px;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.leaders line {
+  stroke: var(--khaki);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.leaders circle {
+  fill: var(--lumen);
+}
+
+.bubble {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(380px, 80%);
+  translate: -50% -50%;
+  display: grid;
+  gap: 0;
+  color: var(--cream);
+}
+
+/* the message's own bubble, which fades to a ghost as the parts leave it */
+.shell {
+  position: absolute;
+  inset: -6px;
+  border-radius: 14px 14px 14px 4px;
+  background: linear-gradient(180deg, #2c3b30, #243026);
+  border: 1px solid var(--line);
+  box-shadow: 0 30px 70px -30px rgb(0 0 0 / 0.9);
+}
+
+.bubble [data-part] {
+  position: relative;
+  outline: none;
+  transition:
+    box-shadow var(--dur-ui) linear,
+    background-color var(--dur-ui) linear;
+}
+
+.bubble [data-part]:focus-visible,
+.bubble [data-part][data-hot="1"] {
+  box-shadow: 0 0 0 1px var(--lumen), 0 0 24px -6px color-mix(in srgb, var(--lumen) 60%, transparent);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: #2b3a2f;
+  border-radius: 10px 10px 0 0;
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.thumb {
+  width: 38px;
+  height: 38px;
+  flex: none;
+  background:
+    linear-gradient(160deg, transparent 40%, rgb(0 0 0 / 0.2) 40%),
+    var(--khaki);
+  border-radius: 6px;
+}
+
+.body {
+  padding: 14px;
+  background: #243026;
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--khaki-light);
+}
+
+.var {
+  font-weight: 700;
+  color: var(--lumen);
+}
+
+/* the variables, pulled out of the body as chips; invisible while the message is whole */
+.vars {
+  position: absolute !important;
+  left: 14px;
+  top: 104px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  width: 300px;
+  opacity: 0;
+}
+
+.chip {
+  padding: 5px 9px;
+  border: 1px solid var(--lumen);
+  background: color-mix(in srgb, var(--lumen) 14%, var(--ground));
+  font-size: 12.5px;
+  font-weight: 650;
+  color: var(--cream);
+  white-space: nowrap;
+}
+
+.footer {
+  padding: 4px 14px 12px;
+  background: #243026;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.buttons {
+  display: grid;
+  gap: 1px;
+  background: var(--line);
+  border-radius: 0 0 10px 4px;
+  overflow: hidden;
+}
+
+.btn {
+  padding: 11px 14px;
+  background: #273329;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 650;
+  color: var(--lumen);
+}
+
+.category {
+  position: absolute !important;
+  right: -10px;
+  top: -16px;
+  padding: 5px 10px;
+  background: var(--khaki);
+  color: var(--ground);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.stage[data-kind="utility"] .category {
+  background: var(--cream);
+}
+
+/* ------------------------------------------------------------- the notes */
+.note {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: grid;
+  gap: 3px;
+  width: min(300px, 30vw);
+  padding: 7px 12px;
+  translate: var(--x) calc(var(--y) - 50%);
+  background: rgb(9 18 11 / 0.82);
+  border-left: 1px solid var(--khaki);
+  transition: border-color var(--dur-ui) linear;
+  pointer-events: none;
+}
+
+.note[data-hot="1"] {
+  border-color: var(--lumen);
+}
+
+.noteTitle {
+  color: var(--khaki);
+}
+
+.note[data-hot="1"] .noteTitle {
+  color: var(--lumen);
+}
+
+.noteText {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--khaki-light);
+}
+
+@media (max-width: 960px) {
+  .station {
+    height: auto;
+  }
+  .sticky {
+    position: relative;
+    height: auto;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto;
+    grid-template-areas:
+      "head"
+      "copy"
+      "stage"
+      "foot";
+    padding-right: var(--margin);
+  }
+  .stage {
+    min-height: 520px;
+  }
+  .leaders,
+  .note {
+    display: none;
+  }
+}

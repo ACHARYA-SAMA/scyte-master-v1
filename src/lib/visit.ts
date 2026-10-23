@@ -13,6 +13,10 @@ export const visit = createStore({
   events: [] as CollectedEvent[],
   /** the OTP step at checkout */
   verified: false,
+  /** whether the patch bay's last run went through every rule module */
+  allRules: true,
+  /** whether the patch bay's last run reached the send line */
+  lastSent: false,
 });
 
 export const recordEvent = (e: CollectedEvent) => visit.set((s) => ({ events: [...s.events.slice(-15), e] }));

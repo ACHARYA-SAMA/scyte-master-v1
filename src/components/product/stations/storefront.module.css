@@ -18,7 +18,8 @@
     "head head"
     "browser side";
   gap: var(--s5) clamp(24px, 3vw, 56px);
-  padding: calc(var(--nav-h) + 2vh) calc(var(--margin) + 64px) calc(var(--s8) + 4px) calc(var(--margin) + 10px);
+  /* the bottom edge belongs to the frame's strip and the audit button */
+  padding: calc(var(--nav-h) + 2vh) calc(var(--margin) + 64px) 118px calc(var(--margin) + 10px);
 }
 
 .head {
