@@ -5,7 +5,7 @@ import { SliceWord, STRIPS, type Face } from "@/components/brand/SliceWord";
 import { SceneSection } from "@/components/gl/SceneSection";
 import { scan } from "@/components/gl/scenes/team/scan";
 import { TEAM, assetsFor, displayName, hexId } from "@/data/team";
-import { PRODUCT_NAME } from "@/config/site";
+import { productName } from "@/config/site";
 import { prefersReducedMotion } from "@/lib/motion";
 import { useMedia } from "@/lib/useMedia";
 import { FACE } from "@/lib/silhouette";
@@ -133,7 +133,7 @@ export function Team() {
             The team
           </h1>
           <p className={styles.intro}>
-            The people building Scyte and {PRODUCT_NAME}.{" "}
+            The people building Scyte and {productName("its WhatsApp recovery platform")}.{" "}
             <span className={styles.hint}>{touch ? "Tap a portrait." : "Point at a portrait or use the arrow keys. Enter opens the dossier."}</span>
           </p>
           <Dock ref={dock} team={TEAM} active={active} touch={touch} onPreview={preview} onOpen={openDossier} onLeave={leave} />

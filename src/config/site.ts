@@ -3,6 +3,12 @@
  */
 
 export const PRODUCT_NAME = "[BRAND NAME]";
+/** Flip to true once the client confirms the name; until then no page prints it. */
+export const PRODUCT_NAME_FINAL = false;
+/** What the product is, for titles and cards while the name is open. */
+export const PRODUCT_LABEL = "WhatsApp recovery for online stores";
+/** The product as public copy may call it: its name once final, a description before. */
+export const productName = (fallback = "a WhatsApp recovery platform") => (PRODUCT_NAME_FINAL ? PRODUCT_NAME : fallback);
 
 /**
  * Information architecture switch. "studio" keeps Scyte as the umbrella brand with the

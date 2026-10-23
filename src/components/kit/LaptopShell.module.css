@@ -1,0 +1,400 @@
+/* LaptopShell: a 16:10 screen in a green-black aluminium body, no brand marks */
+.wrap {
+  --bezel: calc(var(--s) * 22px);
+  position: relative;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 10px;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+.machine {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  perspective: 2400px;
+  /* the eye sits level with the hinge: the deck is seen low and shallow, the screen square on */
+  perspective-origin: 50% calc(var(--sh) + var(--bezel) * 2.1);
+}
+
+/* ------------------------------------------------------------- the lid */
+.lid {
+  position: relative;
+  z-index: 2;
+  padding: var(--bezel) var(--bezel) calc(var(--bezel) * 1.1);
+  border-radius: calc(var(--s) * 30px) calc(var(--s) * 30px) calc(var(--s) * 8px) calc(var(--s) * 8px);
+  background: linear-gradient(180deg, #0c160e, #09120b 60%, #0b140d);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--khaki-light) 22%, transparent),
+    inset 0 0 0 calc(var(--s) * 6px) #070d08,
+    0 50px 90px -40px rgb(4 9 5 / 0.95),
+    0 18px 30px -14px rgb(4 9 5 / 0.75);
+  transform-origin: 50% 100%;
+  backface-visibility: hidden;
+}
+
+.lid[data-shut="1"] .screen {
+  visibility: hidden;
+}
+
+.camera {
+  position: absolute;
+  top: calc(var(--bezel) * 0.38);
+  left: 50%;
+  width: calc(var(--s) * 9px);
+  height: calc(var(--s) * 9px);
+  translate: -50% 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #34463a, #0d1810 70%);
+}
+
+.screen {
+  position: relative;
+  width: var(--sw);
+  height: var(--sh);
+  overflow: hidden;
+  border-radius: calc(var(--s) * 6px);
+  background: var(--ground-deep);
+  isolation: isolate;
+}
+
+/* the page is laid out at full logical size and scaled once, flat: text stays crisp */
+.viewport {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--vw, 1280px);
+  height: var(--vh, 800px);
+  transform: scale(var(--s));
+  transform-origin: 0 0;
+  color: var(--khaki-light);
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.scroller {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+  outline: none;
+}
+
+.scroller:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--lumen);
+}
+
+.wrap[data-flat="1"] .scroller {
+  overflow-y: hidden;
+}
+
+.glass {
+  --gx: 30%;
+  --gy: 20%;
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 38% 46% at var(--gx) var(--gy), rgb(230 213 184 / 0.07), transparent 70%),
+    linear-gradient(118deg, transparent 0 38%, rgb(230 213 184 / 0.035) 38% 52%, transparent 52%);
+  mix-blend-mode: screen;
+}
+
+/* ------------------------------------------------------------- the menu bar */
+.menubar {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  height: 26px;
+  padding: 0 14px;
+  background: rgb(14 24 16 / 0.92);
+  border-bottom: 1px solid #253026;
+  color: var(--cream);
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.menubar strong {
+  font-weight: 760;
+}
+
+.glyph {
+  width: 12px;
+  height: 12px;
+  background: var(--khaki);
+  clip-path: polygon(0 0, 100% 0, 100% 60%, 60% 100%, 0 100%);
+}
+
+.menuItem {
+  color: var(--khaki-light);
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+  color: var(--khaki-light);
+  font-variant-numeric: tabular-nums;
+}
+
+.icon {
+  width: 16px;
+  height: 12px;
+}
+
+/* ------------------------------------------------------------- the dock */
+.dock {
+  position: absolute;
+  left: 50%;
+  bottom: 10px;
+  z-index: 4;
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  padding: 8px 10px;
+  translate: -50% calc(100% + 4px);
+  background: rgb(14 24 16 / 0.82);
+  border: 1px solid #334638;
+  border-radius: 16px;
+  backdrop-filter: blur(8px);
+  transition: translate var(--dur-panel) var(--ease-glide);
+}
+
+.wrap:hover .dock,
+.dock:focus-within {
+  translate: -50% 0;
+}
+
+.dockItem {
+  --m: 1;
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border: 0;
+  border-radius: 11px;
+  background: linear-gradient(160deg, #2b3a2f, #1b261d);
+  box-shadow: inset 0 0 0 1px #3d5243;
+  color: var(--khaki);
+  cursor: pointer;
+  transform: scale(var(--m));
+  transform-origin: 50% 100%;
+  transition: transform 120ms var(--ease-glide);
+}
+
+.dockItem svg {
+  width: 24px;
+  height: 24px;
+}
+
+.dockItem[data-on="1"]::after {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  translate: -50% 0;
+  border-radius: 50%;
+  background: var(--lumen);
+}
+
+.dockTip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  translate: -50% 4px;
+  padding: 3px 8px;
+  background: #0e1810;
+  border: 1px solid #334638;
+  border-radius: 6px;
+  color: var(--cream);
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity var(--dur-feedback) linear,
+    translate var(--dur-feedback) var(--ease-glide);
+}
+
+.dockItem:hover .dockTip,
+.dockItem:focus-visible .dockTip {
+  opacity: 1;
+  translate: -50% 0;
+}
+
+/* ------------------------------------------------------------- the deck */
+.deckWrap {
+  position: relative;
+  z-index: 1;
+  width: calc(var(--sw) + var(--bezel) * 2 + var(--sw) * 0.08);
+  margin-top: -1px;
+  transform-style: preserve-3d;
+}
+
+.deck {
+  position: relative;
+  height: calc(var(--sw) * 0.5);
+  margin-bottom: calc(var(--sw) * -0.5 + var(--sw) * 0.125);
+  padding: calc(var(--sw) * 0.03) calc(var(--sw) * 0.07) calc(var(--sw) * 0.02);
+  display: grid;
+  grid-template-rows: 1fr 0.7fr;
+  gap: calc(var(--sw) * 0.03);
+  background:
+    linear-gradient(180deg, #1a271d 0%, #162219 60%, #132016 100%);
+  border-radius: 0 0 calc(var(--s) * 22px) calc(var(--s) * 22px);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--khaki-light) 18%, transparent);
+  transform: rotateX(78deg);
+  transform-origin: 50% 0;
+}
+
+.keys {
+  display: grid;
+  gap: calc(var(--sw) * 0.005);
+}
+
+.keyRow {
+  display: flex;
+  gap: calc(var(--sw) * 0.005);
+}
+
+.key {
+  flex-basis: 0;
+  border-radius: calc(var(--s) * 4px);
+  background: #0b140d;
+  box-shadow:
+    inset 0 1px 0 rgb(207 199 170 / 0.08),
+    0 1px 0 rgb(0 0 0 / 0.5);
+  transition:
+    background-color 60ms linear,
+    transform 60ms linear;
+}
+
+.key[data-down="1"] {
+  background: color-mix(in srgb, var(--lumen) 55%, #0b140d);
+  box-shadow: 0 0 calc(var(--sw) * 0.02) color-mix(in srgb, var(--lumen) 60%, transparent);
+  transform: translateY(1px);
+}
+
+.keyRow[data-fn="1"] {
+  height: 60%;
+}
+
+.pad {
+  justify-self: center;
+  width: 42%;
+  border-radius: calc(var(--s) * 10px);
+  background: #172319;
+  box-shadow: inset 0 0 0 1px #2b3a2f;
+}
+
+.lip {
+  position: relative;
+  height: calc(var(--sw) * 0.014);
+  background: linear-gradient(180deg, #2b3a2f, #111b13);
+  border-radius: 0 0 calc(var(--s) * 18px) calc(var(--s) * 18px);
+  box-shadow: 0 calc(var(--sw) * 0.03) calc(var(--sw) * 0.05) -10px rgb(4 9 5 / 0.95);
+}
+
+.notch {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 14%;
+  height: 45%;
+  translate: -50% 0;
+  border-radius: 0 0 8px 8px;
+  background: #0d1710;
+}
+
+/* ------------------------------------------------------------- the meter */
+.meter {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: min(var(--sw), 100%);
+  color: var(--muted);
+}
+
+.mode {
+  padding: 3px 7px 2px;
+  border: 1px solid var(--line);
+  color: var(--khaki);
+}
+
+.mode[data-mode="manual"] {
+  border-color: var(--lumen);
+  color: var(--lumen);
+}
+
+.modeText {
+  white-space: nowrap;
+}
+
+.track {
+  position: relative;
+  flex: 1;
+  height: 2px;
+  background: var(--line);
+  overflow: hidden;
+}
+
+.fill {
+  position: absolute;
+  inset: 0;
+  background: var(--lumen);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+}
+
+.cue {
+  position: absolute;
+  left: 50%;
+  top: 44%;
+  z-index: 6;
+  padding: 8px 12px 7px;
+  translate: -50% 0;
+  background: rgb(9 18 11 / 0.9);
+  border: 1px solid var(--lumen);
+  color: var(--lumen);
+  pointer-events: none;
+  animation: cue 2.6s var(--ease-glide) both;
+}
+
+@keyframes cue {
+  0% {
+    opacity: 0;
+    translate: -50% 8px;
+  }
+  12%,
+  80% {
+    opacity: 1;
+    translate: -50% 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cue {
+    animation: none;
+  }
+}

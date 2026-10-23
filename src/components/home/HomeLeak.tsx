@@ -11,7 +11,7 @@ import { PAYMENT_FAILED } from "@/lib/chat/flows";
 import { recordRecovery, session, toast, ui, useStore } from "@/lib/store";
 import { gsap, prefersReducedMotion } from "@/lib/motion";
 import { useMedia } from "@/lib/useMedia";
-import { PRODUCT_NAME } from "@/config/site";
+import { productName } from "@/config/site";
 import { HeroLogo } from "./HeroLogo";
 import { HudLabels, type HudLabel } from "./HudLabels";
 import { LeakControls } from "./LeakControls";
@@ -238,7 +238,7 @@ export function HomeLeak() {
               <span className="sr-only">Scyte. </span>Your shoppers didn’t leave. Your store leaked them.
             </h1>
             <p className={`${styles.heroLede} t-body`}>
-              Scyte is a web and app studio in Hyderabad. We are also building {PRODUCT_NAME}, which catches the shoppers an online
+              Scyte is a web and app studio in Hyderabad. We are also building {productName()}, which catches the shoppers an online
               store loses at checkout and brings them back on WhatsApp, with their consent.
             </p>
           </div>
