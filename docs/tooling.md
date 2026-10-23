@@ -78,3 +78,23 @@ Everything this environment offers, what each piece is for on this build, and wh
 - **Thirteen variable fonts**, rendered at 12 px and 300 px in the palette. Axes, ₹ coverage, tabular figures and file size were checked with fontTools (`docs/recon/font-tests/`).
 - **Live scroll captures** with library sniffing of landonorris.com and messenger.abeto.co (both tagged Site of the Year 2025 on Awwwards listing pages), plus igloo.inc and lusion.co. The v1 crawl of 16 studios is summarised in the thesis.
 - **Film-UI practice:** Territory Studio interviews on Pushing Pixels.
+
+## What was actually used, round 2
+
+Recorded at the end of the build, so it can be checked against the plan above.
+
+| Tool | What it did |
+|---|---|
+| `frontend-design` skill | The art-direction review of the token plan and the thesis against generic defaults |
+| `dataviz` skill and its validator | The two chart series (`#AF9034`, `#37794A`) were validated against Ground and Surface before the dashboard and economics charts shipped |
+| Built-in browser | Looking at pages by eye, reading the DOM and console, timing the archive drag and hand-off, the menu previews |
+| Playwright (headless Chromium 1243) | Repeatable captures: chapter screenshots, the case 00 scene shots (with the site chrome hidden), the archive drag-throw-open film, the 404 solve, an idle-motion audit (two frames 500 ms apart at six scroll depths per page, no input), entrance films, and long-animation-frame attribution |
+| Chrome DevTools Protocol | CPU profiles of the production build, with call stacks, to find what blocked the main thread after load (shader compiles) |
+| Lighthouse 13.5 | Every route, desktop and mobile, against `next start` (see `docs/performance.md`) |
+| Pillow | Contact sheets of captures, WebP encoding of the case 00 shots and the menu previews, pixel diffs for the motion audit |
+| fontTools (`subset`, `varLib.instancer`) with Brotli | The 58 KB Archivo subset, and the two static cuts the share-image renderer needs (it cannot read variable fonts or WOFF2) |
+| TypeScript's `transpileModule` | Running the 404 puzzle's generator in Node over 2,000 seeds: none starts solved, all are solvable |
+| `next/og` (`ImageResponse`) | One share card per route |
+| git | Staged commits, one per page or concern |
+
+Not used in the end: subagents (art direction stayed in one place, as planned), Figma (no AI credits were spent; every image on the site is a real screenshot of the site or drawn in code), Context7 (never connected; the installed type definitions and Next's bundled docs were the reference) and the depth model for team photos (its download still needs a yes).

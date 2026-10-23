@@ -326,12 +326,13 @@
   gap: 0.3em;
   margin-top: 0.2em;
   font-size: 0.72em;
-  color: var(--muted);
+  /* small type on the bubble: lighter than Muted so it clears 4.5:1 on Raised */
+  color: color-mix(in srgb, var(--khaki-light) 60%, var(--muted));
   font-variant-numeric: tabular-nums;
 }
 
 .row[data-from="me"] .meta {
-  color: color-mix(in srgb, var(--ground) 65%, var(--khaki));
+  color: color-mix(in srgb, var(--ground) 80%, var(--khaki));
 }
 
 .ticks {

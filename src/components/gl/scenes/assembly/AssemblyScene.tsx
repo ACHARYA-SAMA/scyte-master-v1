@@ -15,6 +15,14 @@ import { projectAnchors } from "../../anchors";
 import { LAYERS, LH, LW, drawFinished, drawLayer } from "./layers";
 
 const PW = 24;
+// the planes never draw wider than about 900 px, so their textures are drawn at 3/4 size
+// (the drawing code keeps its 1600 x 1000 coordinates through a transform)
+const TS = 0.75;
+const texture = (draw: (c: CanvasRenderingContext2D) => void) =>
+  canvasTexture(Math.round(LW * TS), Math.round(LH * TS), (c) => {
+    c.scale(TS, TS);
+    draw(c);
+  });
 const PH = (PW * LH) / LW;
 const GAP = 4.2;
 
@@ -38,10 +46,10 @@ export default function AssemblyScene() {
   const size = useThree((s) => s.size);
   const mats = useMemo(
     () =>
-      LAYERS.map((l) => new MeshBasicMaterial({ map: canvasTexture(LW, LH, (c) => drawLayer(c, l.id)), transparent: true, toneMapped: false, depthWrite: false })),
+      LAYERS.map((l) => new MeshBasicMaterial({ map: texture((c) => drawLayer(c, l.id)), transparent: true, toneMapped: false, depthWrite: false })),
     [],
   );
-  const finished = useMemo(() => new MeshBasicMaterial({ map: canvasTexture(LW, LH, drawFinished), transparent: true, toneMapped: false }), []);
+  const finished = useMemo(() => new MeshBasicMaterial({ map: texture(drawFinished), transparent: true, toneMapped: false }), []);
   const edges = useMemo(() => LAYERS.map(() => new MeshBasicMaterial({ color: C.khaki.clone(), transparent: true, toneMapped: false })), []);
   const metal = useMemo(() => makeMetal("#253026", 0.3), []);
   const planes = useRef<(Mesh | null)[]>([]);

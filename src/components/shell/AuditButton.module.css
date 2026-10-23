@@ -14,18 +14,22 @@
   letter-spacing: -0.005em;
   transition:
     transform var(--dur-panel) var(--ease-snap),
-    opacity var(--dur-ui) linear,
-    background-color var(--dur-feedback) linear;
+    background-color var(--dur-feedback) linear,
+    visibility 0s;
 }
 
 .audit:hover {
   background: var(--cream);
 }
 
+/* it slides away below the edge, never fades: its label is at full contrast whenever it shows */
 .audit[data-hidden="1"] {
-  opacity: 0;
-  transform: translateY(140%);
+  transform: translateY(calc(100% + 48px));
+  visibility: hidden;
   pointer-events: none;
+  transition:
+    transform var(--dur-panel) var(--ease-snap),
+    visibility 0s linear var(--dur-panel);
 }
 
 .dot {
@@ -37,7 +41,7 @@
 .tag {
   padding-left: 10px;
   border-left: 1px solid color-mix(in srgb, var(--ground) 35%, transparent);
-  color: color-mix(in srgb, var(--ground) 72%, var(--khaki));
+  color: color-mix(in srgb, var(--ground) 86%, var(--khaki));
 }
 
 @media (max-width: 480px) {

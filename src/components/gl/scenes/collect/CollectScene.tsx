@@ -94,12 +94,21 @@ const tokenTexture = (lines: string[]) =>
     });
   });
 
+// the store page draws under 1000 px wide on screen, so its full-page textures are drawn
+// at 3/4 size (the drawing code keeps its own coordinates through a transform)
+const TS = 0.75;
+const pageTexture = (draw: (c: CanvasRenderingContext2D) => void) =>
+  canvasTexture(Math.round(STORE_W * TS), Math.round(STORE_H * TS), (c) => {
+    c.scale(TS, TS);
+    draw(c);
+  });
+
 export default function CollectScene() {
   const camera = useThree((s) => s.camera) as PerspectiveCamera;
   const size = useThree((s) => s.size);
   const metal = useMemo(() => makeMetal("#253026", 0.3), []);
-  const xray = useMemo(() => xrayMaterial(canvasTexture(STORE_W, STORE_H, drawStore), canvasTexture(STORE_W, STORE_H, drawEvents)), []);
-  const pageMat = useMemo(() => new MeshBasicMaterial({ map: canvasTexture(STORE_W, STORE_H, (c) => drawLayer(c, "page")), toneMapped: false }), []);
+  const xray = useMemo(() => xrayMaterial(pageTexture(drawStore), pageTexture(drawEvents)), []);
+  const pageMat = useMemo(() => new MeshBasicMaterial({ map: pageTexture((c) => drawLayer(c, "page")), toneMapped: false }), []);
   const layerMats = useMemo(
     () =>
       LAYERS.map((k) => {

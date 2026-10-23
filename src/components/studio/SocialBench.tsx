@@ -70,13 +70,13 @@ export function SocialBench() {
             data-cursor="scrub"
           />
         </div>
-        <div className={styles.calendar} role="grid" aria-label="Content calendar, demo month">
+        <div className={styles.calendar} role="list" aria-label="Content calendar, demo month">
           {Array.from({ length: 35 }, (_, i) => {
             const day = i - 1;
             const post = POSTS.find((p) => p.day === day);
             const st = post ? statusOf(post.day, today) : null;
             return (
-              <div key={i} role="gridcell" className={styles.day} data-past={day >= 1 && day <= 30 && day < today ? "1" : undefined} data-today={day === today ? "1" : undefined} data-out={day < 1 || day > 30 ? "1" : undefined}>
+              <div key={i} role={day < 1 || day > 30 ? undefined : "listitem"} aria-hidden={day < 1 || day > 30 ? true : undefined} className={styles.day} data-past={day >= 1 && day <= 30 && day < today ? "1" : undefined} data-today={day === today ? "1" : undefined} data-out={day < 1 || day > 30 ? "1" : undefined}>
                 {day >= 1 && day <= 30 ? <span className={`${styles.dayN} t-hud`}>{day}</span> : null}
                 {post ? (
                   <span className={styles.chip} data-status={st}>

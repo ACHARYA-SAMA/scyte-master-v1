@@ -16,7 +16,7 @@ const flag = (name, fallback) => {
   return hit ? hit.split("=")[1] : fallback;
 };
 const base = args.find((a) => !a.startsWith("--")) ?? "http://localhost:3100";
-const routes = flag("routes", "/,/product,/team,/services,/work,/contact,/does-not-exist").split(",");
+const routes = flag("routes", "/,/product,/studio,/work,/work/this-site,/team,/contact,/does-not-exist").split(",");
 const widths = flag("widths", "390,768,1280,1440,1920").split(",").map(Number);
 const scrolls = flag("scroll", "0").split(",").map(Number);
 const out = path.resolve(flag("out", "docs/qa"));

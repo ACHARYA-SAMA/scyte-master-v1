@@ -17,21 +17,25 @@
   gap: 10px;
   justify-items: center;
   transform: translate(-50%, -50%) translateX(calc(var(--o) * var(--pw) * 0.62)) translateZ(calc(var(--a) * -160px)) rotateY(calc(var(--o) * -18deg));
-  transition:
-    transform var(--dur-hud) var(--ease-snap),
-    opacity var(--dur-panel) linear,
-    filter var(--dur-panel) linear;
-  opacity: calc(1 - var(--a) * 0.16);
+  transition: transform var(--dur-hud) var(--ease-snap);
   z-index: calc(10 - var(--a));
 }
 
 .slot:not([data-focus]) {
-  filter: brightness(0.72);
   cursor: pointer;
 }
 
+/* the phones turning away dim; their labels stay readable */
 .slot > div {
   --pw: inherit;
+  opacity: calc(1 - var(--a) * 0.16);
+  transition:
+    opacity var(--dur-panel) linear,
+    filter var(--dur-panel) linear;
+}
+
+.slot:not([data-focus]) > div {
+  filter: brightness(0.72);
 }
 
 .tag {
@@ -62,9 +66,12 @@
     top: auto;
     flex: 0 0 auto;
     transform: none;
+    scroll-snap-align: center;
+  }
+  .slot > div,
+  .slot:not([data-focus]) > div {
     opacity: 1;
     filter: none;
-    scroll-snap-align: center;
   }
   .slot {
     --pw: min(260px, 66vw, 46svh);

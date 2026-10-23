@@ -324,7 +324,7 @@ export function InteractivePhone({
         </button>
       </header>
 
-      <ol ref={log} className={styles.log} role="log" aria-live="polite" aria-label={`Conversation with ${flow.business}`}>
+      <ol ref={log} className={styles.log} aria-live="polite" aria-label={`Conversation with ${flow.business}`}>
         <li className={styles.day} aria-hidden>
           Today
         </li>
