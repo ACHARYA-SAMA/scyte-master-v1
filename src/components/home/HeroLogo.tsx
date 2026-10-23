@@ -33,6 +33,7 @@ export function HeroLogo() {
       }
     };
     let t = 0;
+    let written = false;
     let last = performance.now();
     const tick = () => {
       const now = performance.now();
@@ -42,6 +43,11 @@ export function HeroLogo() {
       [s.x, s.vx] = springStep(s.x, s.vx, s.tx, SPRING.magnet, dt);
       [s.y, s.vy] = springStep(s.y, s.vy, s.ty, SPRING.magnet, dt);
       [s.r, s.vr] = springStep(s.r, s.vr, s.tr, SPRING.snap, dt);
+      // with the lens closed and still, writing the same values every frame would still
+      // invalidate the logo's style and repaint its mask: skip until something moves
+      const still = s.r < 0.5 && s.tr === 0 && Math.abs(s.vr) < 0.01;
+      if (still && written) return;
+      written = still;
       el.style.setProperty("--lx", `${s.x.toFixed(1)}px`);
       el.style.setProperty("--ly", `${s.y.toFixed(1)}px`);
       el.style.setProperty("--lr", `${Math.max(0, s.r).toFixed(1)}px`);

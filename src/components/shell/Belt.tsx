@@ -45,11 +45,18 @@ export function Belt() {
     measure();
     const ro = new ResizeObserver(measure);
     ro.observe(el);
+    // off screen it does nothing at all
+    let onScreen = false;
+    const io = new IntersectionObserver(([e]) => {
+      onScreen = Boolean(e?.isIntersecting);
+    });
+    if (root.current) io.observe(root.current);
     let last = performance.now();
     const tick = () => {
       const now = performance.now();
       const dt = Math.min(0.05, (now - last) / 1000);
       last = now;
+      if (!onScreen) return;
       if (!st.drag) {
         const want = st.over ? 0 : CRUISE;
         st.v += (want - st.v) * (1 - Math.exp(-dt * (st.over ? 6 : 1.4)));
@@ -63,6 +70,7 @@ export function Belt() {
     return () => {
       gsap.ticker.remove(tick);
       ro.disconnect();
+      io.disconnect();
     };
   }, []);
 

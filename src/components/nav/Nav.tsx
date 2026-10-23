@@ -51,24 +51,19 @@ export function Nav() {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- platform is only known on the client
     setMac(isMac());
     let lastY = window.scrollY;
-    let raf = 0;
+    // read the position in the event itself: inside a frame callback, after the
+    // animation code has written styles, reading scrollY forces a full-page layout
     const onScroll = () => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => {
-        const y = window.scrollY;
-        const dy = y - lastY;
-        if (Math.abs(dy) > 6) {
-          setHidden(dy > 0 && y > 240);
-          lastY = y;
-        }
-        setSolid(y > 24);
-      });
+      const y = window.scrollY;
+      const dy = y - lastY;
+      if (Math.abs(dy) > 6) {
+        setHidden(dy > 0 && y > 240);
+        lastY = y;
+      }
+      setSolid(y > 24);
     };
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      cancelAnimationFrame(raf);
-    };
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   const chapter = chapters[active];

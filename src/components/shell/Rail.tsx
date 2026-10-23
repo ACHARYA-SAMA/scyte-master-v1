@@ -10,11 +10,6 @@ import styles from "./Rail.module.css";
 
 const TICKS = 48;
 
-const docProgress = () => {
-  const max = document.documentElement.scrollHeight - window.innerHeight;
-  return max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
-};
-
 const scrollToFraction = (f: number, immediate = false) => {
   const max = document.documentElement.scrollHeight - window.innerHeight;
   const y = Math.max(0, Math.min(max, f * max));
@@ -66,9 +61,16 @@ export function Rail() {
   useEffect(() => {
     let raf = 0;
     let lastActive = -1;
+    // read layout in the scroll event and on resize, never inside the frame callback,
+    // where it would force a full-page layout after the animation code's writes
+    let y = window.scrollY;
+    let max = document.documentElement.scrollHeight - window.innerHeight;
+    const measureMax = () => {
+      max = document.documentElement.scrollHeight - window.innerHeight;
+    };
     const update = () => {
       raf = 0;
-      const p = docProgress();
+      const p = max > 0 ? Math.min(1, Math.max(0, y / max)) : 0;
       if (bug.current) bug.current.style.setProperty("--p", String(p));
       if (bar.current) bar.current.style.transform = `scaleX(${p})`;
       if (pct.current) pct.current.textContent = String(Math.round(p * 100)).padStart(3, "0");
@@ -82,12 +84,21 @@ export function Rail() {
       } else rail.set({ progress: p });
     };
     const onScroll = () => {
+      y = window.scrollY;
       if (!raf) raf = requestAnimationFrame(update);
+    };
+    const onResize = () => {
+      measureMax();
+      onScroll();
     };
     update();
     window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onResize);
+    ScrollTrigger.addEventListener("refresh", onResize);
     return () => {
       window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onResize);
+      ScrollTrigger.removeEventListener("refresh", onResize);
       cancelAnimationFrame(raf);
     };
   }, [marks]);

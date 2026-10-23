@@ -1,6 +1,6 @@
 "use client";
 
-import { Bloom, DepthOfField, EffectComposer, Noise, SMAA, ToneMapping, Vignette } from "@react-three/postprocessing";
+import { Bloom, DepthOfField, EffectComposer, FXAA, Noise, ToneMapping, Vignette } from "@react-three/postprocessing";
 import { BlendFunction, ToneMappingMode } from "postprocessing";
 import type { Vector3 } from "three";
 import { gl, useStore } from "@/lib/store";
@@ -17,7 +17,11 @@ type Props = {
 
 /**
  * The restrained post chain. Quality 2: everything, with MSAA. Quality 1: no depth of
- * field, half-resolution bloom, SMAA. Quality 0: tone mapping, bloom and SMAA only.
+ * field, half-resolution bloom, FXAA. Quality 0: tone mapping, bloom and FXAA only.
+ *
+ * Measured on an Intel UHD at 1440 x 900: SMAA's three passes cost more than the rest of
+ * the chain together (home at 40 fps with it, 60 without). FXAA is one pass and holds
+ * 60 fps with 2 % slow frames, against 7 % for 2x MSAA.
  */
 export function Post({ bloom = 0.9, threshold = 0.85, focus = null, grain = 0.035, vignette = 0.42 }: Props) {
   const q = useStore(gl, (s) => s.quality);
@@ -28,7 +32,7 @@ export function Post({ bloom = 0.9, threshold = 0.85, focus = null, grain = 0.03
       <ToneMapping mode={ToneMappingMode.NEUTRAL} />
       {q > 0 ? <Vignette offset={0.32} darkness={vignette} /> : <></>}
       {q > 0 ? <Noise premultiply blendFunction={BlendFunction.SOFT_LIGHT} opacity={grain * 4} /> : <></>}
-      {q < 2 ? <SMAA /> : <></>}
+      {q < 2 ? <FXAA /> : <></>}
     </EffectComposer>
   );
 }

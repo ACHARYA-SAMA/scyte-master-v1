@@ -45,8 +45,14 @@ export function HudLabels({
         const a = readAnchor(l.anchor);
         const clear = !a || !avoid || !avoid(a.x, a.y, window.innerWidth, window.innerHeight);
         const on = live && l.chapters.includes(chapter) && !!a?.onScreen && clear;
-        el.dataset.on = on ? "1" : "0";
-        if (a && on) el.style.transform = `translate3d(${a.x.toFixed(1)}px, ${a.y.toFixed(1)}px, 0)`;
+        // write only what changed: setting the same attribute every frame still
+        // invalidates style for every label
+        const flag = on ? "1" : "0";
+        if (el.dataset.on !== flag) el.dataset.on = flag;
+        if (a && on) {
+          const t = `translate3d(${a.x.toFixed(1)}px, ${a.y.toFixed(1)}px, 0)`;
+          if (el.style.transform !== t) el.style.transform = t;
+        }
       });
     };
     loop();
