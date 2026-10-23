@@ -10,6 +10,7 @@ import { prefersReducedMotion } from "@/lib/motion";
 import { Studio } from "../../Studio";
 import { Post } from "../../Post";
 import { C } from "../../materials";
+import { drift } from "../../idle";
 import { projectAnchors } from "../../anchors";
 
 const SIZE = 110;
@@ -169,12 +170,13 @@ export default function UnderstandScene() {
 
     // camera: an elevated three-quarter view that slowly circles
     const s = gl.get();
-    const orbit = prefersReducedMotion() ? 0.5 : 0.5 + Math.sin(t * 0.05) * 0.25 + s.progress * 0.6;
+    const orbit = prefersReducedMotion() ? 0.5 : 0.5 + Math.sin(t * 0.11) * 0.22 + s.progress * 0.6;
     const R = 92;
     const want = new Vector3(Math.cos(orbit) * R * 0.75 + s.px * 4, 48 + s.py * 3, Math.sin(orbit) * R);
     const look = new Vector3(-10, 6, 0);
     const aspect = size.width / size.height;
     if (aspect < 1.2) want.sub(look).multiplyScalar(Math.min(2, 1.35 / aspect)).add(look);
+    want.add(drift(2.6));
     const cr = cam.current;
     if (!cr.ready) {
       cr.pos.copy(want);

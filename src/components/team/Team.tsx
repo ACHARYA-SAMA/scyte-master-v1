@@ -127,7 +127,7 @@ export function Team() {
 
   return (
     <SceneSection scene="team" className={styles.team} aria-labelledby="team-title">
-      <div className={styles.stage}>
+      <div className={styles.stage} data-motion-own>
         <header className={styles.top}>
           <h1 id="team-title" className={styles.title}>
             The team

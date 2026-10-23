@@ -67,9 +67,17 @@ export function Station({ id, index, name, mark, moment, title, lede, children, 
       <div className={styles.copy}>
         <h2 className={`${styles.title} t-h2`}>{title}</h2>
         <div className={`${styles.lede} t-body`}>{lede}</div>
-        {children ? <div className={styles.controls}>{children}</div> : null}
+        {children ? (
+          <div className={styles.controls} data-motion-own>
+            {children}
+          </div>
+        ) : null}
       </div>
-      {stage ? <div className={styles.stage}>{stage}</div> : null}
+      {stage ? (
+        <div className={styles.stage} data-motion-own>
+          {stage}
+        </div>
+      ) : null}
     </div>
   );
 

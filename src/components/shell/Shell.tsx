@@ -7,6 +7,7 @@ import { Nav } from "@/components/nav/Nav";
 import { Cursor } from "@/components/cursor/Cursor";
 import { LiquidWipe } from "@/components/transition/LiquidWipe";
 import { Handoff } from "@/components/transition/Handoff";
+import { Reveal } from "@/components/motion/Reveal";
 import { RouteWatcher } from "@/components/transition/navigation";
 import { Preloader } from "@/components/preloader/Preloader";
 import { loadSoundPreference } from "@/lib/sound";
@@ -108,6 +109,7 @@ export function Shell({ children }: { children: ReactNode }) {
       <LiquidWipe />
       <Preloader />
       <RouteWatcher />
+      <Reveal />
     </SmoothScroll>
   );
 }

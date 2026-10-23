@@ -223,7 +223,7 @@ export function HomeLeak() {
       {ORDER.map((k) => (
         <span key={k} id={`leak-${k}`} className={styles.marker} style={{ top: `calc((100% - 100svh) * ${CH[k][0]})` }} aria-hidden />
       ))}
-      <div ref={root} className={styles.sticky} data-chapter={chapter}>
+      <div ref={root} className={styles.sticky} data-chapter={chapter} data-motion-own>
         {fallback ? <div className={styles.fallbackArt} aria-hidden /> : null}
 
         <HudLabels labels={LABELS} chapter={chapter} avoid={chapter === 3 ? undefined : avoidCopy} />

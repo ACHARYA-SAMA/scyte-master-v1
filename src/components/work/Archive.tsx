@@ -280,6 +280,7 @@ export function Archive() {
         <div
           ref={vp}
           className={styles.viewport}
+          data-motion-own
           data-gl={gl ? "1" : undefined}
           data-cursor="drag"
           role="group"

@@ -23,6 +23,14 @@
   color: var(--surface);
   pointer-events: none;
   user-select: none;
+  /* it never quite stops: a slow drift under the scroll-driven one */
+  animation: bleed-drift 24s var(--ease-drift) infinite alternate;
+}
+
+@keyframes bleed-drift {
+  to {
+    translate: -7vw 0;
+  }
 }
 
 .top {
@@ -118,5 +126,41 @@
   }
   .stations {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* the running light: the live step's rule fills in its own time, its number lights */
+.stations > li {
+  position: relative;
+}
+
+.stations > li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -1px;
+  height: 2px;
+  background: var(--lumen);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  pointer-events: none;
+}
+
+.stations > li[data-live="1"]::before {
+  animation: run var(--run, 1s) linear both;
+}
+
+.stations > li[data-live="1"] .n {
+  color: var(--lumen);
+}
+
+.stations > li .n {
+  transition: color var(--dur-ui) linear;
+}
+
+@keyframes run {
+  to {
+    transform: scaleX(1);
   }
 }

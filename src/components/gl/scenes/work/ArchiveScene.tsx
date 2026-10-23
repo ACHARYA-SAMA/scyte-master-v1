@@ -17,10 +17,15 @@ const vertexShader = /* glsl */ `
   uniform float uBend;
   uniform float uHalfW;
   uniform float uLift;
+  uniform float uTime;
+  uniform float uPhase;
+  uniform float uFloat;
   varying vec2 vUv;
   void main() {
     vUv = uv;
     vec4 w = modelMatrix * vec4(position, 1.0);
+    // at rest the frames hang on the strip and drift a little, each on its own beat
+    w.y += sin(uTime * 0.8 + uPhase * 0.9) * uFloat;
     float nx = clamp(w.x / uHalfW, -1.6, 1.6);
     // the strip curves away like film round a drum, harder the faster it moves
     w.z -= uBend * nx * nx * uHalfW * 0.28;
@@ -40,6 +45,8 @@ const fragmentShader = /* glsl */ `
   uniform float uShift;
   uniform float uAlpha;
   uniform float uDim;
+  uniform float uPhase;
+  uniform float uSheen;
   varying vec2 vUv;
 
   // object-fit: cover, so a frame of any shape crops the image the way CSS would
@@ -66,6 +73,10 @@ const fragmentShader = /* glsl */ `
       texture2D(uMap, c).g,
       texture2D(uMap, c - vec2(uShift, 0.0)).b
     );
+    // now and then a soft beam passes across the strip, frame to frame, like a projector's
+    float sweep = fract(uTime * 0.11 - uPhase * 0.045) * 3.0 - 1.0;
+    float band = exp(-pow((vUv.x * 0.85 + vUv.y * 0.15 - sweep) * 9.0, 2.0));
+    col += band * 0.08 * uSheen;
     gl_FragColor = vec4(col * uDim, uAlpha);
     #include <colorspace_fragment>
   }
@@ -127,7 +138,7 @@ export default function ArchiveScene() {
   const mats = useMemo(
     () =>
       PLATES.map(
-        () =>
+        (_p, i) =>
           new ShaderMaterial({
             uniforms: {
               uMap: { value: null as Texture | null },
@@ -142,6 +153,9 @@ export default function ArchiveScene() {
               uDim: { value: 1 },
               uBend: { value: 0 },
               uHalfW: { value: 1 },
+              uPhase: { value: i },
+              uFloat: { value: 0 },
+              uSheen: { value: 1 },
             },
             vertexShader,
             fragmentShader,
@@ -266,6 +280,8 @@ export default function ArchiveScene() {
       u.uShift.value = reduced ? 0 : Math.max(-0.006, Math.min(0.006, strip.vel / 500000)) * (1 - strip.e);
       u.uAlpha.value = s.alpha * fade;
       u.uDim.value = s.dim;
+      u.uFloat.value = reduced ? 0 : 3 * k * (1 - strip.e) * (1 - s.hover);
+      u.uSheen.value = reduced ? 0 : 1 - strip.e;
     });
   });
 

@@ -10,6 +10,7 @@ import { Studio } from "../../Studio";
 import { Post } from "../../Post";
 import { Backdrop } from "../../Backdrop";
 import { C, canvasTexture, makeMetal } from "../../materials";
+import { drift } from "../../idle";
 import { projectAnchors } from "../../anchors";
 import { LAYERS, LH, LW, drawFinished, drawLayer } from "./layers";
 
@@ -78,8 +79,9 @@ export default function AssemblyScene() {
       const on = smooth(i, i + 0.6, built);
       const z = (i - (LAYERS.length - 1) / 2) * GAP * (1 - col);
       m.position.set(0, 0, z);
-      // a just-added layer drops in from above
-      m.position.y = (1 - on) * 6;
+      // a just-added layer drops in from above; built layers float, each on its own beat
+      const reduced = prefersReducedMotion();
+      m.position.y = (1 - on) * 6 + (reduced ? 0 : Math.sin(t * 0.9 + i * 0.8) * 0.45 * on * (1 - col));
       (m.material as MeshBasicMaterial).opacity = on * (1 - col * 0.999);
       if (fr) {
         fr.position.set(0, m.position.y, z - 0.01);
@@ -100,6 +102,7 @@ export default function AssemblyScene() {
     const wide = size.width / size.height > 1.2;
     const want = new Vector3(Math.sin(orbit) * R + g.px * 1.5, 6 * (1 - col) + g.py, Math.cos(orbit) * R);
     const look = new Vector3(wide ? -9 * (1 - col) - 6 * col : 0, 0, 0);
+    want.add(drift(1.8));
     if (!wide) want.multiplyScalar(1.6);
     const c = cam.current;
     if (!c.ready || reduced) {

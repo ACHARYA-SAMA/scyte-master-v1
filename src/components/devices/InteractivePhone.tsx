@@ -433,6 +433,7 @@ export function InteractivePhone({
       ref={root}
       className={`${styles.wrap} ${className ?? ""}`}
       data-variant={variant}
+      data-motion-own
       style={style}
       role="region"
       aria-label={label ?? `Demo chat: ${flow.id.replace(/-/g, " ")}`}

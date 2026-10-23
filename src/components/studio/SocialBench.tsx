@@ -47,7 +47,7 @@ export function SocialBench() {
   const published = POSTS.filter((p) => statusOf(p.day, today) === "published").reverse();
   return (
     <div className={styles.bench} id="social">
-      <div className={styles.calendarWrap}>
+      <div className={styles.calendarWrap} data-motion-own>
         <div className={styles.scrub}>
           <label htmlFor={id} className={styles.fieldLabel}>
             <span>Drag through the month</span>

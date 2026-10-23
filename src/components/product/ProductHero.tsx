@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { PRODUCT_NAME } from "@/config/site";
 import { scroller } from "@/components/providers/SmoothScroll";
 import { gsap, prefersReducedMotion } from "@/lib/motion";
+import { useRunningLight } from "@/lib/useRunningLight";
 import styles from "./ProductHero.module.css";
 
 export const STATIONS = [
@@ -18,6 +19,9 @@ export const STATIONS = [
 /** The product page opens on the machine's name and its six stations, as a map. */
 export function ProductHero() {
   const root = useRef<HTMLElement>(null);
+  const list = useRef<HTMLOListElement>(null);
+  // Aarav's path, run on a loop: each station lights in turn while the page waits
+  useRunningLight(list, 1100);
 
   useEffect(() => {
     const el = root.current;
@@ -39,7 +43,7 @@ export function ProductHero() {
   };
 
   return (
-    <header ref={root} className={styles.hero} id="machine-top">
+    <header ref={root} className={styles.hero} id="machine-top" data-motion-own>
       <p className={styles.bleed} aria-hidden data-bleed>
         THE MACHINE
       </p>
@@ -65,7 +69,7 @@ export function ProductHero() {
           Aarav through all six: the rail on the right is his 20 minutes, and you can drag it.
         </p>
       </div>
-      <ol className={styles.stations}>
+      <ol ref={list} className={styles.stations}>
         {STATIONS.map((s) => (
           <li key={s.id} data-station>
             <button type="button" className={styles.station} onClick={() => jump(s.id)} data-cursor="open">

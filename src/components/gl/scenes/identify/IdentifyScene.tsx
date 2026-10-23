@@ -10,6 +10,7 @@ import { gl, ui } from "@/lib/store";
 import { sfx } from "@/lib/sound";
 import { haptic } from "@/lib/prefs";
 import { prefersReducedMotion } from "@/lib/motion";
+import { drift } from "../../idle";
 import { Studio } from "../../Studio";
 import { Post } from "../../Post";
 import { Backdrop } from "../../Backdrop";
@@ -258,6 +259,7 @@ function World() {
     const wide = size.width / size.height > 1.2;
     const want = new Vector3((wide ? -4 : 2) + s.px * 2, 10 + s.py * 1.2, 40);
     const look = new Vector3(wide ? -6 : 0, 2.5, 0);
+    want.add(drift(1.3));
     const aspect = size.width / size.height;
     if (aspect < 1.2) want.sub(look).multiplyScalar(Math.min(2.1, 1.4 / aspect)).add(look);
     const c = cam.current;

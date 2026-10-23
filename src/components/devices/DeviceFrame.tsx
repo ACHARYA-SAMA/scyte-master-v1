@@ -59,7 +59,7 @@ export function DeviceFrame({ kind, children, label, className, tilt = true }: P
   }, [tilt]);
 
   return (
-    <div ref={wrap} className={`${styles.wrap} ${className ?? ""}`} data-kind={kind} role="group" aria-label={label}>
+    <div ref={wrap} className={`${styles.wrap} ${className ?? ""}`} data-kind={kind} role="group" aria-label={label} data-motion-own>
       <div ref={body} className={styles.body}>
         <div className={styles.lid}>
           <span className={styles.camera} aria-hidden />

@@ -1,10 +1,11 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import { useChapters } from "@/components/shell/chapters";
 import { TransitionLink } from "@/components/transition/navigation";
 import { PhoneFrame } from "@/components/devices/PhoneFrame";
 import { SERVICES } from "@/data/services";
+import { useRunningLight } from "@/lib/useRunningLight";
 import { Assembly } from "./Assembly";
 import { WebsiteBench } from "./WebsiteBench";
 import { AppPrototype } from "./AppPrototype";
@@ -21,6 +22,9 @@ const BENCH_COPY = {
 
 /** The Assembly: what Scyte makes, said plainly, then shown. */
 export function Studio() {
+  const services = useRef<HTMLOListElement>(null);
+  // the three services take turns, like work moving through the studio
+  useRunningLight(services, 2200);
   useChapters(
     useMemo(
       () => [
@@ -41,7 +45,7 @@ export function Studio() {
       <header className={styles.hero} id="studio-top">
         <p className="t-hud c-khaki">The studio</p>
         <h1 className={styles.title}>Scyte designs and builds websites, mobile apps and social media for brands. We work from Hyderabad.</h1>
-        <ol className={styles.services}>
+        <ol ref={services} className={styles.services}>
           {SERVICES.map((s, i) => (
             <li key={s.id}>
               <a href={`#bench-${s.id}`} className={styles.service} data-cursor="open">

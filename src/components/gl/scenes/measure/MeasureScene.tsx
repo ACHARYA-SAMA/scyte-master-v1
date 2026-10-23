@@ -11,6 +11,7 @@ import { Studio } from "../../Studio";
 import { Post } from "../../Post";
 import { Backdrop } from "../../Backdrop";
 import { C, makeGlass, makeMetal } from "../../materials";
+import { drift } from "../../idle";
 import { projectAnchors } from "../../anchors";
 import { P0, P1, groupSizes, measure, sampleWeek } from "./measure";
 
@@ -143,6 +144,7 @@ export default function MeasureScene() {
     const wide = size.width / size.height > 1.2;
     const want = new Vector3((wide ? -24 : 0) + g.px * 6, 4 + g.py * 3, wide ? 112 : 96);
     const look = new Vector3(wide ? -24 : 0, -2, 0);
+    want.add(drift(3.4));
     const aspect = size.width / size.height;
     if (aspect < 1.2) want.sub(look).multiplyScalar(Math.min(2.1, 1.35 / aspect)).add(look);
     const c = cam.current;

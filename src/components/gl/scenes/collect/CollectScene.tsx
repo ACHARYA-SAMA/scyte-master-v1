@@ -12,6 +12,7 @@ import { Post } from "../../Post";
 import { Backdrop } from "../../Backdrop";
 import { C, canvasTexture, makeMetal, siteFont } from "../../materials";
 import { LAYER_EVENTS, LAYER_RECTS, STORE_H, STORE_W, drawEvents, drawLayer, drawStore, type StoreLayer } from "../../storeCanvas";
+import { drift } from "../../idle";
 import { projectAnchors } from "../../anchors";
 
 const SW = 22.6;
@@ -172,6 +173,7 @@ export default function CollectScene() {
     const look = new Vector3(-9 + e * 6, -1 + e * 0.5, e * 6);
     const aspect = size.width / size.height;
     if (aspect < 1.2) want.sub(look).multiplyScalar(Math.min(2.2, 1.35 / aspect)).add(look);
+    want.add(drift(1.6));
     const c = cam.current;
     if (!c.ready || reduced) {
       c.pos.copy(want);

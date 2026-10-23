@@ -206,3 +206,39 @@
     grid-column: 1 / -1;
   }
 }
+
+/* the running light: the live step's rule fills in its own time, its number lights */
+.services > li {
+  position: relative;
+}
+
+.services > li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -1px;
+  height: 2px;
+  background: var(--lumen);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  pointer-events: none;
+}
+
+.services > li[data-live="1"]::before {
+  animation: run var(--run, 1s) linear both;
+}
+
+.services > li[data-live="1"] .sn {
+  color: var(--lumen);
+}
+
+.services > li .sn {
+  transition: color var(--dur-ui) linear;
+}
+
+@keyframes run {
+  to {
+    transform: scaleX(1);
+  }
+}
