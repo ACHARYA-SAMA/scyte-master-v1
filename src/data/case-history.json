@@ -1,0 +1,305 @@
+{
+ "generated": "2026-10-24T05:03:24.292Z",
+ "commits": [
+  {
+   "h": "ebd6bbd",
+   "t": "2026-10-22T15:12:22.000Z",
+   "s": "Import base site as received",
+   "r": "r0"
+  },
+  {
+   "h": "c180125",
+   "t": "2026-10-22T15:18:27.000Z",
+   "s": "Pin dependencies, drop static export, add traced logo with verification",
+   "r": "r1"
+  },
+  {
+   "h": "12ca191",
+   "t": "2026-10-22T16:01:29.000Z",
+   "s": "Foundations and home page",
+   "r": "r1"
+  },
+  {
+   "h": "4ac1b61",
+   "t": "2026-10-22T16:23:35.000Z",
+   "s": "Product page: pipeline world, shopper timeline, playbooks, consent gate, economics, dashboard, pilot",
+   "r": "r1"
+  },
+  {
+   "h": "2da6041",
+   "t": "2026-10-22T16:31:33.000Z",
+   "s": "Team page: slice-swap names, halftone portraits, HUD, dossier, mobile sheet",
+   "r": "r1"
+  },
+  {
+   "h": "20bd16f",
+   "t": "2026-10-22T16:36:56.000Z",
+   "s": "Services, work, contact, 404, brand icons, OG image, sitemap, robots, manifest",
+   "r": "r1"
+  },
+  {
+   "h": "f301c39",
+   "t": "2026-10-22T17:03:57.000Z",
+   "s": "Performance and accessibility pass",
+   "r": "r1"
+  },
+  {
+   "h": "0105451",
+   "t": "2026-10-22T17:28:04.000Z",
+   "s": "Save current Scyte website updates",
+   "r": "r1"
+  },
+  {
+   "h": "336128f",
+   "t": "2026-10-22T19:33:35.000Z",
+   "s": "Lint fixes, hydration fix, README, performance report",
+   "r": "r1"
+  },
+  {
+   "h": "4ab689f",
+   "t": "2026-10-22T19:35:20.000Z",
+   "s": "Normalise line endings to LF",
+   "r": "r1"
+  },
+  {
+   "h": "1f33f13",
+   "t": "2026-10-22T20:18:20.000Z",
+   "s": "Round 2 recon: palette extraction, type tests, tooling inventory, design thesis",
+   "r": "r2"
+  },
+  {
+   "h": "5a1410d",
+   "t": "2026-10-22T21:00:14.000Z",
+   "s": "Round 2 foundations and home: one font, recovered palette, glass pipeline",
+   "r": "r2"
+  },
+  {
+   "h": "67dfcc7",
+   "t": "2026-10-23T02:34:30.000Z",
+   "s": "Product page, The Machine: six stations in six techniques",
+   "r": "r2"
+  },
+  {
+   "h": "edc0fb7",
+   "t": "2026-10-23T02:47:08.000Z",
+   "s": "Team page, The Scan: dock, slice-swapped names, depth hologram, hairline HUD",
+   "r": "r2"
+  },
+  {
+   "h": "da79daf",
+   "t": "2026-10-23T02:55:37.000Z",
+   "s": "Studio page, The Assembly: one site built layer by layer, three live workbenches",
+   "r": "r2"
+  },
+  {
+   "h": "d8e486e",
+   "t": "2026-10-23T03:01:30.000Z",
+   "s": "Contact page, The Conversation: a chat that fills a real form",
+   "r": "r2"
+  },
+  {
+   "h": "a9dd8bd",
+   "t": "2026-10-23T03:28:23.000Z",
+   "s": "Work page, The Archive: a WebGL film strip of real frames, and case 00",
+   "r": "r2"
+  },
+  {
+   "h": "39b8229",
+   "t": "2026-10-23T03:35:26.000Z",
+   "s": "404 as a pipe puzzle, and a draggable belt of ways in",
+   "r": "r2"
+  },
+  {
+   "h": "a595054",
+   "t": "2026-10-23T03:48:59.000Z",
+   "s": "Home: the drops run through the logo from the first frame",
+   "r": "r2"
+  },
+  {
+   "h": "600962c",
+   "t": "2026-10-23T04:00:17.000Z",
+   "s": "Motion everywhere: entrances on every page, and nothing sits still",
+   "r": "r2"
+  },
+  {
+   "h": "cb720a4",
+   "t": "2026-10-23T04:02:47.000Z",
+   "s": "Workbenches demonstrate themselves until someone takes over",
+   "r": "r2"
+  },
+  {
+   "h": "1ad232c",
+   "t": "2026-10-23T07:48:14.000Z",
+   "s": "Compile each scene's shaders before its first frame",
+   "r": "r2"
+  },
+  {
+   "h": "2d5380b",
+   "t": "2026-10-23T08:01:44.000Z",
+   "s": "Accessibility to full contrast, lighter entrances, docs for round 2",
+   "r": "r2"
+  },
+  {
+   "h": "530d0fc",
+   "t": "2026-10-23T08:23:33.000Z",
+   "s": "Shorter hydration tasks, and no quality flip after load",
+   "r": "r2"
+  },
+  {
+   "h": "2a82cf0",
+   "t": "2026-10-23T08:35:35.000Z",
+   "s": "Phone-width contact layout, laptop overflow, a light through the hero logo",
+   "r": "r2"
+  },
+  {
+   "h": "107acbe",
+   "t": "2026-10-23T08:42:42.000Z",
+   "s": "Performance doc for round 2, QA report, placeholders listed",
+   "r": "r2"
+  },
+  {
+   "h": "ebbf944",
+   "t": "2026-10-23T09:33:56.000Z",
+   "s": "Fix the lag: quality by GPU, FXAA, no per-frame layout reads",
+   "r": "r2"
+  },
+  {
+   "h": "7288d81",
+   "t": "2026-10-23T09:52:31.000Z",
+   "s": "Polish pass: buttons, tilt and glare, grain, light, depth, type",
+   "r": "r2"
+  },
+  {
+   "h": "879c621",
+   "t": "2026-10-23T13:19:49.000Z",
+   "s": "Round 3, Round A: baseline captures, density audit, critique and set-piece plan",
+   "r": "r3"
+  },
+  {
+   "h": "39c6794",
+   "t": "2026-10-23T13:44:24.000Z",
+   "s": "Round B: the component library, the instrument frame and the stamp passport",
+   "r": "r3"
+  },
+  {
+   "h": "e413519",
+   "t": "2026-10-23T14:12:43.000Z",
+   "s": "Product P1-P4: the line, the storefront, the gate's merge, the terrain's instruments",
+   "r": "r3"
+  },
+  {
+   "h": "8e7984e",
+   "t": "2026-10-23T14:27:13.000Z",
+   "s": "Product P5-P7: the patch bay, the phone wall, the anatomy of a message",
+   "r": "r3"
+  },
+  {
+   "h": "6f0b026",
+   "t": "2026-10-23T18:04:26.000Z",
+   "s": "Product P8: the split world, with the holdout knob as the valve between the crowds",
+   "r": "r4"
+  },
+  {
+   "h": "3f92bae",
+   "t": "2026-10-23T18:17:58.000Z",
+   "s": "Product P10: the dashboard on a 16:10 laptop whose screen scrolls",
+   "r": "r4"
+  },
+  {
+   "h": "7c65c21",
+   "t": "2026-10-23T18:23:49.000Z",
+   "s": "Product playbooks as a scroll-through, not tabs",
+   "r": "r4"
+  },
+  {
+   "h": "cc6e337",
+   "t": "2026-10-23T18:31:06.000Z",
+   "s": "Home finale: square on, sharp, and lit by a marquee",
+   "r": "r4"
+  },
+  {
+   "h": "44286b6",
+   "t": "2026-10-23T18:31:59.000Z",
+   "s": "Fixed UI: a z-index scale in tokens, a solid header, the gutter rule",
+   "r": "r4"
+  },
+  {
+   "h": "1cc21d5",
+   "t": "2026-10-23T18:40:19.000Z",
+   "s": "Render harness, and two root fixes it found",
+   "r": "r4"
+  },
+  {
+   "h": "f69799e",
+   "t": "2026-10-23T18:42:42.000Z",
+   "s": "Docs: render fixes, round 4 critique and set-piece additions, proof",
+   "r": "r4"
+  },
+  {
+   "h": "cdb8231",
+   "t": "2026-10-23T19:08:06.000Z",
+   "s": "J1 and J2: the Junction at the end of every page, and the arrival splash",
+   "r": "r4"
+  },
+  {
+   "h": "05e5726",
+   "t": "2026-10-23T19:15:33.000Z",
+   "s": "Junction: the frame's minimap and next teaser, the menu as its quick mode, a fuller splash",
+   "r": "r4"
+  },
+  {
+   "h": "7e5cefc",
+   "t": "2026-10-23T19:21:55.000Z",
+   "s": "Studio S3: the website bench on a 16:10 laptop with a scrolling store and app windows",
+   "r": "r4"
+  },
+  {
+   "h": "57dfcad",
+   "t": "2026-10-23T19:27:32.000Z",
+   "s": "Home H1, H2 and H6: the postmortem board, the ledger, the valve and the release",
+   "r": "r4"
+  },
+  {
+   "h": "ef1565a",
+   "t": "2026-10-23T19:30:47.000Z",
+   "s": "Product P11: the economics as a control room",
+   "r": "r4"
+  },
+  {
+   "h": "b4e3a69",
+   "t": "2026-10-23T19:39:30.000Z",
+   "s": "Complete pilot flight plan and interactive plan selection",
+   "r": "r4"
+  },
+  {
+   "h": "e2f8550",
+   "t": "2026-10-24T04:20:57.000Z",
+   "s": "Pilot: dark surfaces inside the khaki band keep their own colour tokens; a smaller lever",
+   "r": "r4"
+  },
+  {
+   "h": "fdd1870",
+   "t": "2026-10-24T04:32:23.000Z",
+   "s": "Team: a redacted dossier, a scanner, a constellation, rules you can throw, an open seat, a roster",
+   "r": "r4"
+  },
+  {
+   "h": "0034791",
+   "t": "2026-10-24T04:40:54.000Z",
+   "s": "Contact: intents that turn over, a greeting dial, hold to send, a real receipt, the audit as a scroll-through, Hyderabad, the FAQ",
+   "r": "r4"
+  },
+  {
+   "h": "cfc0c68",
+   "t": "2026-10-24T04:47:53.000Z",
+   "s": "Contact K7: the playable logo",
+   "r": "r4"
+  },
+  {
+   "h": "2f0c61d",
+   "t": "2026-10-24T04:59:38.000Z",
+   "s": "Work W2 and W3: blueprint slots and the Lab",
+   "r": "r4"
+  }
+ ]
+}
