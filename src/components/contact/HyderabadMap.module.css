@@ -1,0 +1,159 @@
+.section {
+  display: grid;
+  grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+  align-items: center;
+  gap: var(--gutter);
+  padding: var(--s10) calc(var(--margin) + 64px) var(--s9) var(--margin);
+  background: var(--ground);
+  border-top: var(--hair) solid var(--line);
+}
+
+.copy {
+  display: grid;
+  gap: var(--s4);
+}
+
+.kicker {
+  color: var(--khaki);
+}
+
+.title {
+  font-size: clamp(2.2rem, 1rem + 3vw, 4.4rem);
+  line-height: 0.9;
+  font-weight: 860;
+  font-stretch: 66%;
+  letter-spacing: -0.035em;
+  color: var(--cream);
+}
+
+.facts {
+  display: grid;
+  gap: var(--s4);
+  margin: 0;
+}
+
+.facts dt {
+  color: var(--muted);
+}
+
+.facts dd {
+  margin: 4px 0 0;
+  color: var(--cream);
+}
+
+.time {
+  font-size: clamp(2rem, 1.2rem + 2vw, 3.2rem);
+  line-height: 1;
+  font-weight: 820;
+  font-stretch: 70%;
+  color: var(--lumen);
+}
+
+.online {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.online i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--muted);
+}
+
+.online[data-on="1"] i {
+  background: var(--lumen);
+  box-shadow: 0 0 10px var(--lumen);
+}
+
+.map {
+  position: relative;
+  overflow: hidden;
+  border: var(--hair) solid var(--line);
+  background: radial-gradient(ellipse 50% 60% at 56% 52%, rgb(43 58 47 / 0.55), var(--ground-deep) 70%);
+}
+
+.svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.ring {
+  fill: none;
+  stroke: color-mix(in srgb, var(--khaki) 22%, transparent);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.ring[data-k="0"] {
+  stroke: color-mix(in srgb, var(--khaki) 40%, transparent);
+}
+
+.road {
+  stroke: color-mix(in srgb, var(--cream) 30%, transparent);
+  stroke-width: 1.5;
+  stroke-dasharray: 10 6;
+  vector-effect: non-scaling-stroke;
+}
+
+.outer {
+  fill: none;
+  stroke: var(--khaki);
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+
+.pin {
+  fill: var(--lumen);
+}
+
+.pulse {
+  fill: none;
+  stroke: var(--lumen);
+  stroke-width: 1.5;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: pulse 2.6s var(--ease-drift) infinite;
+}
+
+@keyframes pulse {
+  from {
+    transform: scale(0.2);
+    opacity: 1;
+  }
+  to {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+
+.leader {
+  stroke: var(--cream);
+  stroke-width: 1;
+}
+
+.label {
+  fill: var(--cream);
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.tick {
+  fill: var(--muted);
+  font-size: 13px;
+}
+
+@media (max-width: 900px) {
+  .section {
+    grid-template-columns: minmax(0, 1fr);
+    padding-right: var(--margin);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulse {
+    animation: none;
+  }
+}

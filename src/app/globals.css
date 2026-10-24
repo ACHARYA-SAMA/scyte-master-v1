@@ -23,7 +23,8 @@
   --hair: 1px;
 
   /* type: one family, every role */
-  --font: var(--font-archivo), "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  /* Archivo for everything it covers; Devanagari and Telugu fall back to the system's script fonts */
+  --font: var(--font-archivo), "Noto Sans Devanagari", "Nirmala UI", "Mangal", "Noto Sans Telugu", "Gautami", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
   --t-hud: clamp(0.71875rem, 0.69rem + 0.12vw, 0.8125rem);
   --t-small: clamp(0.84375rem, 0.81rem + 0.14vw, 0.9375rem);
   --t-body: clamp(1rem, 0.96rem + 0.2vw, 1.125rem);

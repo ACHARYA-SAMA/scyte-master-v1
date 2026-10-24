@@ -1,0 +1,106 @@
+.cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s3);
+}
+
+/* a card that turns over when picked, showing what follows */
+.card {
+  height: 150px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  perspective: 900px;
+  cursor: pointer;
+}
+
+.inner {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 640ms var(--ease-snap);
+}
+
+.card[data-on="1"] .inner {
+  transform: rotateY(180deg);
+}
+
+.front,
+.back {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  padding: 14px 16px;
+  border: var(--hair) solid var(--line);
+  backface-visibility: hidden;
+}
+
+.front {
+  background: color-mix(in srgb, var(--surface) 70%, transparent);
+  transition: border-color var(--dur-ui) linear;
+}
+
+.card:hover .front,
+.card:focus-visible .front {
+  border-color: var(--khaki);
+}
+
+.back {
+  background: var(--khaki);
+  color: var(--ground);
+  transform: rotateY(180deg);
+}
+
+.n {
+  color: var(--muted);
+}
+
+.back .n {
+  color: color-mix(in srgb, var(--ground) 70%, transparent);
+}
+
+.name {
+  font-size: clamp(1.3rem, 1rem + 1vw, 1.9rem);
+  line-height: 1;
+  font-weight: 860;
+  font-stretch: 70%;
+  color: var(--cream);
+}
+
+.line {
+  color: var(--khaki-light);
+  font-size: var(--t-small);
+  line-height: 1.35;
+}
+
+.back ol {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding-left: 1.1em;
+  font-size: var(--t-small);
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+@media (max-width: 640px) {
+  .cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .card {
+    height: 120px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .inner {
+    transition: none;
+  }
+}

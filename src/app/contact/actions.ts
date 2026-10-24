@@ -18,9 +18,12 @@ const limited = (key: string) => {
   return recent.length > MAX_PER_WINDOW;
 };
 
+const INTENT_LABEL: Record<Contact["intent"], string> = { audit: "20-minute store audit", project: "Studio project", pilot: "30-day pilot" };
+
 const format = (c: Contact) =>
   [
-    `Intent: ${c.intent === "audit" ? "20-minute store audit" : "Studio project"}`,
+    `Intent: ${INTENT_LABEL[c.intent]}`,
+    `Reference: ${c.ref || "none"}`,
     `Service: ${c.service ?? "not given"}`,
     `Name: ${c.name}`,
     `Email: ${c.email}`,
@@ -42,6 +45,7 @@ export async function submitContact(_prev: ContactState, form: FormData): Promis
     pains: form.getAll("pains"),
     message: form.get("message") ?? "",
     company: form.get("company") ?? "",
+    ref: form.get("ref") || undefined,
   });
 
   if (!parsed.success) {
@@ -65,7 +69,7 @@ export async function submitContact(_prev: ContactState, form: FormData): Promis
   try {
     await sendMail({
       replyTo: c.email,
-      subject: `${c.intent === "audit" ? "Store audit" : "Studio project"}: ${c.name}${c.store ? ` (${c.store})` : ""}`,
+      subject: `${INTENT_LABEL[c.intent]}: ${c.name}${c.store ? ` (${c.store})` : ""}${c.ref ? ` [${c.ref}]` : ""}`,
       text: format(c),
     });
   } catch (err) {

@@ -18,7 +18,7 @@ export const CONTACT_FLOW: Flow = {
       bot: [{ kind: "text", text: "Hi, this is Scyte. Five quick questions, and a person reads every answer. What do you need?" }],
       replies: [
         { label: "A store audit", to: "store", fields: [{ name: "intent", value: "audit" }, { name: "service", value: "recovery" }] },
-        { label: "A WhatsApp recovery pilot", to: "store", fields: [{ name: "intent", value: "audit" }, { name: "service", value: "recovery" }] },
+        { label: "A WhatsApp recovery pilot", to: "store", fields: [{ name: "intent", value: "pilot" }, { name: "service", value: "recovery" }] },
         { label: "A website", to: "store", fields: [{ name: "intent", value: "project" }, { name: "service", value: "website" }] },
         { label: "A mobile app", to: "store", fields: [{ name: "intent", value: "project" }, { name: "service", value: "apps" }] },
         { label: "Social media", to: "store", fields: [{ name: "intent", value: "project" }, { name: "service", value: "social" }] },
@@ -69,4 +69,68 @@ export const CONTACT_FLOW: Flow = {
     sending: { id: "sending", bot: [{ kind: "text", text: "Sending…" }], outcome: "sent" },
     pause: { id: "pause", bot: [{ kind: "text", text: "No problem. Nothing has been sent. The form below keeps what you typed." }], end: true },
   },
+};
+
+export type ContactLang = "en" | "hi" | "te" | "hinglish";
+export type ContactIntent = "audit" | "project" | "pilot";
+
+/** The greeting, in the visitor's language. The rest of the chat is in English for now. */
+const GREETING: Record<ContactLang, string> = {
+  en: "Hi, this is Scyte. Five quick questions, and a person reads every answer.",
+  hi: "नमस्ते, यह Scyte है। पाँच छोटे सवाल, और हर जवाब एक इंसान पढ़ता है।",
+  te: "నమస్తే, ఇది Scyte. ఐదు చిన్న ప్రశ్నలు, ప్రతి సమాధానాన్ని ఒక మనిషి చదువుతారు.",
+  hinglish: "Hi, yeh Scyte hai. Paanch chhote sawaal, aur har jawaab ek insaan padhta hai.",
+};
+
+const OPENER: Record<ContactIntent, string> = {
+  audit: "You picked the 20-minute store audit.",
+  project: "You picked a studio project.",
+  pilot: "You picked a 30-day pilot.",
+};
+
+const FIELDS: Record<ContactIntent, { name: string; value: string }[]> = {
+  audit: [
+    { name: "intent", value: "audit" },
+    { name: "service", value: "recovery" },
+  ],
+  project: [{ name: "intent", value: "project" }],
+  pilot: [
+    { name: "intent", value: "pilot" },
+    { name: "service", value: "recovery" },
+  ],
+};
+
+/**
+ * The same conversation, opened for the intent a visitor picked and greeted in their
+ * language. With an intent picked, the first question is skipped: the chat goes
+ * straight to the store, and the form already knows what is wanted.
+ */
+export const contactFlow = (intent: ContactIntent | null, lang: ContactLang): Flow => {
+  const greeting = GREETING[lang];
+  if (!intent || intent === "project") {
+    return {
+      ...CONTACT_FLOW,
+      id: `contact-${intent ?? "any"}-${lang}`,
+      nodes: {
+        ...CONTACT_FLOW.nodes,
+        need: { ...CONTACT_FLOW.nodes.need!, bot: [{ kind: "text", text: `${greeting} ${intent === "project" ? "Which kind of project?" : "What do you need?"}` }] },
+      },
+    };
+  }
+  return {
+    ...CONTACT_FLOW,
+    id: `contact-${intent}-${lang}`,
+    start: "opened",
+    nodes: {
+      ...CONTACT_FLOW.nodes,
+      opened: {
+        id: "opened",
+        bot: [{ kind: "text", text: `${greeting} ${OPENER[intent]}` }],
+        replies: [
+          { label: "That's right", to: "store", fields: FIELDS[intent] },
+          { label: "Something else", to: "need" },
+        ],
+      },
+    },
+  };
 };

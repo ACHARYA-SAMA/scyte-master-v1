@@ -1,0 +1,56 @@
+.section {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: var(--s7) var(--gutter);
+  align-items: start;
+  padding: var(--s10) calc(var(--margin) + 64px) var(--s9) var(--margin);
+  background: var(--ground-deep);
+  border-top: var(--hair) solid var(--line);
+}
+
+.head {
+  display: grid;
+  gap: var(--s4);
+  position: sticky;
+  top: calc(var(--nav-h) + 4vh);
+}
+
+.kicker {
+  color: var(--khaki);
+}
+
+.title {
+  font-size: clamp(2.2rem, 1rem + 3vw, 4.4rem);
+  line-height: 0.9;
+  font-weight: 860;
+  font-stretch: 66%;
+  letter-spacing: -0.035em;
+  color: var(--cream);
+}
+
+.channels {
+  display: grid;
+  justify-items: start;
+  gap: var(--s3);
+}
+
+.whatsapp {
+  padding: 14px 18px;
+  background: var(--khaki);
+  color: var(--ground);
+  font-weight: 700;
+}
+
+.list {
+  min-width: 0;
+}
+
+@media (max-width: 900px) {
+  .section {
+    grid-template-columns: minmax(0, 1fr);
+    padding-right: var(--margin);
+  }
+  .head {
+    position: static;
+  }
+}

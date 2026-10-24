@@ -11,6 +11,14 @@ export const PRODUCT_LABEL = "WhatsApp recovery for online stores";
 export const productName = (fallback = "a WhatsApp recovery platform") => (PRODUCT_NAME_FINAL ? PRODUCT_NAME : fallback);
 
 /**
+ * Contact channels that exist only once the client supplies them. With no number,
+ * no WhatsApp button renders; with no hours, no "likely online" dial renders.
+ */
+export const WHATSAPP_NUMBER: string | null = null;
+/** Office hours in Hyderabad time, 24 h, e.g. { from: 10, to: 19, days: [1, 2, 3, 4, 5, 6] } (0 is Sunday) */
+export const OFFICE_HOURS: { from: number; to: number; days: number[] } | null = null;
+
+/**
  * Plan prices are proposals still being validated with pilot partners. They print only
  * when this is true and a price is set; otherwise the page says "Pricing with your pilot".
  */

@@ -18,7 +18,7 @@ export const PAINS = [
   "Something else",
 ] as const;
 
-export const INTENTS = ["audit", "project"] as const;
+export const INTENTS = ["audit", "project", "pilot"] as const;
 
 export const SERVICE_IDS = ["recovery", "website", "apps", "social"] as const;
 
@@ -40,12 +40,14 @@ export const contactSchema = z
     revenue: z.enum(REVENUE_RANGES).optional(),
     pains: z.array(z.enum(PAINS)).max(PAINS.length).default([]),
     message: z.string().trim().max(2000).default(""),
+    /** the reference printed on the visitor's receipt, so the email and the receipt match */
+    ref: z.string().trim().max(24).optional(),
     /** Honeypot. Real people never see or fill this. */
     company: z.string().max(0).optional(),
   })
   .superRefine((v, ctx) => {
-    if (v.intent === "audit" && !v.store) {
-      ctx.addIssue({ code: "custom", path: ["store"], message: "The audit needs your store address" });
+    if ((v.intent === "audit" || v.intent === "pilot") && !v.store) {
+      ctx.addIssue({ code: "custom", path: ["store"], message: v.intent === "pilot" ? "The pilot needs your store address" : "The audit needs your store address" });
     }
   });
 

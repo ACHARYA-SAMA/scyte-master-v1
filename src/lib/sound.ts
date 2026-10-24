@@ -9,8 +9,38 @@ import { ui } from "./store";
  */
 
 const KEY = "scyte.sound";
+const VOLUME_KEY = "scyte.volume";
 let ctx: AudioContext | null = null;
 let master: GainNode | null = null;
+/** 0..1, the visitor's volume knob; kept in this browser */
+let volume = 0.7;
+
+let volumeLoaded = false;
+const loadVolume = () => {
+  if (volumeLoaded || typeof window === "undefined") return;
+  volumeLoaded = true;
+  try {
+    const v = Number(localStorage.getItem(VOLUME_KEY));
+    if (Number.isFinite(v) && v >= 0 && v <= 1 && localStorage.getItem(VOLUME_KEY) !== null) volume = v;
+  } catch {
+    /* storage blocked: the default stands */
+  }
+};
+
+export const getVolume = () => {
+  loadVolume();
+  return volume;
+};
+
+export const setVolume = (v: number) => {
+  volume = Math.min(1, Math.max(0, v));
+  if (master) master.gain.value = 0.23 * volume;
+  try {
+    localStorage.setItem(VOLUME_KEY, String(volume));
+  } catch {
+    /* fine: it resets next visit */
+  }
+};
 
 const audio = () => {
   if (typeof window === "undefined") return null;
@@ -19,7 +49,8 @@ const audio = () => {
     if (!Ctor) return null;
     ctx = new Ctor();
     master = ctx.createGain();
-    master.gain.value = 0.16;
+    loadVolume();
+    master.gain.value = 0.23 * volume;
     master.connect(ctx.destination);
   }
   if (ctx.state === "suspended") void ctx.resume();

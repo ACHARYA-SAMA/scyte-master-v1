@@ -1,14 +1,23 @@
 "use client";
 
-import { Suspense, useActionState, useCallback, useEffect, useId, useRef, useState } from "react";
+import { Suspense, useActionState, useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { submitContact } from "@/app/contact/actions";
 import { PAINS, REVENUE_RANGES, SERVICE_IDS, type ContactState } from "@/lib/contact-schema";
-import { CONTACT_FLOW } from "@/lib/chat/contactFlow";
+import { contactFlow, type ContactIntent, type ContactLang } from "@/lib/chat/contactFlow";
 import { InteractivePhone } from "@/components/devices/InteractivePhone";
 import { CopyEmail } from "@/components/shell/CopyEmail";
 import { Clock } from "@/components/nav/Nav";
-import { toast } from "@/lib/store";
-import { sfx } from "@/lib/sound";
+import { session, toast, useStore } from "@/lib/store";
+import { getVolume, setVolume, sfx } from "@/lib/sound";
+import { awardStamp } from "@/lib/stamps";
+import { RotaryKnob } from "@/components/kit/RotaryKnob";
+import { HoldToConfirm } from "@/components/kit/HoldToConfirm";
+import { ReceiptPrinter, type ReceiptLine } from "@/components/kit/ReceiptPrinter";
+import { TransitionLink } from "@/components/transition/navigation";
+import { Intents } from "./Intents";
+import { AuditThrough } from "./AuditThrough";
+import { HyderabadMap } from "./HyderabadMap";
+import { ContactFaq } from "./ContactFaq";
 import { track } from "@/lib/analytics";
 import { useMedia } from "@/lib/useMedia";
 import { SITE } from "@/config/site";
@@ -16,7 +25,7 @@ import { LetsTalk } from "./LetsTalk";
 import styles from "./Conversation.module.css";
 
 type Values = {
-  intent: "audit" | "project";
+  intent: "audit" | "project" | "pilot";
   service: (typeof SERVICE_IDS)[number] | "";
   store: string;
   revenue: string;
@@ -37,15 +46,38 @@ const SERVICE_LABEL: Record<(typeof SERVICE_IDS)[number], string> = {
 
 const initial: ContactState = { status: "idle" };
 
-const AUDIT = [
-  { when: "Before the call", what: "We go through your store as a shopper would: product pages, checkout, payment methods, how much is cash on delivery, the messages you send today." },
-  { when: "On the call", what: "Twenty minutes. We show you where it leaks, with screenshots, and what we would fix first." },
-  { when: "After", what: "A short written summary. If our platform is not the right fix, we say so." },
+const LANGS: { id: ContactLang; label: string }[] = [
+  { id: "en", label: "English" },
+  { id: "hi", label: "हिन्दी" },
+  { id: "te", label: "తెలుగు" },
+  { id: "hinglish", label: "Hinglish" },
 ];
+
+const INTENT_LABEL: Record<Values["intent"], string> = { audit: "20-minute store audit", project: "Studio project", pilot: "30-day pilot" };
+const NEXT: Record<Values["intent"], string[]> = {
+  audit: ["We look at the store as a shopper", "We write to book the call", "A summary follows the call"],
+  project: ["We read the brief", "We write to book a call", "A written scope follows"],
+  pilot: ["We look at the store first", "A call to agree the playbooks and the number", "Nothing is sent before that"],
+};
+
+/** A reference a person can quote: the date in Hyderabad and four random letters. */
+const makeRef = () => {
+  const d = new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Kolkata", year: "2-digit", month: "2-digit", day: "2-digit" }).format(new Date()).split("/").reverse().join("");
+  const a = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  return `SC-${d}-${Array.from({ length: 4 }, () => a[(Math.random() * a.length) | 0]).join("")}`;
+};
 
 /** Contact as a conversation, over a real form that works without the chat. */
 export function Conversation() {
   const uid = useId();
+  const [intent, setIntent] = useState<ContactIntent | null>(null);
+  const [lang, setLang] = useState(0);
+  const [vol, setVol] = useState(70);
+  const [hydrated, setHydrated] = useState(false);
+  const [ref, setRef] = useState("");
+  const [preview, setPreview] = useState(0);
+  const recovered = useStore(session, (s) => s.recovered);
+  const flow = useMemo(() => contactFlow(intent, LANGS[lang]!.id), [intent, lang]);
   const [values, setValues] = useState<Values>(EMPTY);
   const [filled, setFilled] = useState<string | null>(null);
   const [state, action, pending] = useActionState(submitContact, initial);
@@ -54,15 +86,30 @@ export function Conversation() {
   const viaChat = useRef(false);
   const small = useMedia("(max-width: 640px)");
 
-  // ?intent=audit or ?service=website from the rest of the site
+  // ?intent=audit|pilot or ?service=website from the rest of the site
   useEffect(() => {
     const q = new URLSearchParams(window.location.search);
     const service = q.get("service");
-    // the query is only known in the browser, after hydration
+    const wanted = q.get("intent");
+    // the query, the volume and the reference are only known in the browser, after hydration
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (service && (SERVICE_IDS as readonly string[]).includes(service)) setValues((v) => ({ ...v, intent: service === "recovery" ? "audit" : "project", service: service as Values["service"] }));
-    else if (q.get("intent") === "audit") setValues((v) => ({ ...v, intent: "audit", service: "recovery" }));
+    setHydrated(true);
+    setVol(Math.round(getVolume() * 100));
+    setRef(makeRef());
+    if (service && (SERVICE_IDS as readonly string[]).includes(service)) {
+      setValues((v) => ({ ...v, intent: service === "recovery" ? "audit" : "project", service: service as Values["service"] }));
+      setIntent(service === "recovery" ? "audit" : "project");
+    } else if (wanted === "audit" || wanted === "pilot") {
+      setValues((v) => ({ ...v, intent: wanted, service: "recovery" }));
+      setIntent(wanted);
+    }
   }, []);
+
+  const pickIntent = (i: ContactIntent) => {
+    setIntent(i);
+    setValues((v) => ({ ...v, intent: i, service: i === "project" ? (v.service === "recovery" ? "" : v.service) : "recovery" }));
+    sfx.clink();
+  };
 
   // the server's answer, said by the phone as well as the form
   useEffect(() => {
@@ -70,10 +117,11 @@ export function Conversation() {
       sfx.ok();
       track("contact_sent", { intent: state.intent, via: viaChat.current ? "chat" : "form" });
       toast("Sent. It is in Scyte's inbox.", "ok");
+      awardStamp("correspondent");
       // eslint-disable-next-line react-hooks/set-state-in-effect -- the reply follows the server, not a render
       setInject({
         id: Date.now(),
-        text: `Sent. Thanks${state.name ? `, ${state.name}` : ""}. We will write back from ${SITE.email}${state.intent === "audit" ? ", after we have looked at the store" : ""}.`,
+        text: `Sent. Thanks${state.name ? `, ${state.name}` : ""}. We will write back from ${SITE.email}${state.intent === "project" ? "" : ", after we have looked at the store"}.`,
         end: true,
       });
     }
@@ -87,7 +135,10 @@ export function Conversation() {
     setFilled(name);
     setValues((v) => {
       if (name === "pains") return { ...v, pains: v.pains.includes(value) ? v.pains : [...v.pains, value] };
-      if (name === "intent") return { ...v, intent: value as Values["intent"] };
+      if (name === "intent") {
+        setIntent(value as ContactIntent);
+        return { ...v, intent: value as Values["intent"] };
+      }
       if (name === "service") return { ...v, service: value as Values["service"] };
       return { ...v, [name]: value };
     });
@@ -110,6 +161,30 @@ export function Conversation() {
   const errors = state.status === "error" ? state.fields : {};
   const sent = state.status === "sent";
 
+  // K3: the receipt, previewed from the form before it goes, printed for real once it has
+  const draft: ReceiptLine[] = [
+    { kind: "title", text: "Before it goes" },
+    { kind: "row", left: "Need", right: INTENT_LABEL[values.intent] },
+    { kind: "row", left: "Service", right: values.service ? SERVICE_LABEL[values.service] : "Not sure yet" },
+    { kind: "row", left: "Store", right: values.store || "None given" },
+    { kind: "row", left: "Revenue", right: values.revenue || "Not given" },
+    { kind: "row", left: "Hurts most", right: values.pains.join(", ") || "Not given" },
+    { kind: "row", left: "Name", right: values.name || "Missing" },
+    { kind: "row", left: "Email", right: values.email || "Missing" },
+    { kind: "rule" },
+    { kind: "row", left: "Nothing has left this page yet." },
+  ];
+  const confirmation: ReceiptLine[] = [
+    { kind: "title", text: "Received" },
+    { kind: "row", left: "Reference", right: ref || "on the email", strong: true },
+    { kind: "row", left: "For", right: INTENT_LABEL[values.intent] },
+    { kind: "row", left: "Sent to", right: SITE.email },
+    { kind: "rule" },
+    ...NEXT[values.intent].map((n, i) => ({ kind: "row" as const, left: `${i + 1}. ${n}` })),
+    { kind: "rule" },
+    { kind: "total", left: "Reply from", right: SITE.email },
+  ];
+
   return (
     <div className={styles.page}>
       <section className={styles.top} aria-labelledby="contact-title">
@@ -119,45 +194,50 @@ export function Conversation() {
           </p>
           <LetsTalk />
           <p className={styles.lede}>Talk to us the way your customers will talk to you: on a chat. Or use the form under it; it is the same thing.</p>
-          <dl className={styles.facts}>
-            <div>
-              <dt className="t-hud">Email</dt>
-              <dd>
-                <CopyEmail big />
-              </dd>
-            </div>
-            <div>
-              <dt className="t-hud">Hyderabad, now</dt>
-              <dd className={styles.clock}>
-                <Clock />
-              </dd>
-            </div>
-          </dl>
+          <Intents value={intent} onChange={pickIntent} />
+          <div className={styles.dials}>
+            <RotaryKnob label="Greeting in" value={lang} min={0} max={LANGS.length - 1} step={1} ticks={LANGS.length} onChange={(v) => setLang(v)} format={(v) => LANGS[v]!.label} size="s" />
+            <RotaryKnob
+              label="Volume"
+              value={vol}
+              min={0}
+              max={100}
+              step={5}
+              onChange={(v) => {
+                setVol(v);
+                setVolume(v / 100);
+                sfx.tick();
+              }}
+              format={(v) => `${v} %`}
+              hint="Sound on in the menu"
+              size="s"
+            />
+            <dl className={styles.facts}>
+              <div>
+                <dt className="t-hud">Email</dt>
+                <dd>
+                  <CopyEmail />
+                </dd>
+              </div>
+              <div>
+                <dt className="t-hud">Hyderabad, now</dt>
+                <dd className={styles.clock}>
+                  <Clock />
+                </dd>
+              </div>
+            </dl>
+          </div>
+          <p className={`${styles.langNote} t-small`}>{lang ? "The greeting changes; the rest of the chat is in English for now." : "Turn the dial to be greeted in Hindi, Telugu or Hinglish."}</p>
         </div>
-        <div className={styles.phone}>
+        <div className={styles.phone} data-avoid>
           {/* the phone, the steps and the form hydrate as separate boundaries, not one long task */}
           <Suspense fallback={null}>
-            <InteractivePhone flow={CONTACT_FLOW} active variant={small ? "frameless" : "device"} onField={onField} onOutcome={onOutcome} inject={inject} replay={false} label="Chat with Scyte" />
+            <InteractivePhone key={flow.id} flow={flow} active variant={small ? "frameless" : "device"} onField={onField} onOutcome={onOutcome} inject={inject} replay={false} label="Chat with Scyte" />
           </Suspense>
         </div>
       </section>
 
-      <Suspense fallback={null}>
-        <section className={styles.audit} aria-labelledby="audit-title">
-          <h2 id="audit-title" className={styles.h2}>
-            The 20-minute store audit
-          </h2>
-          <ol className={styles.steps}>
-            {AUDIT.map((a, i) => (
-              <li key={a.when} data-tilt>
-                <span className={styles.stepN}>{String(i + 1).padStart(2, "0")}</span>
-                <span className={`${styles.stepWhen} t-hud`}>{a.when}</span>
-                <p>{a.what}</p>
-              </li>
-            ))}
-          </ol>
-        </section>
-      </Suspense>
+      <AuditThrough />
 
       <Suspense fallback={null}>
         <section className={styles.formWrap} aria-labelledby="form-title">
@@ -171,10 +251,19 @@ export function Conversation() {
             <fieldset className={styles.row}>
               <legend className="t-hud">What you need</legend>
               <div className={styles.choices}>
-                {(["audit", "project"] as const).map((i) => (
+                {(["audit", "project", "pilot"] as const).map((i) => (
                   <label key={i} className={styles.choice}>
-                    <input type="radio" name="intent" value={i} checked={values.intent === i} onChange={() => set("intent", i)} />
-                    <span>{i === "audit" ? "A store audit" : "A studio project"}</span>
+                    <input
+                      type="radio"
+                      name="intent"
+                      value={i}
+                      checked={values.intent === i}
+                      onChange={() => {
+                        set("intent", i);
+                        setIntent(i);
+                      }}
+                    />
+                    <span>{i === "audit" ? "A store audit" : i === "project" ? "A studio project" : "A 30-day pilot"}</span>
                   </label>
                 ))}
               </div>
@@ -193,7 +282,7 @@ export function Conversation() {
 
             <div className={styles.grid}>
               <label className={styles.field} data-hot={filled === "store" ? "1" : undefined}>
-                <span className={styles.label}>Store address {values.intent === "audit" ? "" : "(optional)"}</span>
+                <span className={styles.label}>Store address {values.intent === "project" ? "(optional)" : ""}</span>
                 <input name="store" inputMode="url" autoComplete="url" placeholder="yourstore.in" value={values.store} onChange={(e) => set("store", e.target.value)} aria-invalid={!!errors.store} aria-describedby={errors.store ? `${uid}-store` : undefined} />
                 {errors.store ? (
                   <span id={`${uid}-store`} className={styles.error}>
@@ -255,6 +344,7 @@ export function Conversation() {
               <textarea name="message" rows={4} value={values.message} onChange={(e) => set("message", e.target.value)} />
             </label>
 
+            <input type="hidden" name="ref" value={ref} />
             {/* honeypot: hidden from people and from assistive technology */}
             <div className={styles.trap} aria-hidden="true">
               <label>
@@ -264,8 +354,17 @@ export function Conversation() {
             </div>
 
             <div className={styles.submitRow}>
-              <button type="submit" className={`${styles.submit} cta`} disabled={pending || sent} data-glow data-magnetic data-cursor="tap">
-                {pending ? "Sending…" : sent ? "Sent" : "Send"}
+              {hydrated ? (
+                <HoldToConfirm onConfirm={() => form.current?.requestSubmit()} disabled={pending || sent} doneLabel={sent ? "Sent" : "Sending"} size="l">
+                  {pending ? "Sending…" : sent ? "Sent" : "Hold to send"}
+                </HoldToConfirm>
+              ) : (
+                <button type="submit" className={`${styles.submit} cta`} disabled={pending || sent} data-glow data-magnetic data-cursor="tap">
+                  {pending ? "Sending…" : sent ? "Sent" : "Send"}
+                </button>
+              )}
+              <button type="button" className={styles.preview} onClick={() => setPreview((n) => n + 1)} disabled={sent}>
+                Preview the receipt
               </button>
               <p className={styles.status} role="status" aria-live="polite">
                 {state.status === "error" ? state.message : sent ? "In Scyte's inbox. Thank you." : ""}
@@ -276,8 +375,35 @@ export function Conversation() {
               analytics and no trackers.
             </p>
           </form>
+          <aside className={styles.receiptCol} aria-label="Receipt" data-avoid>
+            <ReceiptPrinter
+              label={sent ? "Received" : "Preview"}
+              lines={sent ? confirmation : draft}
+              printId={sent ? 999 : preview}
+              idleText="Preview prints what will be sent"
+            />
+            {sent ? (
+              <div className={styles.success}>
+                <p className={styles.successTitle}>It is in our inbox.</p>
+                <p className="t-small">
+                  Reference <b className="t-num">{ref || "on the email"}</b>. Orders you recovered on this visit: <b className="t-num">{recovered}</b>. A stamp landed in your passport.
+                </p>
+                <div className={styles.successLinks}>
+                  <TransitionLink href="/" className="cta" data-magnetic>
+                    Back into the story
+                  </TransitionLink>
+                  <TransitionLink href="/product" className={styles.quiet}>
+                    See the machine
+                  </TransitionLink>
+                </div>
+              </div>
+            ) : null}
+          </aside>
         </section>
       </Suspense>
+
+      <HyderabadMap />
+      <ContactFaq />
     </div>
   );
 }
