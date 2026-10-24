@@ -354,72 +354,6 @@
   color: var(--cream);
 }
 
-/* ------------------------------------------------------------- case 01 */
-.open {
-  display: grid;
-  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-  grid-template-areas:
-    "title slots"
-    "lede slots";
-  align-content: start;
-  gap: var(--s5) var(--gutter);
-  padding: clamp(80px, 12vh, 140px) var(--margin);
-}
-
-.open .h2 {
-  grid-area: title;
-}
-
-.openLede {
-  grid-area: lede;
-  align-self: start;
-  max-width: 38ch;
-  color: var(--khaki-light);
-  text-wrap: pretty;
-}
-
-.slots {
-  grid-area: slots;
-  display: grid;
-  border-bottom: var(--hair) solid var(--line);
-}
-
-.slotRow {
-  display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 2fr) auto;
-  align-items: baseline;
-  gap: var(--s4);
-  padding: 24px 0;
-  border-top: var(--hair) solid var(--line);
-  color: var(--cream);
-  text-decoration: none;
-  transition:
-    background-color var(--dur-feedback) linear,
-    color var(--dur-feedback) linear,
-    padding var(--dur-panel) var(--ease-glide);
-}
-
-.slotRow:hover,
-.slotRow:focus-visible {
-  background: var(--ground);
-  color: var(--khaki);
-  padding-inline: var(--s5);
-  outline: none;
-}
-
-.slotName {
-  font-size: var(--t-h3);
-  line-height: 1;
-  font-weight: 720;
-  font-stretch: 84%;
-  letter-spacing: -0.02em;
-}
-
-.slotGo {
-  font-size: var(--t-small);
-  font-weight: 640;
-}
-
 @media (max-width: 820px) {
   .archive {
     --pw: 78vw;
@@ -439,21 +373,11 @@
     justify-self: start;
     text-align: left;
   }
-  .house,
-  .open {
+  .house {
     grid-template-columns: 1fr;
     grid-template-areas: none;
   }
-  .open .h2,
-  .openLede,
-  .slots {
-    grid-area: auto;
-  }
   .sheet {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .slotRow {
-    grid-template-columns: 1fr;
-    gap: var(--s2);
   }
 }

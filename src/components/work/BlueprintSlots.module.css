@@ -1,0 +1,197 @@
+.section {
+  display: grid;
+  gap: var(--s7);
+  padding: var(--s10) calc(var(--margin) + 64px) var(--s9) var(--margin);
+  background: var(--ground);
+  border-top: var(--hair) solid var(--line);
+}
+
+.head {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  grid-template-areas:
+    "kicker kicker"
+    "title lede";
+  align-items: end;
+  gap: var(--s3) var(--s7);
+}
+
+.kicker {
+  grid-area: kicker;
+  color: var(--khaki);
+}
+
+.title {
+  grid-area: title;
+  font-size: clamp(2.4rem, 1rem + 3.6vw, 5rem);
+  line-height: 0.88;
+  font-weight: 880;
+  font-stretch: 64%;
+  letter-spacing: -0.035em;
+  color: var(--cream);
+}
+
+.lede {
+  grid-area: lede;
+  color: var(--khaki-light);
+  max-width: 44ch;
+}
+
+.slots {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--gutter);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.slot {
+  display: grid;
+  gap: var(--s4);
+}
+
+/* blueprint paper: a fine grid, the drawing in cream line, a scan bar redrawing it */
+.paper {
+  position: relative;
+  aspect-ratio: 32 / 22;
+  overflow: hidden;
+  background: #142a24;
+  border: var(--hair) solid color-mix(in srgb, var(--cream) 30%, transparent);
+}
+
+.grid {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(rgb(230 213 184 / 0.06) 1px, transparent 1px) 0 0 / 16px 16px,
+    linear-gradient(90deg, rgb(230 213 184 / 0.06) 1px, transparent 1px) 0 0 / 16px 16px;
+}
+
+.wire {
+  position: absolute;
+  inset: 8%;
+  width: 84%;
+  height: 84%;
+  overflow: visible;
+}
+
+.wire * {
+  fill: none;
+  stroke: var(--cream);
+  stroke-width: 1.4;
+  vector-effect: non-scaling-stroke;
+  stroke-dasharray: 400;
+  stroke-dashoffset: 400;
+  animation: draw 6s var(--ease-drift) infinite;
+  animation-delay: calc(var(--i) * 0.9s);
+}
+
+.wire :nth-child(2n) {
+  animation-delay: calc(var(--i) * 0.9s + 0.25s);
+}
+
+.wire :nth-child(3n) {
+  animation-delay: calc(var(--i) * 0.9s + 0.5s);
+}
+
+@keyframes draw {
+  0% {
+    stroke-dashoffset: 400;
+    opacity: 0.4;
+  }
+  40%,
+  80% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0.15;
+  }
+}
+
+.slot:hover .wire * {
+  stroke: var(--lumen);
+}
+
+.scan {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0 49.5%, rgb(249 220 125 / 0.6) 50%, transparent 50.5%);
+  background-size: 240% 100%;
+  animation: scan 4.5s linear infinite;
+  animation-delay: calc(var(--i) * 0.6s);
+}
+
+@keyframes scan {
+  from {
+    background-position: 110% 0;
+  }
+  to {
+    background-position: -10% 0;
+  }
+}
+
+.stamp {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  padding: 3px 8px;
+  border: 1.5px solid var(--lumen);
+  color: var(--lumen);
+  rotate: 6deg;
+}
+
+.sheetNo {
+  position: absolute;
+  left: 12px;
+  bottom: 10px;
+  color: color-mix(in srgb, var(--cream) 60%, transparent);
+}
+
+.meta {
+  display: grid;
+  justify-items: start;
+  gap: var(--s2);
+}
+
+.name {
+  font-size: clamp(1.5rem, 1rem + 1.2vw, 2.2rem);
+  line-height: 1;
+  font-weight: 860;
+  font-stretch: 68%;
+  color: var(--cream);
+}
+
+.what {
+  color: var(--khaki-light);
+}
+
+.claim {
+  margin-top: var(--s2);
+}
+
+@media (max-width: 960px) {
+  .section {
+    padding-right: var(--margin);
+  }
+  .head,
+  .slots {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .head {
+    grid-template-areas:
+      "kicker"
+      "title"
+      "lede";
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wire *,
+  .scan {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}

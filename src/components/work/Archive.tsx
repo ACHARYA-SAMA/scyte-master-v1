@@ -9,8 +9,10 @@ import { SceneSection } from "@/components/gl/SceneSection";
 import { TransitionLink, useTransitionRouter } from "@/components/transition/navigation";
 import { releaseHandoff, showHandoff } from "@/components/transition/Handoff";
 import { useChapters } from "@/components/shell/chapters";
-import { THIS_SITE, THIS_SITE_SCENES, OPEN_SLOTS, WORK } from "@/data/work";
+import { THIS_SITE, THIS_SITE_SCENES, WORK } from "@/data/work";
 import { PLATES, archiveGl, strip, type Plate } from "./strip";
+import { BlueprintSlots } from "./BlueprintSlots";
+import { Lab } from "./Lab";
 import styles from "./Archive.module.css";
 
 /** Seconds of momentum a throw carries before the strip settles on a frame. */
@@ -49,7 +51,8 @@ export function Archive() {
       () => [
         { id: "archive", label: "Frames", target: "archive" },
         { id: "case-00", label: "Case 00", target: "case-00" },
-        { id: "open", label: "Case 01", target: "open" },
+        { id: "open", label: "Reserved", target: "open" },
+        { id: "lab", label: "The lab", target: "lab" },
       ],
       [],
     ),
@@ -405,23 +408,8 @@ export function Archive() {
         </ol>
       </section>
 
-      <section id="open" className={`${styles.open} band`} aria-labelledby="open-title">
-        <h2 id="open-title" className={styles.h2}>
-          Case 01 is open.
-        </h2>
-        <p className={styles.openLede}>We take on a few projects at a time. Tell us what you sell and where it leaks, and we will say plainly whether we can help.</p>
-        <ul className={styles.slots}>
-          {OPEN_SLOTS.map((o) => (
-            <li key={o.id}>
-              <TransitionLink href={o.href} className={styles.slotRow} data-cursor="tap">
-                <span className={styles.slotName}>{o.service}</span>
-                <span className={styles.slotLine}>{o.what}</span>
-                <span className={styles.slotGo}>Start a project</span>
-              </TransitionLink>
-            </li>
-          ))}
-        </ul>
-      </section>
+      <BlueprintSlots />
+      <Lab />
     </>
   );
 }
