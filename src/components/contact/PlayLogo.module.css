@@ -1,0 +1,79 @@
+/* K7: a full screen of the name to play with; touch drags letters, not the page */
+.section {
+  position: relative;
+  height: 100svh;
+  min-height: 560px;
+  border-top: var(--hair) solid var(--line);
+  touch-action: pan-y;
+}
+
+.copy {
+  position: absolute;
+  left: var(--margin);
+  top: calc(var(--nav-h) + 4vh);
+  display: grid;
+  gap: var(--s3);
+  max-width: 34rem;
+  pointer-events: none;
+}
+
+.kicker {
+  color: var(--khaki);
+}
+
+.title {
+  font-size: clamp(2.2rem, 1rem + 3vw, 4.4rem);
+  line-height: 0.9;
+  font-weight: 860;
+  font-stretch: 66%;
+  letter-spacing: -0.035em;
+  color: var(--cream);
+}
+
+.lede {
+  color: var(--khaki-light);
+}
+
+.controls {
+  position: absolute;
+  right: calc(var(--margin) + 64px);
+  bottom: 104px;
+  display: flex;
+  align-items: center;
+  gap: var(--s4);
+}
+
+.btn {
+  padding: 11px 16px;
+  border: 1px solid var(--khaki);
+  background: color-mix(in srgb, var(--abyss) 70%, transparent);
+  color: var(--cream);
+  font: inherit;
+  font-size: var(--t-small);
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.btn:hover:not(:disabled),
+.btn:focus-visible {
+  background: var(--khaki);
+  color: var(--ground);
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.state {
+  min-width: 16ch;
+  color: var(--muted);
+}
+
+@media (max-width: 760px) {
+  .controls {
+    left: var(--margin);
+    right: var(--margin);
+    flex-wrap: wrap;
+  }
+}

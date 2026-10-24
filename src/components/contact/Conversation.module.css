@@ -1,8 +1,10 @@
+/* each section carries its own ground, so the playable logo can show the canvas */
 .page {
-  background: var(--ground);
+  position: relative;
 }
 
 .top {
+  background: var(--ground);
   display: grid;
   grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
   gap: var(--s7);
@@ -117,6 +119,7 @@
 
 /* ------------------------------------------------------------- form */
 .formWrap {
+  background: var(--ground);
   display: grid;
   grid-template-columns: minmax(0, 8fr) minmax(0, 4fr);
   grid-template-areas:

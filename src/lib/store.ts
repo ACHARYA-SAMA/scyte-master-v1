@@ -97,7 +97,8 @@ export type SceneKey =
   | "assembly"
   | "team"
   | "work"
-  | "junction";
+  | "junction"
+  | "playlogo";
 
 export const gl = createStore({
   scene: "none" as SceneKey,

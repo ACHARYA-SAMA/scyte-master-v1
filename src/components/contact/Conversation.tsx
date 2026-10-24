@@ -18,6 +18,7 @@ import { Intents } from "./Intents";
 import { AuditThrough } from "./AuditThrough";
 import { HyderabadMap } from "./HyderabadMap";
 import { ContactFaq } from "./ContactFaq";
+import { PlayLogo } from "./PlayLogo";
 import { track } from "@/lib/analytics";
 import { useMedia } from "@/lib/useMedia";
 import { SITE } from "@/config/site";
@@ -404,6 +405,7 @@ export function Conversation() {
 
       <HyderabadMap />
       <ContactFaq />
+      <PlayLogo />
     </div>
   );
 }
