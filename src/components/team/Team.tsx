@@ -12,6 +12,14 @@ import { FACE } from "@/lib/silhouette";
 import { Dock, type DockHandle } from "./Dock";
 import { TeamHud } from "./TeamHud";
 import { Dossier } from "./Dossier";
+import { Redacted } from "@/components/kit/Redacted";
+import { RotaryKnob } from "@/components/kit/RotaryKnob";
+import { LeverSwitch } from "@/components/kit/LeverSwitch";
+import { awardStamp } from "@/lib/stamps";
+import { toast, useStore } from "@/lib/store";
+import { sfx } from "@/lib/sound";
+import { TeamSections } from "./TeamSections";
+import { Roster } from "./Roster";
 import styles from "./Team.module.css";
 
 const LOGO: Face = { id: "logo", kind: "logo" };
@@ -32,6 +40,10 @@ export function Team() {
   const dock = useRef<DockHandle>(null);
   const userTookOver = useRef(false);
   const touch = useMedia("(hover: none), (max-width: 900px)");
+  const sensitivity = useStore(scan, (s) => s.sensitivity);
+  const [sweeping, setSweeping] = useState(false);
+  const sweepTimers = useRef<number[]>([]);
+  useEffect(() => () => sweepTimers.current.forEach((t) => window.clearTimeout(t)), []);
 
   // deep link: /team?member=slug opens that dossier
   useEffect(() => {
@@ -80,6 +92,33 @@ export function Team() {
     [takeOver],
   );
 
+  // T3, Scan all: a beam crosses the room, locking on each person in turn, and the
+  // team folds back into the wordmark at the end
+  const scanAll = () => {
+    if (sweeping) return;
+    takeOver();
+    setSweeping(true);
+    sweepTimers.current.forEach((t) => window.clearTimeout(t));
+    const step = prefersReducedMotion() ? 260 : 900;
+    TEAM.forEach((_, i) => {
+      sweepTimers.current.push(
+        window.setTimeout(() => {
+          setActive(i);
+          sfx.scan();
+        }, 300 + i * step),
+      );
+    });
+    sweepTimers.current.push(
+      window.setTimeout(() => {
+        setActive(-1);
+        setSweeping(false);
+        sfx.relay();
+        awardStamp("fullscan");
+        toast("Everyone scanned. The team folds back into the name.", "ok");
+      }, 300 + TEAM.length * step + 400),
+    );
+  };
+
   const leave = useCallback(() => {
     if (open >= 0 || attract) return;
     setActive(-1);
@@ -126,6 +165,7 @@ export function Team() {
   const face: Face = useMemo(() => (member ? { id: member.slug, kind: "text", text: displayName(member) } : LOGO), [member]);
 
   return (
+    <>
     <SceneSection scene="team" className={styles.team} aria-labelledby="team-title">
       <div className={styles.stage} data-motion-own>
         <header className={styles.top}>
@@ -139,7 +179,20 @@ export function Team() {
           <Dock ref={dock} team={TEAM} active={active} touch={touch} onPreview={preview} onOpen={openDossier} onLeave={leave} />
         </header>
 
-        <TeamHud member={member} index={Math.max(0, active)} total={TEAM.length} attract={attract} />
+        <TeamHud
+          member={member}
+          index={Math.max(0, active)}
+          total={TEAM.length}
+          attract={attract}
+          controls={
+            <>
+              <RotaryKnob label="Sensitivity" value={sensitivity} min={0} max={100} step={5} onChange={(v) => scan.set({ sensitivity: v })} format={(v) => `${v} %`} size="s" />
+              <LeverSwitch label="Scan all" positions={["Idle", "Scan"]} mode="pull" orientation="horizontal" onPull={scanAll} size="m" disabled={sweeping} />
+            </>
+          }
+        />
+
+        <span className={styles.beam} data-on={sweeping ? "1" : undefined} aria-hidden />
 
         <div className={styles.word} data-member={member ? "1" : "0"}>
           <SliceWord face={face} tone={member ? "cream" : "khaki"} origin={origin} label={member ? displayName(member) : "Scyte"} />
@@ -154,9 +207,9 @@ export function Team() {
             <span className={styles.grip} aria-hidden />
             <p className={`${styles.sheetId} t-hud`}>
               <span className="t-num">{hexId(member.slug)}</span>
-              <span>{member.codename ?? "[ FILL: codename ]"}</span>
+              <span>{member.codename ?? <Redacted what="Codename" chars={9} />}</span>
             </p>
-            <p className={styles.sheetName}>{member.name ?? "[ FILL: name ]"}</p>
+            <p className={styles.sheetName}>{member.name ?? <Redacted what="Name" chars={8} />}</p>
             <p className={styles.sheetRole}>{member.role}</p>
             <div className={styles.sheetActions}>
               <button type="button" className={styles.sheetOpen} onClick={() => openDossier(active)}>
@@ -173,34 +226,13 @@ export function Team() {
           </div>
         ) : null}
       </div>
-
-      <section className={styles.roster} aria-labelledby="roster-title">
-        <h2 id="roster-title" className={styles.rosterTitle}>
-          The roster
-        </h2>
-        <p className={styles.rosterNote}>Four seats, from our plan. Each one fills in here as the person joins: name, photo, links.</p>
-        <ol className={styles.rows}>
-          {TEAM.map((m, i) => (
-            <li key={m.slug}>
-              <span className={`${styles.ri} t-hud`}>{String(i + 1).padStart(2, "0")}</span>
-              <span className={styles.rn}>{m.name ?? <span className="fill">[ FILL: name ]</span>}</span>
-              <span className={styles.rr}>{m.role}</span>
-              <span className={styles.rl}>{m.location ?? <span className="fill">[ FILL: city ]</span>}</span>
-              <span className={styles.rp}>
-                {m.links.portfolio ? (
-                  <a href={m.links.portfolio} target="_blank" rel="noopener noreferrer">
-                    Portfolio
-                  </a>
-                ) : (
-                  <span className="c-muted t-small">Portfolio coming soon</span>
-                )}
-              </span>
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      {open >= 0 ? <Dossier key={TEAM[open].slug} member={TEAM[open]} fromEl={openFrom} onClose={closeDossier} /> : null}
     </SceneSection>
+
+    {/* below the scan, the canvas rests: these sit outside its section */}
+    <TeamSections />
+    <Roster onOpen={openDossier} />
+
+    {open >= 0 ? <Dossier key={TEAM[open].slug} member={TEAM[open]} fromEl={openFrom} onClose={closeDossier} /> : null}
+    </>
   );
 }

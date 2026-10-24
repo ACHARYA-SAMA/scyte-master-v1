@@ -42,7 +42,8 @@
   position: absolute;
   left: 50%;
   bottom: clamp(16px, 3vh, 36px);
-  width: min(calc(100% - 2 * var(--margin)), 118svh, 1180px);
+  /* the name fits between the HUD's two columns, never over them */
+  width: max(280px, min(calc(100% - 2 * var(--margin) - 2 * min(22rem, 24vw) - 48px), 84svh, 940px));
   translate: -50% 0;
   z-index: 2;
   pointer-events: none;
@@ -130,129 +131,7 @@
   color: var(--muted);
 }
 
-/* the roster, plain and complete, for everyone and for search */
-.roster {
-  position: relative;
-  z-index: 2;
-  display: grid;
-  gap: var(--s5);
-  padding: clamp(80px, 12vh, 140px) var(--margin);
-  background: var(--ground);
-  border-top: var(--hair) solid var(--line);
-}
-
-.rosterTitle {
-  font-size: var(--t-h2);
-  font-weight: 760;
-  font-stretch: 84%;
-  letter-spacing: -0.03em;
-  color: var(--cream);
-}
-
-.rosterNote {
-  color: var(--khaki-light);
-  max-width: 52ch;
-}
-
-.rows {
-  display: grid;
-}
-
-/* each seat a row you can feel: a big index, the role set large, a light that sweeps
-   in under the pointer. Open seats read as open, not as missing data */
-.rows li {
-  position: relative;
-  isolation: isolate;
-  display: grid;
-  grid-template-columns: 4.5em minmax(0, 5fr) minmax(0, 2fr) minmax(0, 1.4fr) minmax(0, 1.6fr);
-  gap: var(--gutter);
-  align-items: center;
-  padding: var(--s5) 0;
-  border-top: var(--hair) solid var(--line);
-  transition: padding 520ms var(--ease-glide);
-}
-
-.rows li:last-child {
-  border-bottom: var(--hair) solid var(--line);
-}
-
-.rows li::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: linear-gradient(90deg, color-mix(in srgb, var(--khaki) 11%, transparent), transparent 75%);
-  transform: scaleX(0);
-  transform-origin: 0 50%;
-  transition: transform 620ms var(--ease-snap);
-}
-
-.rows li:hover::before {
-  transform: scaleX(1);
-}
-
-.rows li:hover {
-  padding-inline: var(--s4);
-}
-
-.rows .ri {
-  font-size: clamp(2.2rem, 1.4rem + 1.8vw, 3.4rem);
-  line-height: 0.8;
-  font-weight: 900;
-  font-stretch: 62%;
-  letter-spacing: 0;
-  color: var(--khaki);
-  text-shadow: 0 0 36px color-mix(in srgb, var(--lumen) 18%, transparent);
-}
-
-.rr {
-  order: 1;
-  font-size: var(--t-lead);
-  line-height: 1.25;
-  font-weight: 560;
-  letter-spacing: -0.01em;
-  color: var(--cream);
-  text-wrap: balance;
-}
-
-.rn {
-  order: 2;
-  font-weight: 650;
-  color: var(--cream);
-}
-
-.rl {
-  order: 3;
-}
-
-.rp {
-  order: 4;
-  justify-self: end;
-}
-
-.rl,
-.rp {
-  font-size: var(--t-small);
-}
-
-.rp a {
-  color: var(--cream);
-  text-decoration: underline;
-  text-underline-offset: 4px;
-}
-
 @media (max-width: 900px) {
-  .rows li {
-    grid-template-columns: 3.2em minmax(0, 1fr);
-    row-gap: var(--s2);
-  }
-  .rr,
-  .rn,
-  .rl,
-  .rp {
-    grid-column: 2;
-    justify-self: start;
-  }
   .top {
     justify-items: stretch;
     text-align: left;
@@ -265,13 +144,41 @@
   .word {
     bottom: auto;
     top: 42%;
+    width: min(calc(100% - 2 * var(--margin)), 118svh);
   }
-  .rows li {
-    grid-template-columns: 2.4em 1fr;
+}
+
+/* ------------------------------------------------------------- T3: the scan-all beam */
+/* the sweep: a hairline of light crossing the room, once per person */
+.beam {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent 0 calc(50% - 60px), color-mix(in srgb, var(--lumen) 10%, transparent) calc(50% - 4px), var(--lumen) 50%, transparent calc(50% + 2px));
+  background-size: 240% 100%;
+  background-position: 120% 0;
+  opacity: 0;
+}
+
+.beam[data-on="1"] {
+  opacity: 1;
+  animation: beam 900ms var(--ease-drift) infinite;
+}
+
+@keyframes beam {
+  from {
+    background-position: 120% 0;
   }
-  .rr,
-  .rl,
-  .rp {
-    grid-column: 2;
+  to {
+    background-position: -20% 0;
+  }
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  .beam[data-on="1"] {
+    animation: none;
+    opacity: 0.4;
   }
 }

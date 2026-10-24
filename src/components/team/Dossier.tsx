@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { Redacted } from "@/components/kit/Redacted";
 import { displayName, hexId, type Member } from "@/data/team";
 import { gsap, prefersReducedMotion } from "@/lib/motion";
 import { scroller } from "@/components/providers/SmoothScroll";
 import { Portrait } from "./Portrait";
 import styles from "./Dossier.module.css";
 
-const FILL = (what: string) => <span className="fill">[ FILL: {what} ]</span>;
+const FILL = (what: string, chars = 10) => <Redacted what={what} chars={chars} />;
 
 const LINKS: { key: keyof Member["links"]; label: string }[] = [
   { key: "portfolio", label: "Portfolio" },
@@ -83,10 +84,10 @@ export function Dossier({ member, fromEl, onClose }: { member: Member; fromEl: H
           </button>
         </header>
         <p className={`${styles.codename} t-hud`} data-row>
-          {member.codename ?? FILL("codename")}
+          {member.codename ?? FILL("Codename", 9)}
         </p>
         <h2 className={styles.name} data-row>
-          {member.name ?? FILL("name")}
+          {member.name ?? FILL("Name", 8)}
         </h2>
         <p className={styles.role} data-row>
           {member.role}
@@ -94,19 +95,27 @@ export function Dossier({ member, fromEl, onClose }: { member: Member; fromEl: H
         <dl className={styles.facts} data-row>
           <div>
             <dt className="t-hud">Location</dt>
-            <dd>{member.location ?? FILL("city")}</dd>
+            <dd>{member.location ?? FILL("City", 8)}</dd>
           </div>
           <div>
             <dt className="t-hud">Joined</dt>
-            <dd>{member.joined ?? FILL("year")}</dd>
+            <dd>{member.joined ?? FILL("Year joined", 4)}</dd>
           </div>
           <div>
             <dt className="t-hud">Currently</dt>
-            <dd>{member.currently ?? FILL("current work")}</dd>
+            <dd>{member.currently ?? FILL("Current work", 14)}</dd>
           </div>
         </dl>
         <div className={styles.bio} data-row>
-          {member.bio ? <p>{member.bio}</p> : <p>{FILL("a short bio, in their own words")}</p>}
+          {member.bio ? (
+            <p>{member.bio}</p>
+          ) : (
+            <p className={styles.redactedLines}>
+              {FILL("Bio", 30)}
+              {FILL("Bio, second line", 22)}
+              {FILL("Bio, third line", 14)}
+            </p>
+          )}
         </div>
         <div className={styles.skills} data-row>
           <p className="t-hud c-muted">Skills</p>
@@ -142,7 +151,7 @@ export function Dossier({ member, fromEl, onClose }: { member: Member; fromEl: H
                     {l.key === "portfolio" ? "Visit portfolio" : l.label}
                   </a>
                 ) : (
-                  <span className={styles.missing}>{l.key === "portfolio" ? "Portfolio coming soon" : `${l.label}: [ FILL ]`}</span>
+                  <span className={styles.missing}>{l.key === "portfolio" ? "Portfolio coming soon" : <>{l.label} {FILL(l.label, 6)}</>}</span>
                 )}
               </li>
             );

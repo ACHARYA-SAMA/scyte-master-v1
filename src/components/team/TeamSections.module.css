@@ -1,0 +1,291 @@
+/* T4, T6, T7: below the scan, each on solid ground so the hologram stays above */
+.block {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  gap: var(--s6);
+  padding: var(--s10) calc(var(--margin) + 64px) var(--s9) var(--margin);
+  background: var(--ground);
+  border-top: var(--hair) solid var(--line);
+}
+
+.head {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  grid-template-areas:
+    "kicker kicker"
+    "title lede";
+  align-items: end;
+  gap: var(--s3) var(--s7);
+}
+
+.kicker {
+  grid-area: kicker;
+  color: var(--khaki);
+}
+
+.h2 {
+  grid-area: title;
+  font-size: clamp(2.2rem, 1rem + 3vw, 4.4rem);
+  line-height: 0.9;
+  font-weight: 860;
+  font-stretch: 66%;
+  letter-spacing: -0.035em;
+  color: var(--cream);
+  text-wrap: balance;
+}
+
+.lede {
+  grid-area: lede;
+  color: var(--khaki-light);
+  max-width: 44ch;
+}
+
+/* ------------------------------------------------------------- the constellation */
+.sky {
+  display: grid;
+  grid-template-columns: minmax(0, 8fr) minmax(0, 4fr);
+  gap: var(--gutter);
+  align-items: center;
+  padding: var(--s5);
+  background:
+    radial-gradient(circle at 20% 30%, rgb(230 213 184 / 0.05) 0 1px, transparent 2px) 0 0 / 46px 46px,
+    radial-gradient(circle at 70% 60%, rgb(230 213 184 / 0.04) 0 1px, transparent 2px) 0 0 / 63px 63px,
+    var(--ground-deep);
+  border: var(--hair) solid var(--line);
+}
+
+.svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.edgeLine {
+  fill: none;
+  stroke: var(--line);
+  stroke-width: 1.5;
+}
+
+.edgeFlow {
+  fill: none;
+  stroke: var(--lumen);
+  stroke-width: 2;
+  stroke-dasharray: 0.06 0.94;
+  animation: flow 3.2s linear infinite;
+  opacity: 0.85;
+}
+
+@keyframes flow {
+  to {
+    stroke-dashoffset: -1;
+  }
+}
+
+.edge {
+  transition: opacity var(--dur-ui) linear;
+}
+
+.edge[data-on="0"] {
+  opacity: 0.15;
+}
+
+.star {
+  cursor: default;
+  outline: none;
+  transition: opacity var(--dur-ui) linear;
+}
+
+.star[data-dim="1"] {
+  opacity: 0.3;
+}
+
+.orbit {
+  animation: sway var(--d) ease-in-out infinite alternate;
+}
+
+@keyframes sway {
+  from {
+    transform: rotate(-10deg);
+  }
+  to {
+    transform: rotate(10deg);
+  }
+}
+
+.ring {
+  fill: none;
+  stroke: var(--line);
+  stroke-dasharray: 2 6;
+}
+
+.core {
+  fill: var(--khaki);
+  transition: fill var(--dur-ui) linear;
+}
+
+.star[data-hot="1"] .core,
+.star:focus-visible .core {
+  fill: var(--lumen);
+  filter: drop-shadow(0 0 10px rgb(249 220 125 / 0.6));
+}
+
+.moon {
+  fill: var(--cream);
+}
+
+.moonLabel {
+  fill: var(--muted);
+  font-size: 13px;
+}
+
+.star[data-hot="1"] .moonLabel {
+  fill: var(--cream);
+}
+
+.starLabel {
+  fill: var(--cream);
+  font-size: 20px;
+  font-weight: 800;
+  font-stretch: 72%;
+}
+
+.legend {
+  display: grid;
+  gap: var(--s3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--khaki-light);
+  font-size: var(--t-small);
+}
+
+.legend li {
+  padding-left: 14px;
+  border-left: 2px solid var(--lumen);
+}
+
+.legend b {
+  color: var(--cream);
+}
+
+/* ------------------------------------------------------------- the open seat */
+.seat {
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  align-items: center;
+}
+
+.hologram {
+  position: relative;
+  height: clamp(300px, 44svh, 460px);
+  overflow: hidden;
+  background: radial-gradient(ellipse 50% 60% at 50% 60%, rgb(249 220 125 / 0.08), transparent 70%);
+}
+
+/* nobody here: a dashed outline of a person, flickering on its plinth */
+.figure {
+  position: absolute;
+  left: 50%;
+  bottom: 18%;
+  width: 46%;
+  aspect-ratio: 0.8;
+  translate: -50% 0;
+  border: 1.5px dashed color-mix(in srgb, var(--lumen) 60%, transparent);
+  border-radius: 48% 48% 10% 10% / 34% 34% 8% 8%;
+  background: repeating-linear-gradient(0deg, rgb(249 220 125 / 0.08) 0 1px, transparent 1px 5px);
+  animation: flicker 4s steps(1) infinite;
+}
+
+.figure::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -46%;
+  width: 46%;
+  aspect-ratio: 1;
+  translate: -50% 0;
+  border: 1.5px dashed color-mix(in srgb, var(--lumen) 60%, transparent);
+  border-radius: 50%;
+  background: inherit;
+}
+
+@keyframes flicker {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  41% {
+    opacity: 0.45;
+  }
+  43% {
+    opacity: 1;
+  }
+  77% {
+    opacity: 0.7;
+  }
+}
+
+.scanline {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 0 48%, rgb(249 220 125 / 0.5) 50%, transparent 52%);
+  background-size: 100% 260%;
+  animation: sweep 3.6s linear infinite;
+}
+
+@keyframes sweep {
+  from {
+    background-position: 0 100%;
+  }
+  to {
+    background-position: 0 0%;
+  }
+}
+
+.plinth {
+  position: absolute;
+  left: 50%;
+  bottom: 12%;
+  width: 60%;
+  height: 18px;
+  translate: -50% 0;
+  border-radius: 50%;
+  border: 1px solid var(--khaki);
+  box-shadow: 0 0 30px rgb(249 220 125 / 0.25);
+}
+
+.seatCopy {
+  display: grid;
+  justify-items: start;
+  gap: var(--s4);
+}
+
+.hello {
+  margin-top: var(--s2);
+}
+
+@media (max-width: 900px) {
+  .block {
+    padding-right: var(--margin);
+  }
+  .head,
+  .sky,
+  .seat {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .head {
+    grid-template-areas:
+      "kicker"
+      "title"
+      "lede";
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .edgeFlow,
+  .orbit,
+  .figure,
+  .scanline {
+    animation: none;
+  }
+}

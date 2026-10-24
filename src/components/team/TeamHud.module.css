@@ -36,7 +36,7 @@
   position: absolute;
   top: 21%;
   bottom: 36%;
-  width: min(21rem, 23vw);
+  width: min(22rem, 24vw);
   display: grid;
   align-content: start;
   gap: var(--s4);
@@ -292,4 +292,21 @@
   .hud {
     display: none;
   }
+}
+
+/* a redacted paragraph: bars of falling length, the way a printed file is struck out */
+.redactedLines {
+  display: grid;
+  justify-items: start;
+  gap: 0.45em;
+}
+
+/* the scanner, inside the signal panel */
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s2);
+  padding-top: var(--s2);
+  pointer-events: auto;
 }

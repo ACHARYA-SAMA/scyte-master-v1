@@ -8,7 +8,7 @@ import assets from "./team-assets.json";
  *
  * Nothing here is invented. The four seats are the roles the business report plans
  * for "now (3-4 people)" (section 12.1). Every personal field is null until the real
- * person is supplied, and null renders as a visible [ FILL ] state. Without a photo,
+ * person is supplied, and null renders as a redaction bar ("Clearance pending"). Without a photo,
  * a generated silhouette is drawn; never a stock face.
  */
 

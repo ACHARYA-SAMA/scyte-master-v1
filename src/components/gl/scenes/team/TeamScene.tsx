@@ -312,6 +312,10 @@ export default function TeamScene() {
       m.uniforms.uTime.value = t;
     }
     pMat.uniforms.uPixel.value = dpr;
+    // the sensitivity knob: thicker points and a deeper relief as it turns up
+    const sens = scan.get().sensitivity / 100;
+    pMat.uniforms.uSize.value += (2 + sens * 2.6 - pMat.uniforms.uSize.value) * Math.min(1, dt * 8);
+    if (group.current) group.current.scale.z += (0.35 + sens * 1.3 - group.current.scale.z) * Math.min(1, dt * 6);
 
     // parallax and a slow idle turn
     const g = gl.get();

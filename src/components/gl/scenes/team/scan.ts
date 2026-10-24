@@ -13,4 +13,6 @@ export const scan = createStore({
   lockedAt: 0,
   /** the hologram's current turn, in degrees, for the HUD readout */
   rot: 0,
+  /** the sensitivity knob, 0..100: how deep the relief and how thick the points */
+  sensitivity: 60,
 });

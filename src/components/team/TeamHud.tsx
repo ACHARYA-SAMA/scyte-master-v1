@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { Redacted } from "@/components/kit/Redacted";
 import { hexId, type Member } from "@/data/team";
 import { readAnchor } from "@/components/gl/anchors";
 import { scan } from "@/components/gl/scenes/team/scan";
@@ -8,7 +9,7 @@ import { gsap, prefersReducedMotion } from "@/lib/motion";
 import { sfx } from "@/lib/sound";
 import styles from "./TeamHud.module.css";
 
-const FILL = (what: string) => `[ FILL: ${what} ]`;
+const FILL = (what: string, chars = 10) => <Redacted what={what} chars={chars} />;
 
 /** Five skills as a radar on segmented rings. Unknown values draw as dashed, empty spokes. */
 function Radar({ skills }: { skills: Member["skills"] }) {
@@ -120,7 +121,7 @@ function Clock({ since }: { since: number }) {
  * The HUD around the hologram: hairline panels that draw their frame first, then
  * their text, joined to the face by leader lines at the logo's own angles.
  */
-export function TeamHud({ member, index, total, attract }: { member: Member | null; index: number; total: number; attract: boolean }) {
+export function TeamHud({ member, index, total, attract, controls }: { member: Member | null; index: number; total: number; attract: boolean; controls?: ReactNode }) {
   const lines = useRef<SVGSVGElement>(null);
   const left = useRef<HTMLDivElement>(null);
   const right = useRef<HTMLDivElement>(null);
@@ -187,53 +188,58 @@ export function TeamHud({ member, index, total, attract }: { member: Member | nu
         <rect width={8} height={8} />
       </svg>
 
-      <div ref={left} className={styles.col} data-side="left">
+      <div ref={left} className={styles.col} data-side="left" data-avoid>
         <section key={`id-${key}`} className={styles.panel} data-panel="id">
           <p className={`${styles.ph} t-hud`}>
             <span>Subject {String(index + 1).padStart(2, "0")} of {String(total).padStart(2, "0")}</span>
             <span className="t-num">{member ? hexId(member.slug) : ""}</span>
           </p>
-          <p className={styles.codename}>{member?.codename ?? FILL("codename")}</p>
+          <p className={styles.codename}>{member?.codename ?? FILL("Codename", 9)}</p>
           <p className={styles.name} data-fill={member?.name ? undefined : "1"}>
-            {member?.name ?? FILL("name")}
+            {member?.name ?? FILL("Name", 8)}
           </p>
           <p className={styles.role}>{member?.role}</p>
           <dl className={styles.kv}>
             <div>
               <dt className="t-hud">Location</dt>
-              <dd>{member?.location ?? FILL("city")}</dd>
+              <dd>{member?.location ?? FILL("City", 8)}</dd>
             </div>
             <div>
               <dt className="t-hud">Joined</dt>
-              <dd>{member?.joined ?? FILL("year")}</dd>
+              <dd>{member?.joined ?? FILL("Year joined", 4)}</dd>
             </div>
           </dl>
         </section>
         <section key={`sk-${key}`} className={styles.panel} data-panel="skills">
           <p className={`${styles.ph} t-hud`}>
             <span>Skills</span>
-            <span>{member?.skills.every((s) => s.value !== null) ? "self-rated" : FILL("0 to 100 each")}</span>
+            <span>{member?.skills.every((s) => s.value !== null) ? "self-rated" : "ratings pending"}</span>
           </p>
           {member ? <Radar skills={member.skills} /> : null}
         </section>
       </div>
 
-      <div ref={right} className={styles.col} data-side="right">
+      <div ref={right} className={styles.col} data-side="right" data-avoid>
         <section key={`bio-${key}`} className={styles.panel} data-panel="bio">
           <p className={`${styles.ph} t-hud`}>
             <span>Bio</span>
             <span>decoded</span>
           </p>
           <p className={styles.bio}>
-            {member ? <TypeOut text={member.bio ?? FILL("two lines, in their own words")} /> : null}
-            <span className="sr-only">{member?.bio ?? "Bio not yet filled in."}</span>
+            {member?.bio ? <TypeOut text={member.bio} /> : member ? (
+              <span className={styles.redactedLines}>
+                {FILL("Bio", 26)}
+                {FILL("Bio, second line", 18)}
+              </span>
+            ) : null}
+            {member?.bio ? <span className="sr-only">{member.bio}</span> : null}
           </p>
         </section>
         <section key={`now-${key}`} className={styles.panel} data-panel="now">
           <dl className={styles.kv}>
             <div>
               <dt className="t-hud">Currently</dt>
-              <dd>{member?.currently ?? FILL("what they are working on")}</dd>
+              <dd>{member?.currently ?? FILL("Current work", 16)}</dd>
             </div>
             <div>
               <dt className="t-hud">Tools</dt>
@@ -255,15 +261,16 @@ export function TeamHud({ member, index, total, attract }: { member: Member | nu
             </span>
             <span>{attract ? "Scanning" : "Held"}</span>
           </div>
-          <Wave live={!!member} />
+          {/* the scanner's knob and lever live in the signal panel, beside the readouts they move */}
+          {controls ? <div className={styles.controls}>{controls}</div> : <Wave live={!!member} />}
         </section>
         {member?.links.portfolio ? (
-          <a className={`${styles.portfolio} cta`} href={member.links.portfolio} target="_blank" rel="noopener noreferrer" data-magnetic data-cursor="open">
+          <a className={`${styles.portfolio} cta`} href={member.links.portfolio} target="_blank" rel="noopener noreferrer" data-magnetic data-cursor="open" data-avoid>
             <span>Visit portfolio</span>
             <span className={styles.out} aria-hidden />
           </a>
         ) : (
-          <button type="button" className={styles.portfolio} disabled>
+          <button type="button" className={styles.portfolio} disabled data-avoid>
             <span>Portfolio coming soon</span>
           </button>
         )}
