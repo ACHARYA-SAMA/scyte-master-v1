@@ -229,7 +229,7 @@ export function Pilot() {
         </div>
         <Cartridges />
         <div className={styles.close}>
-          <LeverSwitch label="Run a pilot" positions={["Ready", "Run"]} mode="pull" onPull={pull} size="l" />
+          <LeverSwitch label="Run a pilot" positions={["Ready", "Run"]} mode="pull" onPull={pull} size="m" />
           <div>
             <p className={styles.closeTitle}>Pull to start a pilot.</p>
             <p className={styles.closeLine}>It opens a conversation with us, set to a pilot. Thirty days, a holdout, a number agreed first.</p>

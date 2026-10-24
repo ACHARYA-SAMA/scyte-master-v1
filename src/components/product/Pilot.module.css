@@ -256,6 +256,17 @@
   border-bottom: 6px solid var(--ground);
 }
 
+/* dark surfaces inside the khaki band take the site's own tokens back */
+.cart,
+.machine {
+  --cream: #e6d5b8;
+  --khaki-light: #cfc7aa;
+  --muted: #929884;
+  --line: #334638;
+  --lumen: #f9dc7d;
+  color-scheme: dark;
+}
+
 /* a cartridge: a label, a grip, and gold-less contact pins */
 .cart {
   position: relative;
