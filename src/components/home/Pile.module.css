@@ -1,0 +1,133 @@
+.section {
+  position: relative;
+  z-index: 1;
+  height: 100svh;
+  min-height: 620px;
+  overflow: hidden;
+  background:
+    radial-gradient(70% 60% at 50% 100%, color-mix(in srgb, var(--lumen) 16%, transparent), transparent 70%),
+    var(--ground-deep);
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.head {
+  position: absolute;
+  top: calc(var(--nav-h) + 6vh);
+  left: var(--margin);
+  right: var(--margin);
+  z-index: 2;
+  display: grid;
+  justify-items: start;
+  gap: var(--s4);
+  max-width: 34rem;
+}
+
+.kicker {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--khaki);
+}
+
+.kicker::before {
+  content: "";
+  width: 28px;
+  height: 1px;
+  background: var(--lumen);
+  box-shadow: 0 0 10px var(--lumen);
+}
+
+.line {
+  font-size: var(--t-lead);
+  line-height: 1.38;
+  color: var(--khaki-light);
+  text-wrap: pretty;
+}
+
+.cta {
+  display: inline-flex;
+  align-items: center;
+  padding: 15px 20px 14px;
+  font-weight: 650;
+  font-size: var(--t-body);
+  background: var(--khaki);
+  color: var(--ground);
+}
+
+/* the giant word the chips land on */
+.word {
+  position: absolute;
+  left: 50%;
+  bottom: 3svh;
+  translate: -50% 0;
+  z-index: 0;
+  font-size: clamp(5rem, 1rem + 17.4vw, 21rem);
+  line-height: 0.78;
+  font-weight: 900;
+  font-stretch: 62%;
+  letter-spacing: -0.045em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--khaki);
+  text-shadow: 0 30px 80px rgb(0 0 0 / 0.5);
+}
+
+.word span {
+  display: inline-block;
+  transform-origin: 50% 100%;
+}
+
+.chip {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 16px 10px 12px;
+  border-radius: 999px;
+  white-space: nowrap;
+  font-size: clamp(0.8rem, 0.6rem + 0.5vw, 1.05rem);
+  font-weight: 700;
+  font-stretch: 85%;
+  letter-spacing: -0.01em;
+  color: var(--ground);
+  background: var(--lumen);
+  box-shadow:
+    0 8px 18px -8px rgb(0 0 0 / 0.6),
+    inset 0 -2px 0 rgb(0 0 0 / 0.12);
+  opacity: 0;
+  will-change: transform;
+  pointer-events: none;
+}
+
+.chip i {
+  width: 0.62em;
+  height: 0.62em;
+  background: currentColor;
+}
+
+.chip[data-tone="1"] {
+  background: var(--cream);
+}
+
+.chip[data-tone="2"] {
+  background: var(--khaki);
+}
+
+.chip[data-tone="3"] {
+  background: #e2bf55;
+}
+
+@media (max-width: 720px) {
+  .line {
+    font-size: var(--t-body);
+  }
+
+  /* clear of the bottom bar */
+  .word {
+    bottom: calc(3svh + 96px);
+  }
+}

@@ -1,7 +1,11 @@
 "use client";
 
 import {
+  AddEquation,
   CanvasTexture,
+  CustomBlending,
+  OneFactor,
+  ZeroFactor,
   Color,
   MeshPhysicalMaterial,
   MeshStandardMaterial,
@@ -12,6 +16,21 @@ import {
   LinearMipmapLinearFilter,
   LinearFilter,
 } from "three";
+
+/**
+ * Light that adds to the colour and leaves alpha alone. Plain additive blending also
+ * adds alpha, so where glows overlap the frame's alpha climbs far past 1; bloom carries
+ * that alpha along, and the post chain's alpha blends then overshoot into dark rings
+ * round every bright light. Shaders using this write premultiplied colour, alpha 1.
+ */
+export const lightBlend = {
+  blending: CustomBlending,
+  blendEquation: AddEquation,
+  blendSrc: OneFactor,
+  blendDst: OneFactor,
+  blendSrcAlpha: ZeroFactor,
+  blendDstAlpha: OneFactor,
+} as const;
 
 /** The palette as linear-light colours for shaders and materials. */
 export const C = {

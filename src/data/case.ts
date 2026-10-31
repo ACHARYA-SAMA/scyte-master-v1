@@ -74,8 +74,8 @@ export const BRIEFS: Brief[] = [
 export type Excerpt = { file: string; at: string; before?: number; lines: number };
 
 export const EXCERPTS: Record<string, Excerpt> = {
-  leak: { file: "src/components/gl/scenes/home/Plumbing.tsx", at: "/** A square duct along each segment of a path", lines: 18 },
-  reasons: { file: "src/components/gl/scenes/home/Drops.tsx", at: "// the failing arm: leak at this drop's crack", lines: 8 },
+  leak: { file: "src/components/gl/scenes/home/Gate.tsx", at: "        // the river: start far out on the water, swing in before the gate, enter the opening", lines: 8 },
+  reasons: { file: "src/components/gl/scenes/home/shaders.ts", at: "// light lost at every crack it passes, until the cracks are sealed", lines: 3 },
   gate: { file: "src/components/gl/scenes/identify/IdentifyScene.tsx", at: "if (s.consent) angle.current += dt * 1.6;", before: 3, lines: 12 },
   rules: { file: "src/components/product/decide/patch.ts", at: "The patch bay's logic.", before: 1, lines: 7 },
   send: { file: "src/lib/chat/useChat.ts", at: "next.bot.forEach((body, i) => {", lines: 10 },

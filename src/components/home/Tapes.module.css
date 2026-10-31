@@ -1,0 +1,94 @@
+.section {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  height: clamp(260px, 46svh, 520px);
+  margin-bottom: -10svh;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.tape {
+  position: absolute;
+  left: -10vw;
+  right: -10vw;
+  display: flex;
+  align-items: center;
+  height: clamp(54px, 7vw, 112px);
+  overflow: hidden;
+  will-change: transform;
+}
+
+.leaks {
+  top: 30%;
+  background: var(--khaki);
+  color: var(--ground);
+  box-shadow: 0 18px 40px -18px rgb(0 0 0 / 0.7);
+}
+
+.fixes {
+  top: 46%;
+  background: var(--lumen);
+  color: var(--ground);
+  box-shadow: 0 18px 40px -18px rgb(0 0 0 / 0.7);
+}
+
+/* a stitched hem along both edges, like a printed tape */
+.tape::before,
+.tape::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 0;
+  border-top: 2px dashed color-mix(in srgb, var(--ground) 35%, transparent);
+}
+
+.tape::before {
+  top: 7px;
+}
+
+.tape::after {
+  bottom: 7px;
+}
+
+.track {
+  display: flex;
+  white-space: nowrap;
+  will-change: transform;
+}
+
+.run {
+  display: flex;
+}
+
+.word {
+  display: inline-flex;
+  align-items: center;
+  gap: clamp(18px, 2.2vw, 40px);
+  padding-right: clamp(18px, 2.2vw, 40px);
+  font-size: clamp(1.6rem, 0.8rem + 3vw, 4.2rem);
+  line-height: 1;
+  font-weight: 880;
+  font-stretch: 62%;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
+.fixes .word {
+  font-stretch: 100%;
+  font-weight: 760;
+  letter-spacing: -0.03em;
+}
+
+/* the logo's own square, as the separator */
+.mark {
+  width: 0.36em;
+  height: 0.36em;
+  background: currentColor;
+}
+
+.fixes .mark {
+  transform: rotate(45deg);
+}

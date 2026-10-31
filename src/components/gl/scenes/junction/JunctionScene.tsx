@@ -8,16 +8,13 @@ import { BlendFunction, ToneMappingMode, type ChromaticAberrationEffect } from "
 import {
   BoxGeometry,
   CircleGeometry,
-  CurvePath,
   DoubleSide,
   Group,
-  LineCurve3,
   MeshBasicMaterial,
   MeshStandardMaterial,
   Color,
   PerspectiveCamera,
   PlaneGeometry,
-  QuadraticBezierCurve3,
   RingGeometry,
   ShaderMaterial,
   TubeGeometry,
@@ -34,74 +31,10 @@ import { BulbString, type Bulb } from "../../BulbString";
 import { C, makeGlass, makeMetal } from "../../materials";
 import { projectAnchors } from "../../anchors";
 
-/* ------------------------------------------------------------------ layout */
-const ANG = [-38, -23, -7.6, 7.6, 23, 38].map((d) => (d * Math.PI) / 180);
-const R = 62;
-const PIPE_Y = 1.3;
-const PIPE_R = 0.85;
-const PORTAL = { w: 10, h: 14, base: 4 };
-const CAM = new Vector3(0, 10, 38);
-const FOV = 44;
-
-const dirOf = (i: number) => new Vector3(Math.sin(ANG[i]!), 0, -Math.cos(ANG[i]!));
-const at = (i: number, r: number, y: number) => dirOf(i).multiplyScalar(r).setY(y);
-
-/** A pipe: along the floor from the hub, then up into its portal (or out to the pad). */
-const pipeCurve = (i: number, here: boolean) => {
-  const path = new CurvePath<Vector3>();
-  const start = at(i, 4.5, PIPE_Y);
-  if (here) {
-    path.add(new LineCurve3(start, at(i, R * 0.42, PIPE_Y)));
-    return path;
-  }
-  const bend = at(i, R - 7, PIPE_Y);
-  path.add(new LineCurve3(start, bend));
-  path.add(new QuadraticBezierCurve3(bend, at(i, R - 0.5, PIPE_Y), at(i, R, PORTAL.base)));
-  return path;
-};
-
-const portalCenter = (i: number) => at(i, R, PORTAL.base + PORTAL.h / 2 + 0.6);
+import { ANG, CAM, FOV, PORTAL, PIPE_R, R, at, dirOf, pipeCurve, portalCenter } from "./layout";
+import { Atmosphere } from "./Atmosphere";
 
 /* ------------------------------------------------------------------ shaders */
-const floorMaterial = () =>
-  new ShaderMaterial({
-    transparent: true,
-    depthWrite: false,
-    uniforms: { uTime: { value: 0 }, uGlow: { value: 0 } },
-    vertexShader: /* glsl */ `
-      varying vec3 vW;
-      void main() {
-        vec4 w = modelMatrix * vec4(position, 1.0);
-        vW = w.xyz;
-        gl_Position = projectionMatrix * viewMatrix * w;
-      }
-    `,
-    fragmentShader: /* glsl */ `
-      uniform float uTime;
-      uniform float uGlow;
-      varying vec3 vW;
-      // analytic grid lines: one screen pixel wide at any distance or angle
-      float grid(vec2 p, float size) {
-        vec2 q = p / size;
-        vec2 g = abs(fract(q - 0.5) - 0.5) / fwidth(q);
-        return 1.0 - min(min(g.x, g.y), 1.0);
-      }
-      void main() {
-        vec2 p = vW.xz;
-        float d = length(p);
-        float fade = exp(-d / 78.0);
-        // linear values: these land near the site's abyss and line tones after the output transform
-        vec3 col = vec3(0.006, 0.012, 0.008);
-        col += vec3(0.2, 0.27, 0.22) * grid(p, 4.0) * 0.09 * fade;
-        col += vec3(0.76, 0.72, 0.59) * grid(p, 20.0) * 0.12 * fade;
-        // a pool of light at the hub, warmer as a pipe fills
-        col += vec3(0.98, 0.86, 0.49) * (0.05 + uGlow * 0.08) * exp(-d / 11.0);
-        // nearly opaque: only the mirrored cores and portals show through, as reflections
-        gl_FragColor = vec4(col, 0.84);
-      }
-    `,
-  });
-
 const coreMaterial = (length: number) =>
   new ShaderMaterial({
     side: DoubleSide,
@@ -309,8 +242,6 @@ export default function JunctionScene() {
       metal: makeMetal("#2b3a2f", 0.3),
       frame: frameGeometry(),
       plane: new PlaneGeometry(PORTAL.w, PORTAL.h),
-      floor: floorMaterial(),
-      floorGeo: new PlaneGeometry(600, 600),
       padGeo: new CircleGeometry(3.4, 48),
       ringGeo: new RingGeometry(3.6, 3.9, 64),
       hubGeo: new RingGeometry(3.2, 3.36, 72),
@@ -418,8 +349,6 @@ export default function JunctionScene() {
         grp.scale.setScalar(grp.scale.x + (k - grp.scale.x) * Math.min(1, dt * 8));
       }
     });
-    shared.floor.uniforms.uGlow!.value = s.charge;
-    shared.floor.uniforms.uTime!.value = t;
     padMat.color.copy(C.lumen).multiplyScalar(0.3 + 0.1 * Math.sin(t * 2));
 
     // the camera: low at the hub, yawing up to 12 degrees toward the highlighted pipe
@@ -481,11 +410,11 @@ export default function JunctionScene() {
   return (
     <>
       <color attach="background" args={["#070e09"]} />
-      <fog attach="fog" args={["#070e09", 60, 210]} />
+      <fog attach="fog" args={["#070e09", 60, 330]} />
       <Studio intensity={0.45} />
       <ambientLight intensity={0.1} color="#cfc7aa" />
 
-      {off("floor") ? null : <mesh geometry={shared.floorGeo} material={shared.floor} rotation={[-Math.PI / 2, 0, 0]} renderOrder={-1} />}
+      {off("floor") ? null : <Atmosphere pipes={pipes} />}
       <mesh geometry={shared.hubGeo} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0]}>
         <meshBasicMaterial color={C.khaki} toneMapped={false} />
       </mesh>
@@ -514,6 +443,7 @@ export default function JunctionScene() {
                 <mesh geometry={shared.frame} material={outlines[i]!} scale={[1.012, 1.008, 0.4]} position={[0, 0, 0.32]} />
                 {/* reflected below the floor */}
                 <mesh geometry={shared.plane} material={portals[i]!} position={[0, -pc.y * 2, 0]} scale={[1, -1, 1]} />
+                <mesh geometry={shared.frame} material={outlines[i]!} position={[0, -pc.y * 2, 0.32]} scale={[1.012, -1.008, 0.4]} />
               </group>
             )}
           </group>

@@ -58,8 +58,8 @@ export const THIS_SITE_SCENES: SiteScene[] = [
     page: "Home",
     href: "/",
     img: "/work/this-site/leak.webp",
-    what: "The logo is the store. Each visit is a drop of light running through its letters, and the failed ones fall out.",
-    how: "The letters are glass, extruded from the logo's own SVG paths. The drops run through pipes along their centre lines, on the same clock as the scroll.",
+    what: "A store is a door. It stands as a gate of light on still water at dawn, shoppers pour through it as drops of light, and scrolling flies the camera through it and down the pipe with them.",
+    how: "One camera path runs through three sets, joined by cuts hidden in bursts of light. Each drop's place on its river comes from the clock, so a few thousand cost one draw call. Water, sky and haze are shaders, so it holds its frame rate on integrated graphics.",
   },
   {
     id: "reasons",
@@ -67,8 +67,8 @@ export const THIS_SITE_SCENES: SiteScene[] = [
     page: "Home",
     href: "/",
     img: "/work/this-site/reasons.webp",
-    what: "Every leak carries the payment gateway's reason. Press and hold a crack to clamp it and watch the count change.",
-    how: "A live simulation in which one payment in three fails, so the leaks are easy to see. The page says so, and labels its figures illustrative.",
+    what: "At the payment fork, light leaks through cracks labelled with the gateway's reason codes. As the camera rises, the matching playbooks seal them in gold and the fallen light runs back in.",
+    how: "The falling light is one point cloud on a clock the scene can run backwards. It is a picture of the idea, not a measurement of any store, and the figures that follow are labelled illustrative.",
   },
   {
     id: "gate",

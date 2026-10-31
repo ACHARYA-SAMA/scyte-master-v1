@@ -1,0 +1,421 @@
+/* The anatomy band: the one khaki block on the home page, where the film hands over to how
+   the machine works. The kit's light theme, warmed to the palette: cream paper, khaki
+   shades, ground-green ink, and the shoppers in Lumen. */
+.section:global(.iso)[data-theme="light"] {
+  --anatomy-page: #c2b897;
+  --anatomy-card: #f1e9d3;
+  --anatomy-text: #34402f;
+  --anatomy-strong: #1b261d;
+  --anatomy-muted: #5f6651;
+  --anatomy-face: #f7f1e1;
+  --anatomy-top: #fbf7ec;
+  --anatomy-shade-0: #ab9f7b;
+  --anatomy-shade-1: #bdb18d;
+  --anatomy-shade-2: #cdc29f;
+  --anatomy-shade-3: #ddd3b4;
+  --anatomy-lit-top: #f9dc7d;
+  --anatomy-lit-shade: #e2bf55;
+  --anatomy-hi: #1b261d;
+  --anatomy-mid: #48503f;
+  --anatomy-lo: #7d775d;
+  --anatomy-faint: #b0a582;
+  --anatomy-lit: #1b261d;
+  --anatomy-halo: #4f4a36;
+  --anatomy-halo-opacity: 0.34;
+  --anatomy-dot: #1b261d;
+  --anatomy-weight: 0.95px;
+  --anatomy-mono: var(--font);
+}
+
+.section {
+  position: relative;
+  z-index: 2;
+  height: 680svh;
+  background: var(--khaki);
+  color: var(--ground);
+}
+
+/* scalloped edges that ripple, into the dark above and below */
+.section::before,
+.section::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 28px;
+  background: var(--khaki);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 28'%3E%3Cpath d='M0 28V16Q15 0 30 14T60 14T90 14T120 16V28Z'/%3E%3C/svg%3E") 0 0 / 120px 28px repeat-x;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 28'%3E%3Cpath d='M0 28V16Q15 0 30 14T60 14T90 14T120 16V28Z'/%3E%3C/svg%3E") 0 0 / 120px 28px repeat-x;
+  animation: ripple 6s linear infinite;
+  pointer-events: none;
+}
+
+.section::before {
+  top: -27px;
+}
+
+.section::after {
+  bottom: -27px;
+  transform: scaleY(-1);
+  animation-direction: reverse;
+}
+
+@keyframes ripple {
+  to {
+    -webkit-mask-position: 120px 0;
+    mask-position: 120px 0;
+  }
+}
+
+.sticky {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  display: grid;
+  grid-template-columns: minmax(0, 4fr) minmax(0, 9fr);
+  align-items: center;
+  gap: clamp(24px, 4vw, 72px);
+  padding: calc(var(--nav-h) + 12px) var(--margin) 48px;
+  overflow: hidden;
+}
+
+/* ------------------------------------------------------------------ the copy */
+.copy {
+  display: grid;
+  gap: var(--s5);
+  align-content: center;
+}
+
+.kicker {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--ground);
+}
+
+.kicker::before {
+  content: "";
+  width: 28px;
+  height: 2px;
+  background: var(--ground);
+}
+
+.title {
+  font-size: clamp(2.6rem, 1rem + 4.4vw, 6.4rem);
+  line-height: 0.86;
+  font-weight: 880;
+  font-stretch: 64%;
+  letter-spacing: -0.035em;
+  text-transform: uppercase;
+  color: var(--ground);
+}
+
+/* the outlined line fills in, left to right, as the parts land */
+.title span {
+  display: block;
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--ground);
+  background: linear-gradient(90deg, var(--ground) calc(var(--fill, 0) * 100%), transparent calc(var(--fill, 0) * 100%));
+  -webkit-background-clip: text;
+  background-clip: text;
+  transition: --fill 400ms;
+}
+
+/* a giant numeral behind the card: the part that has just landed */
+.ghost {
+  position: absolute;
+  right: calc(var(--margin) + 1vw);
+  top: calc(var(--nav-h) - 3vh);
+  z-index: 0;
+  font-size: clamp(9rem, 19vw, 24rem);
+  line-height: 0.8;
+  font-weight: 900;
+  font-stretch: 62%;
+  letter-spacing: -0.06em;
+  color: transparent;
+  -webkit-text-stroke: 2px color-mix(in srgb, var(--ground) 38%, transparent);
+  pointer-events: none;
+  user-select: none;
+}
+
+.ghost span {
+  display: inline-block;
+  animation: flip 520ms var(--ease-snap) both;
+}
+
+@keyframes flip {
+  from {
+    opacity: 0;
+    transform: translateY(18%) rotate(-6deg);
+  }
+}
+
+.list {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: part;
+}
+
+.list li {
+  display: grid;
+  grid-template-columns: 2.6em 1fr;
+  column-gap: 12px;
+  padding: 8px 10px;
+  border-left: 2px solid color-mix(in srgb, var(--ground) 18%, transparent);
+  cursor: default;
+  opacity: 0.38;
+  transform: translateX(-10px);
+  transition:
+    opacity 320ms var(--ease-drift),
+    transform 420ms var(--ease-snap),
+    border-color 320ms linear,
+    background-color 320ms linear;
+}
+
+.list li[data-on="1"] {
+  opacity: 0.72;
+  transform: none;
+}
+
+.list li[data-now="1"],
+.list li:hover,
+.list li:focus-visible {
+  opacity: 1;
+  border-color: var(--ground);
+  background: color-mix(in srgb, var(--cream) 45%, transparent);
+  outline: none;
+}
+
+.n {
+  grid-row: span 2;
+  font-size: 1.5rem;
+  line-height: 1;
+  font-weight: 800;
+  font-stretch: 70%;
+  font-variant-numeric: tabular-nums;
+}
+
+.name {
+  font-size: var(--t-body);
+  font-weight: 760;
+  font-stretch: 80%;
+  line-height: 1.1;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+/* the line under a name opens only for the part that has just landed, or the one pointed at */
+.line {
+  max-height: 0;
+  overflow: hidden;
+  font-size: var(--t-small);
+  line-height: 1.45;
+  color: color-mix(in srgb, var(--ground) 82%, transparent);
+  transition: max-height 420ms var(--ease-drift);
+}
+
+.list li[data-now="1"] .line,
+.list li:hover .line,
+.list li:focus-visible .line {
+  max-height: 5em;
+}
+
+/* ------------------------------------------------------------------ the card */
+.figure {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+}
+
+.figure :global(.iso-figure) {
+  margin: 0;
+}
+
+.figure :global(.iso-plate) {
+  padding: 46px 18px 40px;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--ground) 30%, transparent),
+    0 30px 60px -30px rgb(27 38 29 / 0.55);
+}
+
+.figure :global(.iso-svg) {
+  max-height: calc(100svh - var(--nav-h) - 230px);
+}
+
+.figure :global(.iso-legend) {
+  color: color-mix(in srgb, var(--ground) 80%, transparent);
+}
+
+/* pointing at a part in the list lifts it out of the rest */
+.figure[data-focus] :global(.iso-svg [data-part]:not([data-part="base"])) {
+  opacity: 0.22;
+  transition: opacity 240ms linear;
+}
+
+.figure[data-focus="hopper"] :global(.iso-svg [data-part="hopper"]),
+.figure[data-focus="gate"] :global(.iso-svg [data-part="gate"]),
+.figure[data-focus="chest"] :global(.iso-svg [data-part="chest"]),
+.figure[data-focus="dial"] :global(.iso-svg [data-part="dial"]),
+.figure[data-focus="press"] :global(.iso-svg [data-part="press"]),
+.figure[data-focus="holdout"] :global(.iso-svg [data-part="holdout"]) {
+  opacity: 1 !important;
+}
+
+/* a shopper is cream until the press stamps it; then it is a message, in Lumen */
+.token[data-state="waiting"] :global(.iso-solid[data-lit] > .iso-top) {
+  fill: var(--anatomy-top);
+}
+
+.token[data-state="waiting"] :global(.iso-solid[data-lit] > .iso-shade) {
+  fill: var(--anatomy-shade-2);
+}
+
+.lamp {
+  fill: var(--lumen);
+  opacity: 0.25;
+}
+
+.slot {
+  fill: var(--anatomy-faint);
+}
+
+.slot[data-on="1"] {
+  fill: var(--anatomy-hi);
+}
+
+@media (max-width: 960px) {
+  .section {
+    height: 720svh;
+  }
+  .slide {
+    bottom: auto;
+    top: 46%;
+  }
+  .sticky {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    align-content: center;
+    align-items: start;
+    gap: 14px;
+    padding-top: calc(var(--nav-h) + 4px);
+    padding-bottom: 72px;
+  }
+  .copy {
+    display: contents;
+  }
+  .kicker {
+    display: none;
+  }
+  .title {
+    font-size: clamp(2rem, 1rem + 6vw, 3.2rem);
+  }
+  .title span {
+    display: inline;
+  }
+  .ghost {
+    font-size: 60vw;
+    top: 58%;
+  }
+  .figure {
+    order: 2;
+  }
+  .list {
+    order: 3;
+  }
+  .figure {
+    align-self: center;
+  }
+  .figure :global(.iso-plate) {
+    padding: 34px 6px 30px;
+  }
+  .figure :global(.iso-legend) {
+    display: none;
+  }
+  .figure :global(.iso-svg) {
+    max-height: none;
+  }
+  /* the list becomes one line: the part that has just landed */
+  .list li {
+    display: none;
+  }
+  .list li[data-now="1"] {
+    display: grid;
+    transform: none;
+  }
+}
+
+/* ------------------------------------------------------------------ the crazy bits */
+/* a giant word sliding through the band behind the card as the page scrolls */
+.slide {
+  position: absolute;
+  left: 0;
+  bottom: 4svh;
+  z-index: 0;
+  white-space: nowrap;
+  font-size: clamp(6rem, 15vw, 17rem);
+  line-height: 0.8;
+  font-weight: 900;
+  font-stretch: 62%;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--ground) 9%, transparent);
+  pointer-events: none;
+  user-select: none;
+  will-change: transform;
+}
+
+/* the exploded view's tags */
+.tag line {
+  stroke: var(--ground);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.tag rect {
+  fill: var(--ground);
+}
+
+.tag text {
+  fill: var(--cream);
+  font-size: 9px;
+  font-weight: 700;
+  font-stretch: 80%;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.tag .tagN {
+  fill: var(--lumen);
+  font-variant-numeric: tabular-nums;
+}
+
+/* confetti out of the tray */
+.spark {
+  transform-box: fill-box;
+  transform-origin: center;
+  fill: var(--lumen);
+}
+
+.spark[data-tone="1"] {
+  fill: var(--ground);
+}
+
+.spark[data-tone="2"] {
+  fill: #e2bf55;
+}
+
+/* in overdrive the card glows */
+.figure[data-turbo="1"] :global(.iso-plate) {
+  box-shadow:
+    0 0 0 2px var(--ground),
+    0 0 0 6px color-mix(in srgb, var(--lumen) 70%, transparent),
+    0 30px 60px -30px rgb(27 38 29 / 0.55);
+}
+
+.figure :global(.iso-plate) {
+  transition: box-shadow 260ms linear;
+  cursor: pointer;
+}

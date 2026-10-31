@@ -16,7 +16,7 @@ npm run build && npm start
 
 | Route | Chapter | Signature |
 |---|---|---|
-| `/` | The Leak | The logo is the store. Drops of light run through glass letters from the first frame; scroll follows one shopper, Aarav, through the leaks, a recovery on a working phone and the result. |
+| `/` | The Leak | One continuous shot. A gate of light stands on still water at dawn and shoppers pour through it as drops of light; scroll flies through the gate, down the pipe, over the payment fork where reason codes leak light, down to a working phone, and back out to the gate fully lit. |
 | `/product` | The Machine | Six stations, each its own technique: an x-ray of a store page, a physical consent gate (Rapier), an intent landscape, a drag-and-drop rule switchyard, five working phones, and a holdout measured in two jars. The rail is Aarav's 20 minutes and scrubs the page. |
 | `/studio` | The Assembly | A real build's six layers added by scroll and collapsed into a page, then three workbenches you can use: a website inspector, an app prototype and a content calendar. |
 | `/work` | The Archive | A drag-and-throw WebGL film strip. Frames bend with speed and ripple under the pointer; opening one grows it into its case. Case 00 is this site; client slots are open. |

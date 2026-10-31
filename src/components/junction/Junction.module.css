@@ -60,7 +60,8 @@
 }
 
 .title {
-  font-size: clamp(1.8rem, 0.9rem + 2.2vw, 3.4rem);
+  font-size: clamp(2.4rem, 1rem + 3.4vw, 4.8rem);
+  text-shadow: 0 4px 40px rgb(0 0 0 / 0.55);
   line-height: 0.9;
   font-weight: 860;
   font-stretch: 64%;
@@ -95,6 +96,8 @@
   gap: 2px;
   text-align: center;
   color: var(--khaki);
+  /* the chosen path's shaft of light stands behind its sign */
+  text-shadow: 0 2px 18px rgb(0 0 0 / 0.8), 0 0 4px rgb(0 0 0 / 0.6);
   text-decoration: none;
   outline: none;
   transition:
@@ -262,9 +265,8 @@
   display: flex;
   align-items: center;
   gap: var(--s6);
-  padding: 10px 18px;
-  background: color-mix(in srgb, var(--abyss) 72%, transparent);
-  border: var(--hair) solid var(--line);
+  padding: 14px 0 0;
+  border-top: var(--hair) solid color-mix(in srgb, var(--khaki) 45%, transparent);
   transition: opacity var(--dur-panel) linear;
 }
 
